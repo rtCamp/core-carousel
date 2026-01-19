@@ -1,0 +1,47 @@
+{
+  "name": "carousel-system-interactivity-api",
+  "version": "1.0.0",
+  "description": "Standalone carousel block using Embla and WordPress Interactivity API",
+  "author": "rtCamp",
+  "private": true,
+  "engines": {
+    "node": "^22.0.0",
+    "npm": "^10.0.0"
+  },
+  "scripts": {
+    "build": "wp-scripts build --experimental-modules --webpack-src-dir=./assets/src --output-path=./build",
+    "start": "wp-scripts start --experimental-modules --webpack-src-dir=./assets/src --output-path=./build",
+    "lint:js": "wp-scripts lint-js",
+    "lint:js:fix": "wp-scripts lint-js --fix",
+    "lint:js:types": "tsc --build --noEmit",
+    "lint:css": "wp-scripts lint-style",
+    "lint:css:fix": "wp-scripts lint-style --fix",
+    "lint:php": "composer run-script lint",
+    "lint:php:fix": "composer run-script format"
+  },
+  "dependencies": {
+    "@wordpress/block-editor": "^15.10.0",
+    "@wordpress/blocks": "^15.10.0",
+    "@wordpress/components": "^30.0.0",
+    "@wordpress/data": "^10.10.0",
+    "@wordpress/dom-ready": "^4.37.0",
+    "@wordpress/i18n": "^6.10.0",
+    "@wordpress/interactivity": "6.37.0",
+    "embla-carousel": "8.6.0",
+    "embla-carousel-autoplay": "8.6.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.3.7",
+    "@types/wordpress__block-editor": "14.21.7",
+    "@types/wordpress__blocks": "12.5.18",
+    "@wordpress/scripts": "^31.2.0",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

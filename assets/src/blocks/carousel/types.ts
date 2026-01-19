@@ -5,6 +5,7 @@ export type CarouselAttributes = {
 	dragFree: boolean;
 	carouselAlign: "start" | "center" | "end";
 	containScroll: "trimSnaps" | "keepSnaps";
+	direction: "ltr" | "rtl";
 	allowedSlideBlocks: string[];
 	autoplay: boolean;
 	autoplayDelay: number;

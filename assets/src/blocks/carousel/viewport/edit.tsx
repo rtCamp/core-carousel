@@ -37,9 +37,10 @@ export default function Edit( {
 		},
 	);
 
-	const { setEmblaApi, setCanScrollPrev, setCanScrollNext } = useContext(
+	const { setEmblaApi, setCanScrollPrev, setCanScrollNext, carouselOptions } = useContext(
 		EditorCarouselContext,
 	);
+	
 	const emblaRef = useRef<HTMLDivElement>( null );
 	const ref = useMergeRefs( [ emblaRef, blockProps.ref ] );
 
@@ -71,27 +72,32 @@ export default function Edit( {
 				loop: false,
 				dragFree: true,
 				containScroll: 'trimSnaps',
+				direction: carouselOptions?.direction || 'ltr',
 				container: queryLoopContainer || undefined,
 			} );
 
 			( emblaRef.current as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ] = embla;
 
 			const onSelect = () => {
-				setCanScrollPrev( embla!.canScrollPrev() );
-				setCanScrollNext( embla!.canScrollNext() );
+				const canPrev = embla!.canScrollPrev();
+				const canNext = embla!.canScrollNext();
+				setCanScrollPrev( canPrev );
+				setCanScrollNext( canNext );
 			};
 
 			embla.on( 'select', onSelect );
 			embla.on( 'reInit', onSelect );
-			onSelect();
+			
+			// Use requestAnimationFrame to ensure DOM has settled
+			requestAnimationFrame( () => {
+				onSelect();
+			} );
 
 			setEmblaApi( embla );
 		};
 
-		// 1. Initial Init
 		initEmbla();
 
-		// 2. Observe DOM for changes (posts loading)
 		if ( emblaRef.current ) {
 			observer = new MutationObserver( ( mutations ) => {
 				let shouldReInit = false;
@@ -145,7 +151,7 @@ export default function Edit( {
 				];
 			}
 		};
-	}, [ setEmblaApi, setCanScrollPrev, setCanScrollNext ] );
+	}, [ setEmblaApi, setCanScrollPrev, setCanScrollNext, carouselOptions ] );
 
 	return (
 		<>

@@ -38,6 +38,7 @@ export default function Edit( {
 		dragFree,
 		carouselAlign,
 		containScroll,
+		direction,
 		allowedSlideBlocks,
 		autoplay,
 		autoplayDelay,
@@ -46,7 +47,6 @@ export default function Edit( {
 		ariaLabel,
 	} = attributes;
 
-	// Editor state for Embla
 	const [ emblaApi, setEmblaApi ] = useState<EmblaCarouselType | undefined>();
 	const [ canScrollPrev, setCanScrollPrev ] = useState( false );
 	const [ canScrollNext, setCanScrollNext ] = useState( false );
@@ -63,6 +63,7 @@ export default function Edit( {
 
 	const blockProps = useBlockProps( {
 		className: 'rt-carousel',
+		dir: direction,
 		style: {
 			'--rt-carousel-gap': `${ attributes.slideGap }px`,
 		} as React.CSSProperties,
@@ -72,7 +73,14 @@ export default function Edit( {
 		template: TEMPLATE,
 	} );
 
+	// Memoize carouselOptions separately to prevent excessive viewport reinitializations
+	const carouselOptions = useMemo(
+		() => ( { loop, dragFree, align: carouselAlign, containScroll, direction } ),
+		[ loop, dragFree, carouselAlign, containScroll, direction ]
+	);
+
 	// Memoize the context value to prevent infinite re-renders in children
+	// Note: setState functions are stable and don't need to be in dependencies
 	const contextValue = useMemo(
 		() => ( {
 			emblaApi,
@@ -81,16 +89,16 @@ export default function Edit( {
 			setCanScrollPrev,
 			canScrollNext,
 			setCanScrollNext,
-			carouselOptions: { loop, dragFree, align: carouselAlign, containScroll },
+			carouselOptions,
 		} ),
 		[
 			emblaApi,
 			canScrollPrev,
 			canScrollNext,
-			loop,
-			dragFree,
-			carouselAlign,
-			containScroll,
+			carouselOptions,
+			setEmblaApi,
+			setCanScrollPrev,
+			setCanScrollNext,
 		],
 	);
 
@@ -142,6 +150,23 @@ export default function Edit( {
 						}
 						help={ __(
 							'Prevents excess scrolling at the beginning or end.',
+							'carousel-system-interactivity-api',
+						) }
+					/>
+					<SelectControl
+						label={ __( 'Direction', 'carousel-system-interactivity-api' ) }
+						value={ direction }
+						options={ [
+							{ label: __( 'Left to Right (LTR)', 'carousel-system-interactivity-api' ), value: 'ltr' },
+							{ label: __( 'Right to Left (RTL)', 'carousel-system-interactivity-api' ), value: 'rtl' },
+						] }
+						onChange={ ( value ) =>
+							setAttributes( {
+								direction: value as CarouselAttributes['direction'],
+							} )
+						}
+						help={ __(
+							'Choose content direction. RTL is typically used for Arabic, Hebrew, and other right-to-left languages.',
 							'carousel-system-interactivity-api',
 						) }
 					/>

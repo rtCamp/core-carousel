@@ -168,20 +168,26 @@ store("carousel-system/carousel", {
 						)
 							? rawOptions.containScroll
 							: "trimSnaps") as any,
-						container: queryLoopContainer || null,
-					};
+					direction: (["ltr", "rtl"].includes(
+						rawOptions.direction as string,
+					)
+						? rawOptions.direction
+						: "ltr") as any,
+					container: queryLoopContainer || null,
+				};
 
-					const plugins = [];
+				const plugins = [];
 
-					if (context.autoplay) {
-						plugins.push(Autoplay(context.autoplay as any));
-					}
+				if (context.autoplay) {
+					plugins.push(Autoplay(context.autoplay as any));
+				}
 
-					const embla = EmblaCarousel(viewport, options, plugins);
-					emblaInstances.set(viewport, embla);
-					viewport[EMBLA_KEY] = embla;
+				const embla = EmblaCarousel(viewport, options, plugins);
 
-					const updateState = () => {
+				emblaInstances.set(viewport, embla);
+				viewport[EMBLA_KEY] = embla;
+
+				const updateState = () => {
 						context.canScrollPrev = embla.canScrollPrev();
 						context.canScrollNext = embla.canScrollNext();
 						context.selectedIndex = embla.selectedScrollSnap();

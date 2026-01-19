@@ -44,6 +44,11 @@
 			"type": "string",
 			"default": "trimSnaps"
 		},
+		"direction": {
+			"type": "string",
+			"default": "ltr",
+			"enum": ["ltr", "rtl"]
+		},
 		"autoplay": {
 			"type": "boolean",
 			"default": false

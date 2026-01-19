@@ -8,15 +8,16 @@ import type { EmblaCarouselType } from "embla-carousel";
 const EMBLA_KEY = Symbol.for("carousel-system.carousel");
 
 export default function Edit() {
+	const {
+		emblaApi: contextApi,
+		canScrollPrev,
+		canScrollNext,
+	} = useContext(EditorCarouselContext);
+	const ref = useRef<HTMLDivElement>(null);
+
 	const blockProps = useBlockProps({
 		className: "rt-carousel-controls",
 	});
-
-	// Consume state directly from Context (managed by Viewport)
-	const {
-		emblaApi: contextApi,
-	} = useContext(EditorCarouselContext);
-	const ref = useRef<HTMLDivElement>(null);
 
 	const getEmblaFromDOM = () => {
 		if (!ref.current) return null;
@@ -39,23 +40,25 @@ export default function Edit() {
 	return (
 		<div {...blockProps} ref={ref}>
 			<button
-				className="rt-carousel-controls__btn"
+				className="rt-carousel-controls__btn rt-carousel-controls__btn--prev"
 				onClick={(e) => {
 					e.stopPropagation();
 					handleScroll("prev");
 				}}
 				type="button"
+				disabled={!canScrollPrev}
 				aria-label={__("Previous Slide", "carousel-system-interactivity-api")}
 			>
 				<PreviousIcon />
 			</button>
 			<button
-				className="rt-carousel-controls__btn"
+				className="rt-carousel-controls__btn rt-carousel-controls__btn--next"
 				onClick={(e) => {
 					e.stopPropagation();
 					handleScroll("next");
 				}}
 				type="button"
+				disabled={!canScrollNext}
 				aria-label={__("Next Slide", "carousel-system-interactivity-api")}
 			>
 				<NextIcon />

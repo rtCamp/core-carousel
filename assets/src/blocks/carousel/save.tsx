@@ -12,6 +12,7 @@ export default function Save({
 		dragFree,
 		carouselAlign,
 		containScroll,
+		direction,
 		autoplay,
 		autoplayDelay,
 		autoplayStopOnInteraction,
@@ -22,7 +23,7 @@ export default function Save({
 
 	// Pass configuration to the frontend via data-wp-context
 	const context: CarouselContext = {
-		options: { loop, dragFree, align: carouselAlign, containScroll },
+		options: { loop, dragFree, align: carouselAlign, containScroll, direction },
 		autoplay: autoplay
 			? {
 					delay: autoplayDelay,
@@ -44,6 +45,7 @@ export default function Save({
 		role: "region",
 		"aria-roledescription": "carousel",
 		"aria-label": ariaLabel,
+		dir: direction,
 		"data-wp-interactive": "carousel-system/carousel",
 		"data-wp-context": JSON.stringify(context),
 		"data-wp-init": "callbacks.initCarousel", // Use init for mounting

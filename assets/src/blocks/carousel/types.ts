@@ -4,6 +4,7 @@ export type CarouselAttributes = {
 	loop: boolean;
 	dragFree: boolean;
 	carouselAlign: "start" | "center" | "end";
+	align?: "start" | "center" | "end"; // Add align property optional
 	containScroll: "trimSnaps" | "keepSnaps";
 	direction: "ltr" | "rtl";
 	axis: "x" | "y";
@@ -15,6 +16,7 @@ export type CarouselAttributes = {
 	autoplayStopOnMouseEnter: boolean;
 	ariaLabel: string;
 	slideGap: number;
+	slidesToScroll: string;
 };
 
 export type CarouselViewportAttributes = Record<string, never>;
@@ -23,7 +25,9 @@ export type CarouselControlsAttributes = Record<string, never>;
 export type CarouselDotsAttributes = Record<string, never>;
 
 export type CarouselContext = {
-	options: EmblaOptionsType;
+	options: EmblaOptionsType & {
+		slidesToScroll?: number | 'auto';
+	};
 	autoplay:
 		| boolean
 		| {

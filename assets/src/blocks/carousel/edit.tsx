@@ -47,6 +47,7 @@ export default function Edit( {
 		autoplayStopOnInteraction,
 		autoplayStopOnMouseEnter,
 		ariaLabel,
+		slidesToScroll = '1',
 	} = attributes;
 
 	const [ emblaApi, setEmblaApi ] = useState<EmblaCarouselType | undefined>();
@@ -79,8 +80,17 @@ export default function Edit( {
 
 	// Memoize carouselOptions separately to prevent excessive viewport reinitializations
 	const carouselOptions = useMemo(
-		() => ( { loop, dragFree, align: carouselAlign, containScroll, direction, axis, height } ),
-		[ loop, dragFree, carouselAlign, containScroll, direction, axis, height ]
+		() => ( {
+			loop,
+			dragFree,
+			align: carouselAlign,
+			containScroll,
+			direction,
+			axis,
+			height,
+			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+		} ),
+		[ loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll ]
 	);
 
 	// Memoize the context value to prevent infinite re-renders in children
@@ -157,6 +167,23 @@ export default function Edit( {
 							'carousel-system-interactivity-api',
 						) }
 					/>
+					<ToggleControl
+						label={ __( 'Scroll Auto', 'carousel-system-interactivity-api' ) }
+						checked={ slidesToScroll === 'auto' }
+						onChange={ ( isAuto ) => setAttributes( { slidesToScroll: isAuto ? 'auto' : '1' } ) }
+						help={ __( 'Scrolls the number of slides currently visible in the viewport.', 'carousel-system-interactivity-api' ) }
+					/>
+					{ slidesToScroll !== 'auto' && (
+						<RangeControl
+							label={ __( 'Slides to Scroll', 'carousel-system-interactivity-api' ) }
+							value={ parseInt( slidesToScroll, 10 ) || 1 }
+							onChange={ ( value ) =>
+								setAttributes( { slidesToScroll: ( value || 1 ).toString() } )
+							}
+							min={ 1 }
+							max={ 10 }
+						/>
+					) }
 					<SelectControl
 						label={ __( 'Direction', 'carousel-system-interactivity-api' ) }
 						value={ direction }

@@ -78,12 +78,17 @@ export default function Edit( {
 				'.wp-block-post-template',
 			) as HTMLElement;
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const options = carouselOptions as any;
+
 			embla = EmblaCarousel( emblaRef.current!, {
 				loop: false,
-				dragFree: true,
-				containScroll: 'trimSnaps',
-				axis: carouselOptions?.axis || 'x',
-				direction: carouselOptions?.direction || 'ltr',
+				dragFree: options?.dragFree ?? false,
+				containScroll: options?.containScroll || 'trimSnaps',
+				axis: options?.axis || 'x',
+				align: options?.align || 'start',
+				direction: options?.direction || 'ltr',
+				slidesToScroll: options?.slidesToScroll || 1,
 				container: queryLoopContainer || undefined,
 			} );
 

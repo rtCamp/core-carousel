@@ -9,7 +9,9 @@ export type EditorCarouselContextType = {
 	canScrollNext: boolean;
 	setCanScrollPrev: (value: boolean) => void;
 	setCanScrollNext: (value: boolean) => void;
-	carouselOptions: Partial<CarouselAttributes>;
+	carouselOptions: Omit<Partial<CarouselAttributes>, 'slidesToScroll'> & {
+		slidesToScroll?: number | string;
+	};
 };
 
 

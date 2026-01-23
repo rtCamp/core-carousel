@@ -21,11 +21,20 @@ export default function Save({
 		slideGap,
 		axis,
 		height,
+		slidesToScroll,
 	} = attributes;
 
 	// Pass configuration to the frontend via data-wp-context
 	const context: CarouselContext = {
-		options: { loop, dragFree, align: carouselAlign, containScroll, direction, axis },
+		options: {
+			loop,
+			dragFree,
+			align: carouselAlign,
+			containScroll,
+			direction,
+			axis,
+			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 )
+		},
 		autoplay: autoplay
 			? {
 					delay: autoplayDelay,

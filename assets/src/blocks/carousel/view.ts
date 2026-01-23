@@ -173,6 +173,11 @@ store("carousel-system/carousel", {
 					)
 						? rawOptions.direction
 						: "ltr") as any,
+					slidesToScroll: rawOptions.slidesToScroll === 'auto'
+						? 'auto'
+						: (typeof rawOptions.slidesToScroll === 'number' && rawOptions.slidesToScroll > 0
+							? rawOptions.slidesToScroll
+							: 1),
 					container: queryLoopContainer || null,
 				};
 

@@ -81,6 +81,10 @@
 		"slideGap": {
 			"type": "number",
 			"default": 0
+		},
+		"slidesToScroll": {
+			"type": "string",
+			"default": "1"
 		}
 	},
 	"editorScript": "file:./index.js",

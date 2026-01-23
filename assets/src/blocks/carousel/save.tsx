@@ -1,12 +1,12 @@
-import { useBlockProps, useInnerBlocksProps } from "@wordpress/block-editor";
-import { __ } from "@wordpress/i18n";
-import { CarouselAttributes, CarouselContext } from "./types";
+import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
+import { __ } from '@wordpress/i18n';
+import type { CarouselAttributes, CarouselContext } from './types';
 
-export default function Save({
+export default function Save( {
 	attributes,
 }: {
 	attributes: CarouselAttributes;
-}) {
+} ) {
 	const {
 		loop,
 		dragFree,
@@ -33,41 +33,41 @@ export default function Save({
 			containScroll,
 			direction,
 			axis,
-			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 )
+			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
 		},
 		autoplay: autoplay
 			? {
-					delay: autoplayDelay,
-					stopOnInteraction: autoplayStopOnInteraction,
-					stopOnMouseEnter: autoplayStopOnMouseEnter,
-				}
+				delay: autoplayDelay,
+				stopOnInteraction: autoplayStopOnInteraction,
+				stopOnMouseEnter: autoplayStopOnMouseEnter,
+			}
 			: false,
-		isPlaying: !!autoplay, // Initially true if autoplay is enabled
+		isPlaying: !! autoplay, // Initially true if autoplay is enabled
 		timerIterationId: 0,
 		selectedIndex: -1,
 		scrollSnaps: [],
 		canScrollPrev: false,
 		canScrollNext: false,
-		ariaLabelPattern: __("Go to slide %d", "carousel-system-interactivity-api"),
+		ariaLabelPattern: __( 'Go to slide %d', 'carousel-system-interactivity-api' ),
 	};
 
-	const blockProps = useBlockProps.save({
-		className: "rt-carousel",
-		role: "region",
-		"aria-roledescription": "carousel",
-		"aria-label": ariaLabel,
+	const blockProps = useBlockProps.save( {
+		className: 'rt-carousel',
+		role: 'region',
+		'aria-roledescription': 'carousel',
+		'aria-label': ariaLabel,
 		dir: direction,
-		"data-axis": axis,
-		"data-wp-interactive": "carousel-system/carousel",
-		"data-wp-context": JSON.stringify(context),
-		"data-wp-init": "callbacks.initCarousel", // Use init for mounting
+		'data-axis': axis,
+		'data-wp-interactive': 'carousel-system/carousel',
+		'data-wp-context': JSON.stringify( context ),
+		'data-wp-init': 'callbacks.initCarousel', // Use init for mounting
 		style: {
-			"--rt-carousel-gap": `${slideGap}px`,
-			"--rt-carousel-height": axis === "y" ? height : undefined,
+			'--rt-carousel-gap': `${ slideGap }px`,
+			'--rt-carousel-height': axis === 'y' ? height : undefined,
 		} as React.CSSProperties,
-	});
+	} );
 
-	const innerBlocksProps = useInnerBlocksProps.save(blockProps);
+	const innerBlocksProps = useInnerBlocksProps.save( blockProps );
 
-	return <div {...innerBlocksProps} />;
+	return <div { ...innerBlocksProps } />;
 }

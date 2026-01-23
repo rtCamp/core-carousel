@@ -1,8 +1,9 @@
-import { registerBlockType, BlockConfiguration } from '@wordpress/blocks';
+import type { BlockConfiguration } from '@wordpress/blocks';
+import { registerBlockType } from '@wordpress/blocks';
 import Edit from './edit';
 import Save from './save';
 import metadata from './block.json';
-import { CarouselViewportAttributes } from '../types';
+import type { CarouselViewportAttributes } from '../types';
 
 registerBlockType( metadata as BlockConfiguration<CarouselViewportAttributes>, {
 	edit: Edit,

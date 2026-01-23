@@ -103,7 +103,7 @@ export default function Edit( {
 
 			embla.on( 'select', onSelect );
 			embla.on( 'reInit', onSelect );
-			
+
 			// Use requestAnimationFrame to ensure DOM has settled
 			requestAnimationFrame( () => {
 				onSelect();

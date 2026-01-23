@@ -90,7 +90,7 @@ export default function Edit( {
 			height,
 			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
 		} ),
-		[ loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll ]
+		[ loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll ],
 	);
 
 	// Memoize the context value to prevent infinite re-renders in children

@@ -1,14 +1,14 @@
-import { useBlockProps } from "@wordpress/block-editor";
-import { __ } from "@wordpress/i18n";
+import { useBlockProps } from '@wordpress/block-editor';
+import { __ } from '@wordpress/i18n';
 
 export default function Save() {
-	const blockProps = useBlockProps.save({
-		className: "rt-carousel-dots",
-	});
+	const blockProps = useBlockProps.save( {
+		className: 'rt-carousel-dots',
+	} );
 
 	return (
-		<div {...blockProps}>
-			{/* Iterate over scrollSnaps objects: { index: 0 }, { index: 1 } ... */}
+		<div { ...blockProps }>
+			{ /* Iterate over scrollSnaps objects: { index: 0 }, { index: 1 } ... */ }
 
 			<template data-wp-each--snap="context.scrollSnaps">
 				<button

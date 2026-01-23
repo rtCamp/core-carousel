@@ -1,13 +1,13 @@
-import { EmblaOptionsType } from "embla-carousel";
+import type { EmblaOptionsType } from 'embla-carousel';
 
 export type CarouselAttributes = {
 	loop: boolean;
 	dragFree: boolean;
-	carouselAlign: "start" | "center" | "end";
-	align?: "start" | "center" | "end"; // Add align property optional
-	containScroll: "trimSnaps" | "keepSnaps";
-	direction: "ltr" | "rtl";
-	axis: "x" | "y";
+	carouselAlign: 'start' | 'center' | 'end';
+	align?: 'start' | 'center' | 'end'; // Add align property optional
+	containScroll: 'trimSnaps' | 'keepSnaps';
+	direction: 'ltr' | 'rtl';
+	axis: 'x' | 'y';
 	height: string;
 	allowedSlideBlocks: string[];
 	autoplay: boolean;

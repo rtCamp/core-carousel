@@ -55,6 +55,6 @@
   "overrides": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "webpack-dev-server": ">=5.2.0"
+    "webpack-dev-server": ">=5.2.1"
   }
 }

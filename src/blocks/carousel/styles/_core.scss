@@ -19,7 +19,6 @@
 	list-style: none;
 	gap: 0;
 	grid-template-columns: none;
-	// margin-left: calc(var(--core-carousel-gap, 0) * -1);
 	gap: var(--core-carousel-gap, 0);
 }
 
@@ -38,8 +37,7 @@
 	max-width: var(--core-carousel-slide-width, 100%);
 	min-width: 0;
 	box-sizing: border-box;
-	padding-left: var(--core-carousel-gap, 0);
-	
+
 	/* Reset vertical margins to align slides */
 	margin-block-start: 0;
 	margin-block-end: 0;
@@ -67,5 +65,4 @@
 	width: 100%;
 	max-width: 100%;
 	margin-inline-end: 0;
-	padding-block-start: var(--core-carousel-gap, 0);
 }

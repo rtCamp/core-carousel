@@ -15,8 +15,6 @@ export type EditorCarouselContextType = {
 };
 
 // Use a global singleton to ensure all block bundles share the same Context reference
-const GLOBAL_CONTEXT_KEY = Symbol.for( 'carousel-system.editor-context' );
-
 const defaultValue: EditorCarouselContextType = {
 	emblaApi: undefined,
 	setEmblaApi: () => {},
@@ -27,13 +25,10 @@ const defaultValue: EditorCarouselContextType = {
 	carouselOptions: {},
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let context = ( window as any )[ GLOBAL_CONTEXT_KEY ];
-
+let context = window.__RT_CAROUSEL_CONTEXT__;
 if ( ! context ) {
 	context = createContext<EditorCarouselContextType>( defaultValue );
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	( window as any )[ GLOBAL_CONTEXT_KEY ] = context;
+	window.__RT_CAROUSEL_CONTEXT__ = context;
 }
 
-export const EditorCarouselContext = context as React.Context<EditorCarouselContextType>;
+export const EditorCarouselContext = context;

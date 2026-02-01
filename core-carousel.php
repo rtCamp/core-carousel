@@ -7,7 +7,7 @@
  * Author URI:  https://rtcamp.com
  * License:     GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Version:     2.0.0
+ * Version:     1.0.0
  * Text Domain: core-carousel
  *
  * @package core-carousel

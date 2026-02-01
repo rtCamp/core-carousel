@@ -1,10 +1,14 @@
-import { EmblaOptionsType } from "embla-carousel";
+import type { EmblaOptionsType } from 'embla-carousel';
 
 export type CarouselAttributes = {
 	loop: boolean;
 	dragFree: boolean;
-	carouselAlign: "start" | "center" | "end";
-	containScroll: "trimSnaps" | "keepSnaps";
+	carouselAlign: 'start' | 'center' | 'end';
+	align?: 'start' | 'center' | 'end'; // Add align property optional
+	containScroll: 'trimSnaps' | 'keepSnaps';
+	direction: 'ltr' | 'rtl';
+	axis: 'x' | 'y';
+	height: string;
 	allowedSlideBlocks: string[];
 	autoplay: boolean;
 	autoplayDelay: number;
@@ -12,6 +16,7 @@ export type CarouselAttributes = {
 	autoplayStopOnMouseEnter: boolean;
 	ariaLabel: string;
 	slideGap: number;
+	slidesToScroll: string;
 };
 
 export type CarouselViewportAttributes = Record<string, never>;
@@ -20,7 +25,9 @@ export type CarouselControlsAttributes = Record<string, never>;
 export type CarouselDotsAttributes = Record<string, never>;
 
 export type CarouselContext = {
-	options: EmblaOptionsType;
+	options: EmblaOptionsType & {
+		slidesToScroll?: number | 'auto';
+	};
 	autoplay:
 		| boolean
 		| {

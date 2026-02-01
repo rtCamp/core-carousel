@@ -1,14 +1,14 @@
-import { store, getContext, getElement } from "@wordpress/interactivity";
-import type { EmblaOptionsType, EmblaCarouselType } from "embla-carousel";
-import EmblaCarousel from "embla-carousel";
-import Autoplay from "embla-carousel-autoplay";
-import type { CarouselContext } from "./types";
+import { store, getContext, getElement } from '@wordpress/interactivity';
+import type { EmblaOptionsType, EmblaCarouselType } from 'embla-carousel';
+import EmblaCarousel from 'embla-carousel';
+import Autoplay from 'embla-carousel-autoplay';
+import type { CarouselContext } from './types';
 
 type ElementWithRef = {
 	ref?: HTMLElement | null;
 };
 
-const EMBLA_KEY = Symbol.for("carousel-system.carousel");
+const EMBLA_KEY = Symbol.for( 'carousel-system.carousel' );
 
 type EmblaViewportElement = HTMLElement & {
 	[EMBLA_KEY]?: EmblaCarouselType;
@@ -16,11 +16,11 @@ type EmblaViewportElement = HTMLElement & {
 
 export const emblaInstances = new WeakMap<HTMLElement, EmblaCarouselType>();
 
-const getElementRef = (rawElement: unknown): HTMLElement | null => {
-	if (rawElement instanceof HTMLElement) {
+const getElementRef = ( rawElement: unknown ): HTMLElement | null => {
+	if ( rawElement instanceof HTMLElement ) {
 		return rawElement;
 	}
-	if (rawElement && typeof rawElement === "object" && "ref" in rawElement) {
+	if ( rawElement && typeof rawElement === 'object' && 'ref' in rawElement ) {
 		const { ref } = rawElement as ElementWithRef;
 		return ref ?? null;
 	}
@@ -30,21 +30,21 @@ const getElementRef = (rawElement: unknown): HTMLElement | null => {
 const getEmblaFromElement = (
 	element: HTMLElement | null,
 ): EmblaCarouselType | null => {
-	if (!element) {
+	if ( ! element ) {
 		return null;
 	}
-	const wrapper = element.closest(".rt-carousel");
+	const wrapper = element.closest( '.rt-carousel' );
 	const viewport = wrapper?.querySelector(
-		".embla",
+		'.embla',
 	) as EmblaViewportElement | null;
-	if (!viewport) {
+	if ( ! viewport ) {
 		return null;
 	}
 	// EMBLA_KEY is optional, so check if it exists
-	return emblaInstances.get(viewport) || viewport[EMBLA_KEY] || null;
+	return emblaInstances.get( viewport ) || viewport[ EMBLA_KEY ] || null;
 };
 
-store("carousel-system/carousel", {
+store( 'carousel-system/carousel', {
 	state: {
 		get canScrollPrev() {
 			const context = getContext<CarouselContext>();
@@ -57,21 +57,21 @@ store("carousel-system/carousel", {
 	},
 	actions: {
 		scrollPrev: () => {
-			const element = getElementRef(getElement());
-			const embla = getEmblaFromElement(element);
-			if (embla) {
+			const element = getElementRef( getElement() );
+			const embla = getEmblaFromElement( element );
+			if ( embla ) {
 				embla.scrollPrev();
 			} else {
-				console.warn("Carousel: Embla instance not found for scrollPrev");
+				console.warn( 'Carousel: Embla instance not found for scrollPrev' );
 			}
 		},
 		scrollNext: () => {
-			const element = getElementRef(getElement());
-			const embla = getEmblaFromElement(element);
-			if (embla) {
+			const element = getElementRef( getElement() );
+			const embla = getEmblaFromElement( element );
+			if ( embla ) {
 				embla.scrollNext();
 			} else {
-				console.warn("Carousel: Embla instance not found for scrollNext");
+				console.warn( 'Carousel: Embla instance not found for scrollNext' );
 			}
 		},
 		onDotClick: () => {
@@ -79,33 +79,33 @@ store("carousel-system/carousel", {
 			const { snap } = context as CarouselContext & {
 				snap?: { index?: number };
 			}; // snap is the iterated item
-			const element = getElementRef(getElement());
-			const embla = getEmblaFromElement(element);
+			const element = getElementRef( getElement() );
+			const embla = getEmblaFromElement( element );
 
-			if (embla && snap && typeof snap.index === "number") {
-				embla.scrollTo(snap.index);
+			if ( embla && snap && typeof snap.index === 'number' ) {
+				embla.scrollTo( snap.index );
 			}
 		},
 	},
 	callbacks: {
 		isSlideActive: () => {
 			const { selectedIndex } = getContext<CarouselContext>();
-			const element = getElementRef(getElement());
+			const element = getElementRef( getElement() );
 			// Check for either standard slide or Query Loop post
-			const slide = element?.closest?.(".embla__slide, .wp-block-post");
+			const slide = element?.closest?.( '.embla__slide, .wp-block-post' );
 
-			if (!slide || !slide.parentElement) {
+			if ( ! slide || ! slide.parentElement ) {
 				return false;
 			}
 
 			// Filter siblings to find index among valid slides
-			const slides = Array.from(slide.parentElement.children).filter(
-				(child: Element) =>
-					child.classList?.contains("embla__slide") ||
-					child.classList?.contains("wp-block-post"),
+			const slides = Array.from( slide.parentElement.children ).filter(
+				( child: Element ) =>
+					child.classList?.contains( 'embla__slide' ) ||
+					child.classList?.contains( 'wp-block-post' ),
 			);
-			const index = slides.indexOf(slide);
-			if (index === -1) {
+			const index = slides.indexOf( slide );
+			if ( index === -1 ) {
 				return false;
 			}
 			return selectedIndex === index;
@@ -122,34 +122,34 @@ store("carousel-system/carousel", {
 			const { snap } = context as CarouselContext & {
 				snap?: { index?: number };
 			};
-			const index = (snap?.index || 0) + 1;
-			return context.ariaLabelPattern.replace("%d", index.toString());
+			const index = ( snap?.index || 0 ) + 1;
+			return context.ariaLabelPattern.replace( '%d', index.toString() );
 		},
 		initCarousel: () => {
 			try {
 				const context = getContext<CarouselContext>();
-				const element = getElementRef(getElement());
+				const element = getElementRef( getElement() );
 
-				if (!element || typeof element.querySelector !== "function") {
-					console.warn("Carousel: Invalid root element", element);
+				if ( ! element || typeof element.querySelector !== 'function' ) {
+					console.warn( 'Carousel: Invalid root element', element );
 					return;
 				}
 
 				const viewport = element.querySelector(
-					".embla",
-				) as EmblaViewportElement | null;
+					'.embla',
+				);
 
-				if (!viewport) {
-					console.warn("Carousel: Viewport (.embla) not found");
+				if ( ! viewport ) {
+					console.warn( 'Carousel: Viewport (.embla) not found' );
 					return;
 				}
 
 				// Check for Query Loop container
 				const queryLoopContainer = viewport.querySelector(
-					".wp-block-post-template",
-				) as HTMLElement | null;
+					'.wp-block-post-template',
+				);
 
-				let cleanupEmbla: (() => void) | undefined;
+				let cleanupEmbla: ( () => void ) | undefined;
 				let observer: ResizeObserver | undefined;
 
 				const startEmbla = () => {
@@ -158,28 +158,39 @@ store("carousel-system/carousel", {
 					// Sanitize options to prevent Embla crashes
 					const options: EmblaOptionsType = {
 						...rawOptions,
-						align: (["start", "center", "end"].includes(
+						align: ( [ 'start', 'center', 'end' ].includes(
 							rawOptions.align as string,
 						)
 							? rawOptions.align
-							: "start") as any,
-						containScroll: (["trimSnaps", "keepSnaps", ""].includes(
+							: 'start' ) as any,
+						containScroll: ( [ 'trimSnaps', 'keepSnaps', '' ].includes(
 							rawOptions.containScroll as string,
 						)
 							? rawOptions.containScroll
-							: "trimSnaps") as any,
+							: 'trimSnaps' ) as any,
+						direction: ( [ 'ltr', 'rtl' ].includes(
+						rawOptions.direction as string,
+						)
+							? rawOptions.direction
+							: 'ltr' ) as any,
+						slidesToScroll: rawOptions.slidesToScroll === 'auto'
+							? 'auto'
+							: ( typeof rawOptions.slidesToScroll === 'number' && rawOptions.slidesToScroll > 0
+								? rawOptions.slidesToScroll
+								: 1 ),
 						container: queryLoopContainer || null,
 					};
 
 					const plugins = [];
 
-					if (context.autoplay) {
-						plugins.push(Autoplay(context.autoplay as any));
+					if ( context.autoplay ) {
+						plugins.push( Autoplay( context.autoplay as any ) );
 					}
 
-					const embla = EmblaCarousel(viewport, options, plugins);
-					emblaInstances.set(viewport, embla);
-					viewport[EMBLA_KEY] = embla;
+					const embla = EmblaCarousel( viewport, options, plugins );
+
+					emblaInstances.set( viewport, embla );
+					viewport[ EMBLA_KEY ] = embla;
 
 					const updateState = () => {
 						context.canScrollPrev = embla.canScrollPrev();
@@ -187,56 +198,56 @@ store("carousel-system/carousel", {
 						context.selectedIndex = embla.selectedScrollSnap();
 						context.scrollSnaps = embla
 							.scrollSnapList()
-							.map((_, index) => ({ index }));
+							.map( ( _, index ) => ( { index } ) );
 					};
 
-					embla.on("select", updateState);
-					embla.on("reInit", updateState);
+					embla.on( 'select', updateState );
+					embla.on( 'reInit', updateState );
 
 					// Autoplay API Integration
-					embla.on("autoplay:timerset", () => {
+					embla.on( 'autoplay:timerset', () => {
 						context.isPlaying = true;
-						context.timerIterationId = (context.timerIterationId || 0) + 1;
-					});
+						context.timerIterationId = ( context.timerIterationId || 0 ) + 1;
+					} );
 
-					embla.on("autoplay:timerstopped", () => {
+					embla.on( 'autoplay:timerstopped', () => {
 						context.isPlaying = false;
-					});
+					} );
 
 					updateState();
 
 					return () => {
 						embla.destroy();
-						emblaInstances.delete(viewport);
-						delete viewport[EMBLA_KEY];
+						emblaInstances.delete( viewport );
+						delete viewport[ EMBLA_KEY ];
 					};
 				};
 
-				if (viewport.getBoundingClientRect().width > 0) {
+				if ( viewport.getBoundingClientRect().width > 0 ) {
 					cleanupEmbla = startEmbla();
 				} else {
-					observer = new ResizeObserver((entries) => {
-						for (const entry of entries) {
-							if (entry.contentRect.width > 0) {
+					observer = new ResizeObserver( ( entries ) => {
+						for ( const entry of entries ) {
+							if ( entry.contentRect.width > 0 ) {
 								cleanupEmbla = startEmbla();
 								observer?.disconnect();
 								observer = undefined;
 								break;
 							}
 						}
-					});
-					observer.observe(viewport);
+					} );
+					observer.observe( viewport );
 				}
 
 				return () => {
 					observer?.disconnect();
 					cleanupEmbla?.();
 				};
-			} catch (e) {
-				console.error("Carousel: Error in initCarousel", e);
+			} catch ( e ) {
+				console.error( 'Carousel: Error in initCarousel', e );
 
 				return null;
 			}
 		},
 	},
-});
+} );

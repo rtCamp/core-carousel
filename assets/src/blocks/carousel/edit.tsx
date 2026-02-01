@@ -38,15 +38,18 @@ export default function Edit( {
 		dragFree,
 		carouselAlign,
 		containScroll,
+		direction,
+		axis,
+		height,
 		allowedSlideBlocks,
 		autoplay,
 		autoplayDelay,
 		autoplayStopOnInteraction,
 		autoplayStopOnMouseEnter,
 		ariaLabel,
+		slidesToScroll = '1',
 	} = attributes;
 
-	// Editor state for Embla
 	const [ emblaApi, setEmblaApi ] = useState<EmblaCarouselType | undefined>();
 	const [ canScrollPrev, setCanScrollPrev ] = useState( false );
 	const [ canScrollNext, setCanScrollNext ] = useState( false );
@@ -63,8 +66,11 @@ export default function Edit( {
 
 	const blockProps = useBlockProps( {
 		className: 'rt-carousel',
+		dir: direction,
+		'data-axis': axis,
 		style: {
 			'--rt-carousel-gap': `${ attributes.slideGap }px`,
+			'--rt-carousel-height': axis === 'y' ? height : undefined,
 		} as React.CSSProperties,
 	} );
 
@@ -72,7 +78,23 @@ export default function Edit( {
 		template: TEMPLATE,
 	} );
 
+	// Memoize carouselOptions separately to prevent excessive viewport reinitializations
+	const carouselOptions = useMemo(
+		() => ( {
+			loop,
+			dragFree,
+			align: carouselAlign,
+			containScroll,
+			direction,
+			axis,
+			height,
+			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+		} ),
+		[ loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll ],
+	);
+
 	// Memoize the context value to prevent infinite re-renders in children
+	// Note: setState functions are stable and don't need to be in dependencies
 	const contextValue = useMemo(
 		() => ( {
 			emblaApi,
@@ -81,16 +103,16 @@ export default function Edit( {
 			setCanScrollPrev,
 			canScrollNext,
 			setCanScrollNext,
-			carouselOptions: { loop, dragFree, align: carouselAlign, containScroll },
+			carouselOptions,
 		} ),
 		[
 			emblaApi,
 			canScrollPrev,
 			canScrollNext,
-			loop,
-			dragFree,
-			carouselAlign,
-			containScroll,
+			carouselOptions,
+			setEmblaApi,
+			setCanScrollPrev,
+			setCanScrollNext,
 		],
 	);
 
@@ -145,6 +167,64 @@ export default function Edit( {
 							'carousel-system-interactivity-api',
 						) }
 					/>
+					<ToggleControl
+						label={ __( 'Scroll Auto', 'carousel-system-interactivity-api' ) }
+						checked={ slidesToScroll === 'auto' }
+						onChange={ ( isAuto ) => setAttributes( { slidesToScroll: isAuto ? 'auto' : '1' } ) }
+						help={ __( 'Scrolls the number of slides currently visible in the viewport.', 'carousel-system-interactivity-api' ) }
+					/>
+					{ slidesToScroll !== 'auto' && (
+						<RangeControl
+							label={ __( 'Slides to Scroll', 'carousel-system-interactivity-api' ) }
+							value={ parseInt( slidesToScroll, 10 ) || 1 }
+							onChange={ ( value ) =>
+								setAttributes( { slidesToScroll: ( value || 1 ).toString() } )
+							}
+							min={ 1 }
+							max={ 10 }
+						/>
+					) }
+					<SelectControl
+						label={ __( 'Direction', 'carousel-system-interactivity-api' ) }
+						value={ direction }
+						options={ [
+							{ label: __( 'Left to Right (LTR)', 'carousel-system-interactivity-api' ), value: 'ltr' },
+							{ label: __( 'Right to Left (RTL)', 'carousel-system-interactivity-api' ), value: 'rtl' },
+						] }
+						onChange={ ( value ) =>
+							setAttributes( {
+								direction: value as CarouselAttributes['direction'],
+							} )
+						}
+						help={ __(
+							'Choose content direction. RTL is typically used for Arabic, Hebrew, and other right-to-left languages.',
+							'carousel-system-interactivity-api',
+						) }
+					/>
+					<SelectControl
+						label={ __( 'Orientation', 'carousel-system-interactivity-api' ) }
+						value={ axis }
+						options={ [
+							{ label: __( 'Horizontal', 'carousel-system-interactivity-api' ), value: 'x' },
+							{ label: __( 'Vertical', 'carousel-system-interactivity-api' ), value: 'y' },
+						] }
+						onChange={ ( value ) =>
+							setAttributes( {
+								axis: value as CarouselAttributes['axis'],
+							} )
+						}
+					/>
+					{ axis === 'y' && (
+						<TextControl
+							label={ __( 'Height', 'carousel-system-interactivity-api' ) }
+							value={ height }
+							onChange={ ( value ) => setAttributes( { height: value } ) }
+							help={ __(
+								'Set a fixed height for vertical carousel (e.g., 400px).',
+								'carousel-system-interactivity-api',
+							) }
+						/>
+					) }
 				</PanelBody>
 				<PanelBody
 					title={ __( 'Autoplay Options', 'carousel-system-interactivity-api' ) }

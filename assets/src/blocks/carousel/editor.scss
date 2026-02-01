@@ -15,4 +15,9 @@
 		border: 1px dashed #ccc;
 		min-height: 50px;
 	}
+
+	// Vertical Axis adjustments in editor
+	&[data-axis="y"] .embla__container {
+		height: 100% !important;
+	}
 }

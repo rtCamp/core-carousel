@@ -1,6 +1,7 @@
 :where(.wp-block-carousel-system-carousel) {
 	position: relative;
 	width: 100%;
+	--rt-carousel-slide-width: 100%;
 }
 
 :where(.wp-block-carousel-system-carousel) .embla {
@@ -18,6 +19,7 @@
 	list-style: none;
 	gap: 0;
 	grid-template-columns: none;
+	margin-left: calc(var(--rt-carousel-gap, 0) * -1);
 }
 
 /* Ensure intermediate wrappers (like wp-block-query) don't shrink */
@@ -35,9 +37,33 @@
 	max-width: var(--rt-carousel-slide-width, 100%);
 	min-width: 0;
 	box-sizing: border-box;
-	margin-inline-end: var(--rt-carousel-gap, 0);
+	padding-left: var(--rt-carousel-gap, 0);
 	
 	/* Reset vertical margins to align slides */
 	margin-block-start: 0;
 	margin-block-end: 0;
+}
+
+/* Vertical Axis adjustments */
+:where(.wp-block-carousel-system-carousel[data-axis="y"]) {
+	height: var(--rt-carousel-height);
+}
+
+:where(.wp-block-carousel-system-carousel[data-axis="y"]) .embla {
+	height: 100%;
+}
+
+:where(.wp-block-carousel-system-carousel[data-axis="y"]) .embla__container {
+	flex-direction: column;
+	height: 100%;
+	min-height: 100%;
+}
+
+:where(.wp-block-carousel-system-carousel[data-axis="y"]) .embla__slide,
+:where(.wp-block-carousel-system-carousel[data-axis="y"]) .embla .wp-block-post-template li {
+	flex: 0 0 var(--rt-carousel-slide-width, 100%);
+	width: 100%;
+	max-width: 100%;
+	margin-inline-end: 0;
+	padding-block-start: var(--rt-carousel-gap, 0);
 }

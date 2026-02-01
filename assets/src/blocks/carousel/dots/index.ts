@@ -1,11 +1,12 @@
-import { registerBlockType, BlockConfiguration } from "@wordpress/blocks";
-import Edit from "./edit";
-import Save from "./save";
-import metadata from "./block.json";
-import { CarouselDotsAttributes } from "../types";
-import "./style.scss";
+import type { BlockConfiguration } from '@wordpress/blocks';
+import { registerBlockType } from '@wordpress/blocks';
+import Edit from './edit';
+import Save from './save';
+import metadata from './block.json';
+import type { CarouselDotsAttributes } from '../types';
+import './style.scss';
 
-registerBlockType(metadata as BlockConfiguration<CarouselDotsAttributes>, {
+registerBlockType( metadata as BlockConfiguration<CarouselDotsAttributes>, {
 	edit: Edit,
 	save: Save,
-});
+} );

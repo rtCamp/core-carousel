@@ -24,22 +24,33 @@ export default function Edit( {
 	clientId: string;
 	attributes: CarouselViewportAttributes;
 } ) {
+	const { setEmblaApi, setCanScrollPrev, setCanScrollNext, carouselOptions } = useContext(
+		EditorCarouselContext,
+	);
+
 	const blockProps = useBlockProps( {
 		className: 'embla',
+		style: {
+			height: carouselOptions?.axis === 'y' ? carouselOptions?.height : undefined,
+		},
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'embla__container' },
 		{
-			orientation: 'horizontal',
+			className: 'embla__container',
+			style: {
+				height: carouselOptions?.axis === 'y' ? 'auto' : undefined,
+				minHeight: carouselOptions?.axis === 'y' ? '100%' : undefined,
+				flexDirection: ( carouselOptions?.axis === 'y' ? 'column' : 'row' ) as React.CSSProperties['flexDirection'],
+			},
+		},
+		{
+			orientation: carouselOptions?.axis === 'y' ? 'vertical' : 'horizontal',
 			allowedBlocks: [ 'carousel-system/carousel-slide', 'core/query' ],
 			template: [ [ 'carousel-system/carousel-slide' ] ],
 		},
 	);
 
-	const { setEmblaApi, setCanScrollPrev, setCanScrollNext } = useContext(
-		EditorCarouselContext,
-	);
 	const emblaRef = useRef<HTMLDivElement>( null );
 	const ref = useMergeRefs( [ emblaRef, blockProps.ref ] );
 
@@ -67,31 +78,42 @@ export default function Edit( {
 				'.wp-block-post-template',
 			) as HTMLElement;
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const options = carouselOptions as any;
+
 			embla = EmblaCarousel( emblaRef.current!, {
 				loop: false,
-				dragFree: true,
-				containScroll: 'trimSnaps',
+				dragFree: options?.dragFree ?? false,
+				containScroll: options?.containScroll || 'trimSnaps',
+				axis: options?.axis || 'x',
+				align: options?.align || 'start',
+				direction: options?.direction || 'ltr',
+				slidesToScroll: options?.slidesToScroll || 1,
 				container: queryLoopContainer || undefined,
 			} );
 
 			( emblaRef.current as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ] = embla;
 
 			const onSelect = () => {
-				setCanScrollPrev( embla!.canScrollPrev() );
-				setCanScrollNext( embla!.canScrollNext() );
+				const canPrev = embla!.canScrollPrev();
+				const canNext = embla!.canScrollNext();
+				setCanScrollPrev( canPrev );
+				setCanScrollNext( canNext );
 			};
 
 			embla.on( 'select', onSelect );
 			embla.on( 'reInit', onSelect );
-			onSelect();
+
+			// Use requestAnimationFrame to ensure DOM has settled
+			requestAnimationFrame( () => {
+				onSelect();
+			} );
 
 			setEmblaApi( embla );
 		};
 
-		// 1. Initial Init
 		initEmbla();
 
-		// 2. Observe DOM for changes (posts loading)
 		if ( emblaRef.current ) {
 			observer = new MutationObserver( ( mutations ) => {
 				let shouldReInit = false;
@@ -145,7 +167,7 @@ export default function Edit( {
 				];
 			}
 		};
-	}, [ setEmblaApi, setCanScrollPrev, setCanScrollNext ] );
+	}, [ setEmblaApi, setCanScrollPrev, setCanScrollNext, carouselOptions ] );
 
 	return (
 		<>

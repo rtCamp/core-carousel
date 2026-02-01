@@ -44,6 +44,20 @@
 			"type": "string",
 			"default": "trimSnaps"
 		},
+		"direction": {
+			"type": "string",
+			"default": "ltr",
+			"enum": ["ltr", "rtl"]
+		},
+		"axis": {
+			"type": "string",
+			"default": "x",
+			"enum": ["x", "y"]
+		},
+		"height": {
+			"type": "string",
+			"default": "300px"
+		},
 		"autoplay": {
 			"type": "boolean",
 			"default": false
@@ -67,6 +81,10 @@
 		"slideGap": {
 			"type": "number",
 			"default": 0
+		},
+		"slidesToScroll": {
+			"type": "string",
+			"default": "1"
 		}
 	},
 	"editorScript": "file:./index.js",

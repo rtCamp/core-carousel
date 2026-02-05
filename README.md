@@ -37,12 +37,12 @@ The plugin provides a suite of blocks that work together:
 
 ## Live Demo
 
-[**🚀 Try the Interactive Demo in WordPress Playground**](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/rtCamp/core-carousel/production/blueprint.json)
+[**🚀 Try the Interactive Demo in WordPress Playground**](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/rtCamp/core-carousel/main/blueprint.json)
 
 ## Contributors
 
 - [Danish Shakeel](https://github.com/danish17)
-- [Masud Rana](https://github.com/mr-masudrana00)
+- [Masud Rana](https://github.com/theMasudRana)
 
 ## License
 GPL-2.0-or-later

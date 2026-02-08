@@ -4,16 +4,8 @@
         "php": "8.2",
         "wp": "latest"
     },
-    "landingPage": "/",
+    "landingPage": "/core-carousel",
     "steps": [
-        {
-            "step": "installTheme",
-            "themeData": {
-                "resource": "wordpress.org/themes",
-                "slug": "twentytwentyfour"
-            },
-            "options": { "activate": true }
-        },
         {
             "step": "installPlugin",
             "pluginData": {

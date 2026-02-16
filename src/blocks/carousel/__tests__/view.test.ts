@@ -12,11 +12,7 @@
  * @package
  */
 
-import {
-	store,
-	getContext,
-	getElement,
-} from '@wordpress/interactivity';
+import { store, getContext, getElement } from '@wordpress/interactivity';
 
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
 
@@ -25,7 +21,7 @@ const EMBLA_KEY = Symbol.for( 'carousel-kit.carousel' );
 
 // Type for viewport element with Embla instance attached
 type EmblaViewportElement = HTMLElement & {
-	[ EMBLA_KEY ]?: EmblaCarouselType;
+	[EMBLA_KEY]?: EmblaCarouselType;
 };
 
 import type { CarouselContext } from '../types';
@@ -41,23 +37,25 @@ const storeConfig = storeCall ? storeCall[ 1 ] : null;
 
 /**
  * Helper to set Embla instance on a viewport element.
- * @param viewport The viewport element to attach the Embla instance to.
- * @param embla    The Embla instance to attach.
+ *
+ * @param {HTMLElement}                viewport The viewport element to attach the Embla instance to.
+ * @param {Partial<EmblaCarouselType>} embla    The Embla instance to attach.
  */
 const setEmblaOnViewport = (
 	viewport: HTMLElement,
-	embla: Partial< EmblaCarouselType >,
+	embla: Partial<EmblaCarouselType>,
 ) => {
-	( viewport as EmblaViewportElement )[ EMBLA_KEY ] =
-		embla as EmblaCarouselType;
+	( viewport as EmblaViewportElement )[ EMBLA_KEY ] = embla as EmblaCarouselType;
 };
 
 /**
  * Helper to create mock carousel context with customizable properties.
- * @param overrides Partial properties to override in the default context.
+ *
+ * @param {Partial<CarouselContext>} overrides Partial properties to override in the default context.
+ * @return {CarouselContext} The mock carousel context.
  */
 const createMockContext = (
-	overrides: Partial< CarouselContext > = {},
+	overrides: Partial<CarouselContext> = {},
 ): CarouselContext => ( {
 	options: { loop: true },
 	autoplay: false,
@@ -73,6 +71,8 @@ const createMockContext = (
 
 /**
  * Helper to create a mock DOM element structure for carousel.
+ *
+ * @return {Object} The mock DOM elements.
  */
 const createMockCarouselDOM = () => {
 	const viewport = document.createElement( 'div' );
@@ -90,7 +90,9 @@ const createMockCarouselDOM = () => {
 
 /**
  * Helper to create mock Embla instance with all required methods.
- * @param overrides Partial methods to override in the default mock instance.
+ *
+ * @param {Object} overrides Partial methods to override in the default mock instance.
+ * @return {Object} The mock Embla instance.
  */
 const createMockEmblaInstance = ( overrides = {} ) => ( {
 	scrollPrev: jest.fn(),
@@ -227,9 +229,7 @@ describe( 'Carousel View Module', () => {
 			} );
 
 			it( 'should log warning when embla instance not found', () => {
-				const consoleSpy = jest
-					.spyOn( console, 'warn' )
-					.mockImplementation();
+				const consoleSpy = jest.spyOn( console, 'warn' ).mockImplementation();
 				const button = document.createElement( 'button' );
 
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
@@ -244,9 +244,7 @@ describe( 'Carousel View Module', () => {
 			} );
 
 			it( 'should handle null element gracefully', () => {
-				const consoleSpy = jest
-					.spyOn( console, 'warn' )
-					.mockImplementation();
+				const consoleSpy = jest.spyOn( console, 'warn' ).mockImplementation();
 				( getElement as jest.Mock ).mockReturnValue( null );
 
 				expect( () => storeConfig.actions.scrollPrev() ).not.toThrow();
@@ -279,9 +277,7 @@ describe( 'Carousel View Module', () => {
 			} );
 
 			it( 'should log warning when embla instance not found', () => {
-				const consoleSpy = jest
-					.spyOn( console, 'warn' )
-					.mockImplementation();
+				const consoleSpy = jest.spyOn( console, 'warn' ).mockImplementation();
 				const button = document.createElement( 'button' );
 
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
@@ -309,8 +305,9 @@ describe( 'Carousel View Module', () => {
 				setEmblaOnViewport( viewport, mockEmbla );
 
 				const mockContext = createMockContext();
-				( mockContext as CarouselContext & { snap?: { index: number } } ).snap =
-					{ index: 2 };
+				( mockContext as CarouselContext & { snap?: { index: number } } ).snap = {
+					index: 2,
+				};
 
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
@@ -338,8 +335,9 @@ describe( 'Carousel View Module', () => {
 				setEmblaOnViewport( viewport, mockEmbla );
 
 				const mockContext = createMockContext();
-				( mockContext as CarouselContext & { snap?: { index: number } } ).snap =
-					{ index: 0 };
+				( mockContext as CarouselContext & { snap?: { index: number } } ).snap = {
+					index: 0,
+				};
 
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
@@ -362,9 +360,7 @@ describe( 'Carousel View Module', () => {
 		describe( 'isSlideActive', () => {
 			it( 'should be defined as a function', () => {
 				expect( storeConfig?.callbacks?.isSlideActive ).toBeDefined();
-				expect( typeof storeConfig?.callbacks?.isSlideActive ).toBe(
-					'function',
-				);
+				expect( typeof storeConfig?.callbacks?.isSlideActive ).toBe( 'function' );
 			} );
 
 			it( 'should return false when element is null', () => {
@@ -446,8 +442,9 @@ describe( 'Carousel View Module', () => {
 
 			it( 'should return true when snap.index matches selectedIndex', () => {
 				const mockContext = createMockContext( { selectedIndex: 2 } );
-				( mockContext as CarouselContext & { snap?: { index: number } } ).snap =
-					{ index: 2 };
+				( mockContext as CarouselContext & { snap?: { index: number } } ).snap = {
+					index: 2,
+				};
 
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 
@@ -458,8 +455,9 @@ describe( 'Carousel View Module', () => {
 
 			it( 'should return false when snap.index does not match selectedIndex', () => {
 				const mockContext = createMockContext( { selectedIndex: 0 } );
-				( mockContext as CarouselContext & { snap?: { index: number } } ).snap =
-					{ index: 2 };
+				( mockContext as CarouselContext & { snap?: { index: number } } ).snap = {
+					index: 2,
+				};
 
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 
@@ -479,8 +477,9 @@ describe( 'Carousel View Module', () => {
 				const mockContext = createMockContext( {
 					ariaLabelPattern: 'Go to slide %d',
 				} );
-				( mockContext as CarouselContext & { snap?: { index: number } } ).snap =
-					{ index: 2 };
+				( mockContext as CarouselContext & { snap?: { index: number } } ).snap = {
+					index: 2,
+				};
 
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 
@@ -493,8 +492,9 @@ describe( 'Carousel View Module', () => {
 				const mockContext = createMockContext( {
 					ariaLabelPattern: 'Slide %d of 5',
 				} );
-				( mockContext as CarouselContext & { snap?: { index: number } } ).snap =
-					{ index: 0 };
+				( mockContext as CarouselContext & { snap?: { index: number } } ).snap = {
+					index: 0,
+				};
 
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 
@@ -519,15 +519,11 @@ describe( 'Carousel View Module', () => {
 		describe( 'initCarousel', () => {
 			it( 'should be defined as a function', () => {
 				expect( storeConfig?.callbacks?.initCarousel ).toBeDefined();
-				expect( typeof storeConfig?.callbacks?.initCarousel ).toBe(
-					'function',
-				);
+				expect( typeof storeConfig?.callbacks?.initCarousel ).toBe( 'function' );
 			} );
 
 			it( 'should return early and log warning for invalid element', () => {
-				const consoleSpy = jest
-					.spyOn( console, 'warn' )
-					.mockImplementation();
+				const consoleSpy = jest.spyOn( console, 'warn' ).mockImplementation();
 				const mockContext = createMockContext();
 
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
@@ -545,9 +541,7 @@ describe( 'Carousel View Module', () => {
 			} );
 
 			it( 'should log warning when viewport not found', () => {
-				const consoleSpy = jest
-					.spyOn( console, 'warn' )
-					.mockImplementation();
+				const consoleSpy = jest.spyOn( console, 'warn' ).mockImplementation();
 				const mockContext = createMockContext();
 				const element = document.createElement( 'div' );
 
@@ -596,8 +590,7 @@ describe( 'Carousel View Module', () => {
 
 describe( 'Embla Carousel Integration', () => {
 	// Type-safe helper to get mocked Embla instance
-	const getMockedEmblaCarousel = () =>
-		EmblaCarousel as unknown as jest.Mock;
+	const getMockedEmblaCarousel = () => EmblaCarousel as unknown as jest.Mock;
 
 	it( 'should have EmblaCarousel mocked', () => {
 		expect( EmblaCarousel ).toBeDefined();

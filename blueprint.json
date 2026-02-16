@@ -10,13 +10,12 @@
             "step": "installPlugin",
             "pluginData": {
                 "resource": "url",
-                "url": "https://cdn.statically.io/gh/rtCamp/carousel-kit@dist/carousel-kit.zip"
+                "url": "https://github.com/rtCamp/core-carousel/releases/latest/download/core-carousel.zip"
             }
         },
         {
             "step": "login",
-            "username": "admin",
-            "password": "password"
+            "username": "admin"
         },
         {
             "step": "importWxr",

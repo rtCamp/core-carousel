@@ -1,6 +1,47 @@
 /**
  * Editor-only styles for Carousel
  */
+
+// ── Setup chooser ────────────────────────────────────────────────────────────
+.carousel-kit-setup {
+	.carousel-kit-setup__options {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+		margin-bottom: 12px;
+	}
+
+	.carousel-kit-setup__option {
+		min-width: 80px;
+		justify-content: center;
+	}
+
+	.carousel-kit-setup__skip {
+		display: block;
+		margin-top: 4px;
+	}
+}
+
+// ── Viewport empty state ─────────────────────────────────────────────────────
+// Rendered via renderAppender inside .embla__container (a flex row).
+// flex: 0 0 100% makes it fill the full container width as a single flex item.
+.carousel-kit-viewport-empty {
+	flex: 0 0 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 2rem;
+	border: 1px dashed #ccc;
+	border-radius: 2px;
+	box-sizing: border-box;
+}
+
+// Give slides a minimum visual height in the editor so they are
+// easy to click and populate. Does not affect the frontend.
+.carousel-kit .embla__slide {
+	min-height: 200px;
+}
+
 .carousel-kit {
 	/* Ensure selectable area */
 	padding: 0.625rem;

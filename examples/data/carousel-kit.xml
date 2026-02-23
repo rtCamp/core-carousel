@@ -1468,7 +1468,7 @@
 <!-- /wp:list -->
 
 <!-- wp:image {"id":86,"width":"229px","height":"auto","sizeSlug":"full","linkDestination":"none","align":"center"} -->
-<figure class="wp-block-image aligncenter size-full is-resized"><img src="http://carousel-demo.local/wp-content/uploads/2026/02/image-3.png" alt="" class="wp-image-86" style="width:229px;height:auto"/></figure>
+<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/a7b54454bd08744df4e28a2336c01929c0e919b7/examples/data/images/editor-style-options.webp" alt="" class="wp-image-86" style="width:229px;height:auto"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -1662,44 +1662,11 @@
   <wp:is_sticky>0</wp:is_sticky>
 </item>
 <item>
-  <title><![CDATA[Group 10]]></title>
-  <link>http://carousel-demo.local/orientation-direction/group-10/</link>
-  <pubDate>Mon, 16 Feb 2026 01:51:05 +0000</pubDate>
-  <dc:creator>danish</dc:creator>
-  <guid isPermaLink="false">http://carousel-demo.local/wp-content/uploads/2026/02/Group-10.png</guid>
-  <description/>
-  <content:encoded><![CDATA[]]></content:encoded>
-  <excerpt:encoded><![CDATA[]]></excerpt:encoded>
-  <wp:post_id>70</wp:post_id>
-  <wp:post_date>2026-02-16 01:51:05</wp:post_date>
-  <wp:post_date_gmt>2026-02-16 01:51:05</wp:post_date_gmt>
-  <wp:post_modified>2026-02-16 01:51:05</wp:post_modified>
-  <wp:post_modified_gmt>2026-02-16 01:51:05</wp:post_modified_gmt>
-  <wp:comment_status>open</wp:comment_status>
-  <wp:ping_status>closed</wp:ping_status>
-  <wp:post_name>group-10</wp:post_name>
-  <wp:status>inherit</wp:status>
-  <wp:post_parent>69</wp:post_parent>
-  <wp:menu_order>0</wp:menu_order>
-  <wp:post_type>attachment</wp:post_type>
-  <wp:post_password/>
-  <wp:is_sticky>0</wp:is_sticky>
-  <wp:attachment_url>http://carousel-demo.local/wp-content/uploads/2026/02/Group-10.png</wp:attachment_url>
-  <wp:postmeta>
-    <wp:meta_key>_wp_attached_file</wp:meta_key>
-    <wp:meta_value><![CDATA[2026/02/Group-10.png]]></wp:meta_value>
-  </wp:postmeta>
-  <wp:postmeta>
-    <wp:meta_key>_wp_attachment_metadata</wp:meta_key>
-    <wp:meta_value><![CDATA[a:6:{s:5:"width";i:352;s:6:"height";i:1073;s:4:"file";s:20:"2026/02/Group-10.png";s:8:"filesize";i:78302;s:5:"sizes";a:3:{s:6:"medium";a:5:{s:4:"file";s:19:"Group-10-98x300.png";s:5:"width";i:98;s:6:"height";i:300;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:15083;}s:5:"large";a:5:{s:4:"file";s:21:"Group-10-336x1024.png";s:5:"width";i:336;s:6:"height";i:1024;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:107311;}s:9:"thumbnail";a:5:{s:4:"file";s:20:"Group-10-150x150.png";s:5:"width";i:150;s:6:"height";i:150;s:9:"mime-type";s:9:"image/png";s:8:"filesize";i:4758;}}s:10:"image_meta";a:12:{s:8:"aperture";s:1:"0";s:6:"credit";s:0:"";s:6:"camera";s:0:"";s:7:"caption";s:0:"";s:17:"created_timestamp";s:1:"0";s:9:"copyright";s:0:"";s:12:"focal_length";s:1:"0";s:3:"iso";s:1:"0";s:13:"shutter_speed";s:1:"0";s:5:"title";s:0:"";s:11:"orientation";s:1:"0";s:8:"keywords";a:0:{}}}]]></wp:meta_value>
-  </wp:postmeta>
-</item>
-<item>
   <title><![CDATA[image]]></title>
   <link>http://carousel-demo.local/styles/image-4/</link>
   <pubDate>Mon, 16 Feb 2026 09:07:46 +0000</pubDate>
   <dc:creator>danish</dc:creator>
-  <guid isPermaLink="false">http://carousel-demo.local/wp-content/uploads/2026/02/image-3.png</guid>
+  <guid isPermaLink="false">https://raw.githubusercontent.com/rtCamp/carousel-kit/a7b54454bd08744df4e28a2336c01929c0e919b7/examples/data/images/editor-style-options.webp</guid>
   <description/>
   <content:encoded><![CDATA[]]></content:encoded>
   <excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -1717,7 +1684,7 @@
   <wp:post_type>attachment</wp:post_type>
   <wp:post_password/>
   <wp:is_sticky>0</wp:is_sticky>
-  <wp:attachment_url>http://carousel-demo.local/wp-content/uploads/2026/02/image-3.png</wp:attachment_url>
+  <wp:attachment_url>https://raw.githubusercontent.com/rtCamp/carousel-kit/a7b54454bd08744df4e28a2336c01929c0e919b7/examples/data/images/editor-style-options.webp</wp:attachment_url>
   <wp:postmeta>
     <wp:meta_key>_wp_attached_file</wp:meta_key>
     <wp:meta_value><![CDATA[2026/02/image-3.png]]></wp:meta_value>

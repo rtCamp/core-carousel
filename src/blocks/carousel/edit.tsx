@@ -4,6 +4,7 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 	InspectorAdvancedControls,
+	store as blockEditorStore,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -14,24 +15,37 @@ import {
 	TextControl,
 	RangeControl,
 } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { useState, useMemo } from '@wordpress/element';
 import type { CarouselAttributes } from './types';
-import type { BlockConfiguration, Template } from '@wordpress/blocks';
+import {
+	type BlockConfiguration,
+	type BlockVariation,
+	type InnerBlockTemplate,
+	createBlocksFromInnerBlocksTemplate,
+	store as blocksStore,
+} from '@wordpress/blocks';
 import { EditorCarouselContext } from './editor-context';
 import type { EmblaCarouselType } from 'embla-carousel';
 
-const TEMPLATE: Template[] = [
-	[ 'carousel-kit/carousel-viewport', {} ],
+// @ts-expect-error -- __experimentalBlockVariationPicker is not exported in types
+import { __experimentalBlockVariationPicker as BlockVariationPicker } from '@wordpress/block-editor';
+
+const DEFAULT_TEMPLATE: InnerBlockTemplate[] = [
+	[ 'carousel-kit/carousel-viewport', {}, [
+		[ 'carousel-kit/carousel-slide', {} ],
+	] ],
 	[ 'carousel-kit/carousel-controls', {} ],
 ];
 
 export default function Edit( {
 	attributes,
 	setAttributes,
+	clientId,
 }: {
 	attributes: CarouselAttributes;
 	setAttributes: ( attrs: Partial<CarouselAttributes> ) => void;
+	clientId: string;
 } ) {
 	const {
 		loop,
@@ -54,13 +68,22 @@ export default function Edit( {
 	const [ canScrollPrev, setCanScrollPrev ] = useState( false );
 	const [ canScrollNext, setCanScrollNext ] = useState( false );
 
-	// Fetch all registered block types for suggestions
-	const blockTypes = useSelect( ( select ) => {
-		return (
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			select( 'core/blocks' ) as any
-		).getBlockTypes() as BlockConfiguration[];
-	}, [] );
+	// Fetch all registered block types for suggestions, inner blocks state, and variations
+	const { blockTypes, hasInnerBlocks, variations } = useSelect( ( select ) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const blocksStoreSelectors = select( blocksStore ) as any;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const blockEditorSelectors = select( blockEditorStore ) as any;
+		const innerBlocks = blockEditorSelectors.getBlocks( clientId );
+
+		return {
+			blockTypes: blocksStoreSelectors.getBlockTypes() as BlockConfiguration[],
+			hasInnerBlocks: innerBlocks.length > 0,
+			variations: blocksStoreSelectors.getBlockVariations( 'carousel-kit/carousel', 'block' ) as BlockVariation<Partial<CarouselAttributes>>[],
+		};
+	}, [ clientId ] );
+
+	const { replaceInnerBlocks } = useDispatch( blockEditorStore );
 
 	const suggestions = blockTypes?.map( ( block ) => block.name ) || [];
 
@@ -75,9 +98,7 @@ export default function Edit( {
 		} as React.CSSProperties,
 	} );
 
-	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		template: TEMPLATE,
-	} );
+	const innerBlocksProps = useInnerBlocksProps( blockProps, {} );
 
 	// Memoize carouselOptions separately to prevent excessive viewport reinitializations
 	const carouselOptions = useMemo(
@@ -116,6 +137,35 @@ export default function Edit( {
 			setCanScrollNext,
 		],
 	);
+
+	/**
+	 * Handle variation selection from the picker.
+	 */
+	const onSelectVariation = ( variation?: BlockVariation<Partial<CarouselAttributes>> ) => {
+		if ( variation?.attributes ) {
+			setAttributes( variation.attributes );
+		}
+
+		const innerBlocksTemplate = ( variation?.innerBlocks ?? DEFAULT_TEMPLATE ) as InnerBlockTemplate[];
+		const newInnerBlocks = createBlocksFromInnerBlocksTemplate( innerBlocksTemplate );
+		replaceInnerBlocks?.( clientId, newInnerBlocks );
+	};
+
+	// Show variation picker when block has no content
+	if ( ! hasInnerBlocks && variations ) {
+		return (
+			<div { ...blockProps }>
+				<BlockVariationPicker
+					icon="slides"
+					label={ __( 'Carousel', 'carousel-kit' ) }
+					instructions={ __( 'Select a carousel layout to start with.', 'carousel-kit' ) }
+					variations={ variations }
+					onSelect={ onSelectVariation }
+					allowSkip
+				/>
+			</div>
+		);
+	}
 
 	return (
 		<EditorCarouselContext.Provider value={ contextValue }>

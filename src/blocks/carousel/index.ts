@@ -10,10 +10,13 @@ import './editor.scss';
 import metadata from './block.json';
 import type { CarouselAttributes } from './types';
 import { __ } from '@wordpress/i18n';
+import variations from './variations';
 
 registerBlockType( metadata as BlockConfiguration<CarouselAttributes>, {
 	edit: Edit,
 	save: Save,
+	// @ts-expect-error -- variations is valid but not in the older types
+	variations,
 } );
 
 const styles = [

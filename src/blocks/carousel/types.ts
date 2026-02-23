@@ -4,7 +4,7 @@ export type CarouselAttributes = {
 	loop: boolean;
 	dragFree: boolean;
 	carouselAlign: 'start' | 'center' | 'end';
-	align?: 'start' | 'center' | 'end'; // Add align property optional
+	align?: 'start' | 'center' | 'end' | 'wide' | 'full'; // Block alignment
 	containScroll: 'trimSnaps' | 'keepSnaps';
 	direction: 'ltr' | 'rtl';
 	axis: 'x' | 'y';
@@ -17,6 +17,7 @@ export type CarouselAttributes = {
 	ariaLabel: string;
 	slideGap: number;
 	slidesToScroll: string;
+	className?: string; // For block styles
 };
 
 export type CarouselViewportAttributes = Record<string, never>;

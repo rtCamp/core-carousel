@@ -34,8 +34,6 @@ export default function Edit( {
 		},
 	} );
 
-	// Track actual count — used both for the empty-state check and for triggering
-	// Embla reInit whenever the number of slides changes.
 	const slideCount = useSelect(
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		( select ) => ( select( 'core/block-editor' ) as any ).getBlockCount( clientId ) as number,
@@ -54,8 +52,6 @@ export default function Edit( {
 		insertBlock( block, undefined, clientId );
 	}, [ insertBlock, clientId ] );
 
-	// Stable renderAppender for the empty state — memoized so useInnerBlocksProps
-	// doesn't see a new function reference on every render.
 	const EmptyAppender = useCallback(
 		() => (
 			<div className="carousel-kit-viewport-empty">
@@ -67,9 +63,6 @@ export default function Edit( {
 		[ addSlide ],
 	);
 
-	// No default template — slide creation is handled by the carousel setup flow.
-	// When empty, renderAppender shows the "Add Slide" button inside .embla__container
-	// (a flex container), keeping it properly contained and at full width.
 	const innerBlocksProps = useInnerBlocksProps(
 		{
 			className: 'embla__container',
@@ -86,8 +79,6 @@ export default function Edit( {
 		},
 	);
 
-	// Rerun whenever the slide count changes (slide added/removed via block inserter,
-	// toolbar, or any other mechanism) so Embla re-indexes dots and nav state.
 	useEffect( () => {
 		const api = emblaRef.current
 			? ( emblaRef.current as { [ EMBLA_KEY ]?: EmblaCarouselType } )[ EMBLA_KEY ]

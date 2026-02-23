@@ -58,8 +58,6 @@ export default function Edit( {
 
 	const { replaceInnerBlocks, insertBlock } = useDispatch( 'core/block-editor' );
 
-	// Existing carousels (before this feature) already have inner blocks;
-	// skip the setup screen for them even though isSetup is still false.
 	const hasInnerBlocks = useSelect(
 		( select ) =>
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,7 +65,6 @@ export default function Edit( {
 		[ clientId ],
 	);
 
-	// Find the viewport block so the carousel-level toolbar can insert slides into it.
 	const viewportClientId = useSelect(
 		( select ) => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,10 +81,6 @@ export default function Edit( {
 		insertBlock( createBlock( 'carousel-kit/carousel-slide' ), undefined, viewportClientId );
 	}, [ insertBlock, viewportClientId ] );
 
-	// Show the setup screen only for a genuinely fresh insertion.
-	// hasInnerBlocks alone is the reliable gate: existing carousels already have
-	// inner blocks so they skip setup; a new carousel has none until the user picks.
-	// This avoids persisting editor-only state (isSetup) into post content.
 	const showSetup = ! hasInnerBlocks;
 
 	// Fetch registered block types for the allowed-blocks token field
@@ -109,7 +102,6 @@ export default function Edit( {
 		} as React.CSSProperties,
 	} );
 
-	// No template — setup is handled via replaceInnerBlocks
 	const innerBlocksProps = useInnerBlocksProps( blockProps, {} );
 
 	const carouselOptions = useMemo(
@@ -147,9 +139,6 @@ export default function Edit( {
 		],
 	);
 
-	/**
-	 * Controls + Dots in a flex-row group with space-between.
-	 */
 	const createNavGroup = () =>
 		createBlock(
 			'core/group',
@@ -166,9 +155,6 @@ export default function Edit( {
 			],
 		);
 
-	// Create N slides, each with a single empty paragraph.
-	// No wrapper group — avoids any persistent padding or layout constraints
-	// that would interfere with the user's own content structure.
 	const handleSetup = ( slideCount: number ) => {
 		const slides = Array.from( { length: slideCount }, () =>
 			createBlock( 'carousel-kit/carousel-slide', {}, [
@@ -194,7 +180,6 @@ export default function Edit( {
 		);
 	};
 
-	// ── Shared inspector panels ──────────────────────────────────────────────
 	const inspectorControls = (
 		<>
 			<InspectorControls>
@@ -400,7 +385,6 @@ export default function Edit( {
 		</>
 	);
 
-	// ── Setup / chooser screen ───────────────────────────────────────────────
 	if ( showSetup ) {
 		return (
 			<EditorCarouselContext.Provider value={ contextValue }>
@@ -439,7 +423,6 @@ export default function Edit( {
 		);
 	}
 
-	// ── Normal carousel editor ───────────────────────────────────────────────
 	return (
 		<EditorCarouselContext.Provider value={ contextValue }>
 			<BlockControls>

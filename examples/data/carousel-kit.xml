@@ -1015,7 +1015,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":60,"width":"277px","height":"auto","aspectRatio":"1.9091224419007977","sizeSlug":"full","linkDestination":"none","align":"center","style":{"border":{"radius":{"topLeft":"0px","topRight":"0px","bottomLeft":"0px","bottomRight":"0px"}}}} -->
-<figure class="wp-block-image aligncenter size-full is-resized has-custom-border"><img src="http://carousel-demo.local/wp-content/uploads/2026/02/image.png" alt="" class="wp-image-60" style="border-top-left-radius:0px;border-top-right-radius:0px;border-bottom-left-radius:0px;border-bottom-right-radius:0px;aspect-ratio:1.9091224419007977;width:277px;height:auto"/></figure>
+<figure class="wp-block-image aligncenter size-full is-resized has-custom-border"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/bd871f0ede1c2e14f318261bc06353907317dd18/examples/data/images/editor-step-1.webp" alt="" class="wp-image-60" style="border-top-left-radius:0px;border-top-right-radius:0px;border-bottom-left-radius:0px;border-bottom-right-radius:0px;aspect-ratio:1.9091224419007977;width:277px;height:auto"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -1023,7 +1023,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":61,"width":"289px","height":"auto","aspectRatio":"1.7685009487666035","sizeSlug":"full","linkDestination":"none","align":"center"} -->
-<figure class="wp-block-image aligncenter size-full is-resized"><img src="http://carousel-demo.local/wp-content/uploads/2026/02/image-1.png" alt="" class="wp-image-61" style="aspect-ratio:1.7685009487666035;width:289px;height:auto"/></figure>
+<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/bd871f0ede1c2e14f318261bc06353907317dd18/examples/data/images/editor-step-2.webp" alt="" class="wp-image-61" style="aspect-ratio:1.7685009487666035;width:289px;height:auto"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -1031,7 +1031,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":62,"width":"179px","height":"auto","aspectRatio":"0.31936717984733953","sizeSlug":"full","linkDestination":"none","align":"center"} -->
-<figure class="wp-block-image aligncenter size-full is-resized"><img src="http://carousel-demo.local/wp-content/uploads/2026/02/image-2.png" alt="" class="wp-image-62" style="aspect-ratio:0.31936717984733953;width:179px;height:auto"/></figure>
+<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/eb6008251039ea700262c63db89a266072ee6c3f/examples/data/images/editor-sidebar-settings.webp" alt="" class="wp-image-62" style="aspect-ratio:0.31936717984733953;width:179px;height:auto"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -1104,7 +1104,7 @@
   <link>http://carousel-demo.local/creating-a-carousel/image/</link>
   <pubDate>Mon, 16 Feb 2026 01:27:41 +0000</pubDate>
   <dc:creator>danish</dc:creator>
-  <guid isPermaLink="false">http://carousel-demo.local/wp-content/uploads/2026/02/image.png</guid>
+  <guid isPermaLink="false">https://raw.githubusercontent.com/rtCamp/carousel-kit/bd871f0ede1c2e14f318261bc06353907317dd18/examples/data/images/editor-step-1.webp</guid>
   <description/>
   <content:encoded><![CDATA[]]></content:encoded>
   <excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -1122,7 +1122,7 @@
   <wp:post_type>attachment</wp:post_type>
   <wp:post_password/>
   <wp:is_sticky>0</wp:is_sticky>
-  <wp:attachment_url>http://carousel-demo.local/wp-content/uploads/2026/02/image.png</wp:attachment_url>
+  <wp:attachment_url>https://raw.githubusercontent.com/rtCamp/carousel-kit/bd871f0ede1c2e14f318261bc06353907317dd18/examples/data/images/editor-step-1.webp</wp:attachment_url>
   <wp:postmeta>
     <wp:meta_key>_wp_attached_file</wp:meta_key>
     <wp:meta_value><![CDATA[2026/02/image.png]]></wp:meta_value>
@@ -1137,7 +1137,7 @@
   <link>http://carousel-demo.local/creating-a-carousel/image-2/</link>
   <pubDate>Mon, 16 Feb 2026 01:30:58 +0000</pubDate>
   <dc:creator>danish</dc:creator>
-  <guid isPermaLink="false">http://carousel-demo.local/wp-content/uploads/2026/02/image-1.png</guid>
+  <guid isPermaLink="false">https://raw.githubusercontent.com/rtCamp/carousel-kit/bd871f0ede1c2e14f318261bc06353907317dd18/examples/data/images/editor-step-2.webp</guid>
   <description/>
   <content:encoded><![CDATA[]]></content:encoded>
   <excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -1155,7 +1155,7 @@
   <wp:post_type>attachment</wp:post_type>
   <wp:post_password/>
   <wp:is_sticky>0</wp:is_sticky>
-  <wp:attachment_url>http://carousel-demo.local/wp-content/uploads/2026/02/image-1.png</wp:attachment_url>
+  <wp:attachment_url>https://raw.githubusercontent.com/rtCamp/carousel-kit/bd871f0ede1c2e14f318261bc06353907317dd18/examples/data/images/editor-step-2.webp</wp:attachment_url>
   <wp:postmeta>
     <wp:meta_key>_wp_attached_file</wp:meta_key>
     <wp:meta_value><![CDATA[2026/02/image-1.png]]></wp:meta_value>
@@ -1170,7 +1170,7 @@
   <link>http://carousel-demo.local/creating-a-carousel/image-3/</link>
   <pubDate>Mon, 16 Feb 2026 01:32:28 +0000</pubDate>
   <dc:creator>danish</dc:creator>
-  <guid isPermaLink="false">http://carousel-demo.local/wp-content/uploads/2026/02/image-2.png</guid>
+  <guid isPermaLink="false">https://raw.githubusercontent.com/rtCamp/carousel-kit/eb6008251039ea700262c63db89a266072ee6c3f/examples/data/images/editor-sidebar-settings.webp</guid>
   <description/>
   <content:encoded><![CDATA[]]></content:encoded>
   <excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -1188,7 +1188,7 @@
   <wp:post_type>attachment</wp:post_type>
   <wp:post_password/>
   <wp:is_sticky>0</wp:is_sticky>
-  <wp:attachment_url>http://carousel-demo.local/wp-content/uploads/2026/02/image-2.png</wp:attachment_url>
+  <wp:attachment_url>https://raw.githubusercontent.com/rtCamp/carousel-kit/eb6008251039ea700262c63db89a266072ee6c3f/examples/data/images/editor-sidebar-settings.webp</wp:attachment_url>
   <wp:postmeta>
     <wp:meta_key>_wp_attached_file</wp:meta_key>
     <wp:meta_value><![CDATA[2026/02/image-2.png]]></wp:meta_value>

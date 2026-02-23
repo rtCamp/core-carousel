@@ -6,11 +6,11 @@ import {
 } from '@wordpress/block-editor';
 import { Button, PanelBody, ToolbarButton } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
 import type { CarouselViewportAttributes } from '../types';
-import { useContext, useEffect, useRef } from '@wordpress/element';
+import { useContext, useEffect, useRef, useCallback } from '@wordpress/element';
 import { useMergeRefs } from '@wordpress/compose';
 import { EditorCarouselContext } from '../editor-context';
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
@@ -34,31 +34,59 @@ export default function Edit( {
 		},
 	} );
 
-	const innerBlocksProps = useInnerBlocksProps(
-		{
-			className: 'embla__container',
-			style: {
-				height: carouselOptions?.axis === 'y' ? 'auto' : undefined,
-				minHeight: carouselOptions?.axis === 'y' ? '100%' : undefined,
-				flexDirection: ( carouselOptions?.axis === 'y' ? 'column' : 'row' ) as React.CSSProperties['flexDirection'],
-			},
-		},
-		{
-			orientation: carouselOptions?.axis === 'y' ? 'vertical' : 'horizontal',
-			allowedBlocks: [ 'carousel-kit/carousel-slide', 'core/query' ],
-			template: [ [ 'carousel-kit/carousel-slide' ] ],
-		},
+	const slideCount = useSelect(
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		( select ) => ( select( 'core/block-editor' ) as any ).getBlockCount( clientId ) as number,
+		[ clientId ],
 	);
+
+	const hasSlides = slideCount > 0;
 
 	const emblaRef = useRef<HTMLDivElement>( null );
 	const ref = useMergeRefs( [ emblaRef, blockProps.ref ] );
 
 	const { insertBlock } = useDispatch( 'core/block-editor' );
 
-	const addSlide = () => {
+	const addSlide = useCallback( () => {
 		const block = createBlock( 'carousel-kit/carousel-slide' );
 		insertBlock( block, undefined, clientId );
-	};
+	}, [ insertBlock, clientId ] );
+
+	const EmptyAppender = useCallback(
+		() => (
+			<div className="carousel-kit-viewport-empty">
+				<Button variant="primary" icon={ plus } onClick={ addSlide }>
+					{ __( 'Add Slide', 'carousel-kit' ) }
+				</Button>
+			</div>
+		),
+		[ addSlide ],
+	);
+
+	const innerBlocksProps = useInnerBlocksProps(
+		{
+			className: 'embla__container',
+			style: {
+				height: carouselOptions?.axis === 'y' ? 'auto' : undefined,
+				minHeight: carouselOptions?.axis === 'y' ? '100%' : undefined,
+				flexDirection: ( carouselOptions?.axis === 'y' ? 'column' : 'row' ) as React.CSSProperties[ 'flexDirection' ],
+			},
+		},
+		{
+			orientation: carouselOptions?.axis === 'y' ? 'vertical' : 'horizontal',
+			allowedBlocks: [ 'carousel-kit/carousel-slide', 'core/query' ],
+			renderAppender: ! hasSlides ? EmptyAppender : undefined,
+		},
+	);
+
+	useEffect( () => {
+		const api = emblaRef.current
+			? ( emblaRef.current as { [ EMBLA_KEY ]?: EmblaCarouselType } )[ EMBLA_KEY ]
+			: null;
+		if ( api ) {
+			setTimeout( () => api.reInit(), 10 );
+		}
+	}, [ slideCount ] );
 
 	useEffect( () => {
 		if ( ! emblaRef.current ) {
@@ -103,7 +131,6 @@ export default function Edit( {
 			embla.on( 'select', onSelect );
 			embla.on( 'reInit', onSelect );
 
-			// Use requestAnimationFrame to ensure DOM has settled
 			requestAnimationFrame( () => {
 				onSelect();
 			} );
@@ -120,13 +147,11 @@ export default function Edit( {
 				for ( const mutation of mutations ) {
 					const target = mutation.target as HTMLElement;
 
-					// If the Post Template itself changed (children added/removed)
 					if ( target.classList.contains( 'wp-block-post-template' ) ) {
 						shouldReInit = true;
 						break;
 					}
 
-					// If the Post Template was just added to the DOM
 					if (
 						mutation.addedNodes.length > 0 &&
 						( target.querySelector( '.wp-block-post-template' ) ||
@@ -142,7 +167,6 @@ export default function Edit( {
 				}
 
 				if ( shouldReInit ) {
-					// Small debounce/timeout to allow render to settle
 					setTimeout( initEmbla, 10 );
 				}
 			} );

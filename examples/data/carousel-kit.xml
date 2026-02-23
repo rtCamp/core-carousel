@@ -1491,39 +1491,6 @@
   <wp:is_sticky>0</wp:is_sticky>
 </item>
 <item>
-  <title><![CDATA[Screen Recording 2026-02-16 at 02.40.13]]></title>
-  <link>http://carousel-demo.local/styles/screen-recording-2026-02-16-at-02-40-13/</link>
-  <pubDate>Mon, 16 Feb 2026 01:42:08 +0000</pubDate>
-  <dc:creator>danish</dc:creator>
-  <guid isPermaLink="false">http://carousel-demo.local/wp-content/uploads/2026/02/Screen-Recording-2026-02-16-at-02.40.13.gif</guid>
-  <description/>
-  <content:encoded><![CDATA[]]></content:encoded>
-  <excerpt:encoded><![CDATA[]]></excerpt:encoded>
-  <wp:post_id>65</wp:post_id>
-  <wp:post_date>2026-02-16 01:42:08</wp:post_date>
-  <wp:post_date_gmt>2026-02-16 01:42:08</wp:post_date_gmt>
-  <wp:post_modified>2026-02-16 01:42:08</wp:post_modified>
-  <wp:post_modified_gmt>2026-02-16 01:42:08</wp:post_modified_gmt>
-  <wp:comment_status>open</wp:comment_status>
-  <wp:ping_status>closed</wp:ping_status>
-  <wp:post_name>screen-recording-2026-02-16-at-02-40-13</wp:post_name>
-  <wp:status>inherit</wp:status>
-  <wp:post_parent>64</wp:post_parent>
-  <wp:menu_order>0</wp:menu_order>
-  <wp:post_type>attachment</wp:post_type>
-  <wp:post_password/>
-  <wp:is_sticky>0</wp:is_sticky>
-  <wp:attachment_url>http://carousel-demo.local/wp-content/uploads/2026/02/Screen-Recording-2026-02-16-at-02.40.13.gif</wp:attachment_url>
-  <wp:postmeta>
-    <wp:meta_key>_wp_attached_file</wp:meta_key>
-    <wp:meta_value><![CDATA[2026/02/Screen-Recording-2026-02-16-at-02.40.13.gif]]></wp:meta_value>
-  </wp:postmeta>
-  <wp:postmeta>
-    <wp:meta_key>_wp_attachment_metadata</wp:meta_key>
-    <wp:meta_value><![CDATA[a:6:{s:5:"width";i:430;s:6:"height";i:258;s:4:"file";s:51:"2026/02/Screen-Recording-2026-02-16-at-02.40.13.gif";s:8:"filesize";i:196532;s:5:"sizes";a:2:{s:6:"medium";a:5:{s:4:"file";s:51:"Screen-Recording-2026-02-16-at-02.40.13-300x180.gif";s:5:"width";i:300;s:6:"height";i:180;s:9:"mime-type";s:9:"image/gif";s:8:"filesize";i:9027;}s:9:"thumbnail";a:5:{s:4:"file";s:51:"Screen-Recording-2026-02-16-at-02.40.13-150x150.gif";s:5:"width";i:150;s:6:"height";i:150;s:9:"mime-type";s:9:"image/gif";s:8:"filesize";i:5125;}}s:10:"image_meta";a:12:{s:8:"aperture";s:1:"0";s:6:"credit";s:0:"";s:6:"camera";s:0:"";s:7:"caption";s:0:"";s:17:"created_timestamp";s:1:"0";s:9:"copyright";s:0:"";s:12:"focal_length";s:1:"0";s:3:"iso";s:1:"0";s:13:"shutter_speed";s:1:"0";s:5:"title";s:0:"";s:11:"orientation";s:1:"0";s:8:"keywords";a:0:{}}}]]></wp:meta_value>
-  </wp:postmeta>
-</item>
-<item>
   <title><![CDATA[Orientation &amp; Direction]]></title>
   <link>http://carousel-demo.local/orientation-direction/</link>
   <pubDate>Mon, 16 Feb 2026 01:51:57 +0000</pubDate>
@@ -1706,7 +1673,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:image {"id":95,"width":"285px","height":"auto","sizeSlug":"full","linkDestination":"none","align":"center"} -->
-<figure class="wp-block-image aligncenter size-full is-resized"><img src="http://carousel-demo.local/wp-content/uploads/2026/02/image-4.png" alt="" class="wp-image-95" style="width:285px;height:auto"/></figure>
+<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/a7b54454bd08744df4e28a2336c01929c0e919b7/examples/data/images/editor-query-loop-setup.webp" alt="" class="wp-image-95" style="width:285px;height:auto"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:carousel-kit/carousel {"dragFree":true,"slideGap":30,"className":"wp-block-carousel-carousel"} -->
@@ -1753,7 +1720,7 @@
   <link>http://carousel-demo.local/query-loop/image-5/</link>
   <pubDate>Mon, 16 Feb 2026 09:23:24 +0000</pubDate>
   <dc:creator>danish</dc:creator>
-  <guid isPermaLink="false">http://carousel-demo.local/wp-content/uploads/2026/02/image-4.png</guid>
+  <guid isPermaLink="false">https://raw.githubusercontent.com/rtCamp/carousel-kit/a7b54454bd08744df4e28a2336c01929c0e919b7/examples/data/images/editor-query-loop-setup.webp</guid>
   <description/>
   <content:encoded><![CDATA[]]></content:encoded>
   <excerpt:encoded><![CDATA[]]></excerpt:encoded>
@@ -1771,7 +1738,7 @@
   <wp:post_type>attachment</wp:post_type>
   <wp:post_password/>
   <wp:is_sticky>0</wp:is_sticky>
-  <wp:attachment_url>http://carousel-demo.local/wp-content/uploads/2026/02/image-4.png</wp:attachment_url>
+  <wp:attachment_url>https://raw.githubusercontent.com/rtCamp/carousel-kit/a7b54454bd08744df4e28a2336c01929c0e919b7/examples/data/images/editor-query-loop-setup.webp</wp:attachment_url>
   <wp:postmeta>
     <wp:meta_key>_wp_attached_file</wp:meta_key>
     <wp:meta_value><![CDATA[2026/02/image-4.png]]></wp:meta_value>

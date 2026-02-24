@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/rtCamp/carousel-system-interactivity-api/compare/v1.0.2...v1.0.3) (2026-02-24)
+
+
+### Bug Fixes
+
+* enable loop on editor ([fe4566a](https://github.com/rtCamp/carousel-system-interactivity-api/commit/fe4566afcf72e1e663c7eb481a7957d62c2d3365))
+* state corruption when clicking between slides ([637e4a5](https://github.com/rtCamp/carousel-system-interactivity-api/commit/637e4a507eb2c58576c4004d5460e8aa7295db9f))
+
 ## [1.0.2](https://github.com/rtCamp/carousel-system-interactivity-api/compare/v1.0.1...v1.0.2) (2026-02-23)
 
 

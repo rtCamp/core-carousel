@@ -189,7 +189,7 @@ export default function Edit( {
 						checked={ loop }
 						onChange={ ( value ) => setAttributes( { loop: value } ) }
 						help={ __(
-							'Infinite scrolling of slides (Frontend only). Disabled in editor for stability.',
+							'Enables infinite scrolling of slides.',
 							'carousel-kit',
 						) }
 					/>

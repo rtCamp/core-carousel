@@ -93,22 +93,22 @@ export default function Edit( {
 			return;
 		}
 
+		const viewportEl = emblaRef.current;
 		let embla: EmblaCarouselType | undefined;
-		let observer: MutationObserver | undefined;
 
 		const initEmbla = () => {
 			if ( embla ) {
 				embla.destroy();
 			}
 
-			const queryLoopContainer = emblaRef.current?.querySelector(
+			const queryLoopContainer = viewportEl.querySelector(
 				'.wp-block-post-template',
 			) as HTMLElement;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const options = carouselOptions as any;
 
-			embla = EmblaCarousel( emblaRef.current!, {
+			embla = EmblaCarousel( viewportEl, {
 				loop: options?.loop ?? false,
 				dragFree: options?.dragFree ?? false,
 				containScroll: options?.containScroll || 'trimSnaps',
@@ -117,9 +117,12 @@ export default function Edit( {
 				direction: options?.direction || 'ltr',
 				slidesToScroll: options?.slidesToScroll || 1,
 				container: queryLoopContainer || undefined,
+				watchDrag: false, // Clicks in slide gaps must not trigger Embla scroll in the editor.
+				watchSlides: false, // Gutenberg injects block UI nodes into .embla__container; Embla's built-in MutationObserver would call reInit() on those, corrupting slide order and transforms.
+				watchResize: false, // Block toolbar appearing on selection can cause a layout shift that triggers an unwanted reInit.
 			} );
 
-			( emblaRef.current as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ] = embla;
+			( viewportEl as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ] = embla;
 
 			const onSelect = () => {
 				const canPrev = embla!.canScrollPrev();
@@ -140,42 +143,40 @@ export default function Edit( {
 
 		initEmbla();
 
-		if ( emblaRef.current ) {
-			observer = new MutationObserver( ( mutations ) => {
-				let shouldReInit = false;
+		const observer = new MutationObserver( ( mutations ) => {
+			let shouldReInit = false;
 
-				for ( const mutation of mutations ) {
-					const target = mutation.target as HTMLElement;
+			for ( const mutation of mutations ) {
+				const target = mutation.target as HTMLElement;
 
-					if ( target.classList.contains( 'wp-block-post-template' ) ) {
-						shouldReInit = true;
-						break;
-					}
+				if ( target.classList.contains( 'wp-block-post-template' ) ) {
+					shouldReInit = true;
+					break;
+				}
 
-					if (
-						mutation.addedNodes.length > 0 &&
+				if (
+					mutation.addedNodes.length > 0 &&
 						( target.querySelector( '.wp-block-post-template' ) ||
 							Array.from( mutation.addedNodes ).some(
 								( node ) =>
 									node instanceof HTMLElement &&
 									node.classList.contains( 'wp-block-post-template' ),
 							) )
-					) {
-						shouldReInit = true;
-						break;
-					}
+				) {
+					shouldReInit = true;
+					break;
 				}
+			}
 
-				if ( shouldReInit ) {
-					setTimeout( initEmbla, 10 );
-				}
-			} );
+			if ( shouldReInit ) {
+				setTimeout( initEmbla, 10 );
+			}
+		} );
 
-			observer.observe( emblaRef.current, {
-				childList: true,
-				subtree: true,
-			} );
-		}
+		observer.observe( viewportEl, {
+			childList: true,
+			subtree: true,
+		} );
 
 		return () => {
 			if ( embla ) {
@@ -184,11 +185,7 @@ export default function Edit( {
 			if ( observer ) {
 				observer.disconnect();
 			}
-			if ( emblaRef.current ) {
-				delete ( emblaRef.current as { [EMBLA_KEY]?: typeof embla } )[
-					EMBLA_KEY
-				];
-			}
+			delete ( viewportEl as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ];
 		};
 	}, [ setEmblaApi, setCanScrollPrev, setCanScrollNext, carouselOptions ] );
 

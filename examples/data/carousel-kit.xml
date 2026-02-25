@@ -1030,8 +1030,8 @@
 <p>3. To configure your carousel, select the Carousel block and from the right sidebar, configure it as per your needs.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":62,"width":"179px","height":"auto","aspectRatio":"0.31936717984733953","sizeSlug":"full","linkDestination":"none","align":"center"} -->
-<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/main/examples/data/images/editor-style-options.webp" alt="" class="wp-image-62" style="aspect-ratio:0.31936717984733953;width:179px;height:auto"/></figure>
+<!-- wp:image {"id":62,"width":"179px","height":"auto","sizeSlug":"full","linkDestination":"none","align":"center"} -->
+<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/main/examples/data/images/editor-sidebar-settings.webp" alt="" class="wp-image-62" style="width:179px;height:auto"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -1468,7 +1468,7 @@
 <!-- /wp:list -->
 
 <!-- wp:image {"id":86,"width":"229px","height":"auto","sizeSlug":"full","linkDestination":"none","align":"center"} -->
-<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/main/examples/data/images/editor-sidebar-settings.webp" alt="" class="wp-image-86" style="width:229px;height:auto"/></figure>
+<figure class="wp-block-image aligncenter size-full is-resized"><img src="https://raw.githubusercontent.com/rtCamp/carousel-kit/main/examples/data/images/editor-style-options.webp" alt="" class="wp-image-86" style="width:229px;height:auto"/></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->

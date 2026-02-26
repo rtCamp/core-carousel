@@ -74,9 +74,6 @@
 
 /* Vertical + Loop specific */
 :where(.carousel-kit[data-axis="y"][data-loop="true"]) .embla__slide,
-:where(.carousel-kit[data-axis="y"][data-loop="true"])
-	.embla
-	.wp-block-post-template
-	li {
+:where(.carousel-kit[data-axis="y"][data-loop="true"]) .embla .wp-block-post-template li {
 	margin-block-end: var(--carousel-kit-gap, 0);
 }

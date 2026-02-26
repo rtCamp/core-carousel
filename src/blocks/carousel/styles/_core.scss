@@ -30,9 +30,7 @@
 /* Force slides (including posts) to respect a configurable width variable */
 :where(.carousel-kit) .embla__slide,
 :where(.carousel-kit) .embla .wp-block-post-template li {
-	display: block;
 	flex: 0 0 var(--carousel-kit-slide-width, 100%);
-	width: var(--carousel-kit-slide-width, 100%);
 	max-width: var(--carousel-kit-slide-width, 100%);
 	min-width: 0;
 	box-sizing: border-box;
@@ -59,11 +57,6 @@
 }
 
 /* Vertical Axis adjustments */
-:where(.carousel-kit[data-axis="y"]) {
-	display: flex;
-	flex-direction: column;
-}
-
 :where(.carousel-kit[data-axis="y"]) .embla {
 	height: var(--carousel-kit-height);
 }
@@ -76,9 +69,6 @@
 
 :where(.carousel-kit[data-axis="y"]) .embla__slide,
 :where(.carousel-kit[data-axis="y"]) .embla .wp-block-post-template li {
-	flex: 0 0 var(--carousel-kit-slide-width, 100%);
-	width: 100%;
-	max-width: 100%;
 	margin-inline-end: 0;
 }
 

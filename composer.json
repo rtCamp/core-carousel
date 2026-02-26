@@ -32,8 +32,7 @@
 		}
 	],
 	"require": {
-		"php": "^8.2",
-		"scrivo/highlight.php": "^9.18"
+		"php": "^8.2"
 	},
 	"require-dev": {
 		"automattic/vipwpcs": "^3.0",

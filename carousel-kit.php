@@ -8,13 +8,15 @@
  * Author:      rtCamp
  * Author URI:  https://rtcamp.com
  * Contributors: iamdanih17, immasud
- * License:     GPL2
+ * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Version:     1.0.3
  * Text Domain: carousel-kit
  *
  * @package carousel-kit
  */
+
+defined( 'ABSPATH' ) || exit;
 
 define( 'CAROUSEL_KIT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'CAROUSEL_KIT_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );

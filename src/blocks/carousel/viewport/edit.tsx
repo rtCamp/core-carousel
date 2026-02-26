@@ -6,11 +6,11 @@ import {
 } from '@wordpress/block-editor';
 import { Button, PanelBody, ToolbarButton } from '@wordpress/components';
 import { createBlock } from '@wordpress/blocks';
-import { useDispatch } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
 import type { CarouselViewportAttributes } from '../types';
-import { useContext, useEffect, useRef } from '@wordpress/element';
+import { useContext, useEffect, useRef, useCallback } from '@wordpress/element';
 import { useMergeRefs } from '@wordpress/compose';
 import { EditorCarouselContext } from '../editor-context';
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
@@ -34,53 +34,81 @@ export default function Edit( {
 		},
 	} );
 
-	const innerBlocksProps = useInnerBlocksProps(
-		{
-			className: 'embla__container',
-			style: {
-				height: carouselOptions?.axis === 'y' ? 'auto' : undefined,
-				minHeight: carouselOptions?.axis === 'y' ? '100%' : undefined,
-				flexDirection: ( carouselOptions?.axis === 'y' ? 'column' : 'row' ) as React.CSSProperties['flexDirection'],
-			},
-		},
-		{
-			orientation: carouselOptions?.axis === 'y' ? 'vertical' : 'horizontal',
-			allowedBlocks: [ 'carousel-kit/carousel-slide', 'core/query' ],
-			template: [ [ 'carousel-kit/carousel-slide' ] ],
-		},
+	const slideCount = useSelect(
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		( select ) => ( select( 'core/block-editor' ) as any ).getBlockCount( clientId ) as number,
+		[ clientId ],
 	);
+
+	const hasSlides = slideCount > 0;
 
 	const emblaRef = useRef<HTMLDivElement>( null );
 	const ref = useMergeRefs( [ emblaRef, blockProps.ref ] );
 
 	const { insertBlock } = useDispatch( 'core/block-editor' );
 
-	const addSlide = () => {
+	const addSlide = useCallback( () => {
 		const block = createBlock( 'carousel-kit/carousel-slide' );
 		insertBlock( block, undefined, clientId );
-	};
+	}, [ insertBlock, clientId ] );
+
+	const EmptyAppender = useCallback(
+		() => (
+			<div className="carousel-kit-viewport-empty">
+				<Button variant="primary" icon={ plus } onClick={ addSlide }>
+					{ __( 'Add Slide', 'carousel-kit' ) }
+				</Button>
+			</div>
+		),
+		[ addSlide ],
+	);
+
+	const innerBlocksProps = useInnerBlocksProps(
+		{
+			className: 'embla__container',
+			style: {
+				height: carouselOptions?.axis === 'y' ? 'auto' : undefined,
+				minHeight: carouselOptions?.axis === 'y' ? '100%' : undefined,
+				flexDirection: ( carouselOptions?.axis === 'y' ? 'column' : 'row' ) as React.CSSProperties[ 'flexDirection' ],
+			},
+		},
+		{
+			orientation: carouselOptions?.axis === 'y' ? 'vertical' : 'horizontal',
+			allowedBlocks: [ 'carousel-kit/carousel-slide', 'core/query' ],
+			renderAppender: ! hasSlides ? EmptyAppender : undefined,
+		},
+	);
+
+	useEffect( () => {
+		const api = emblaRef.current
+			? ( emblaRef.current as { [ EMBLA_KEY ]?: EmblaCarouselType } )[ EMBLA_KEY ]
+			: null;
+		if ( api ) {
+			setTimeout( () => api.reInit(), 10 );
+		}
+	}, [ slideCount ] );
 
 	useEffect( () => {
 		if ( ! emblaRef.current ) {
 			return;
 		}
 
+		const viewportEl = emblaRef.current;
 		let embla: EmblaCarouselType | undefined;
-		let observer: MutationObserver | undefined;
 
 		const initEmbla = () => {
 			if ( embla ) {
 				embla.destroy();
 			}
 
-			const queryLoopContainer = emblaRef.current?.querySelector(
+			const queryLoopContainer = viewportEl.querySelector(
 				'.wp-block-post-template',
 			) as HTMLElement;
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const options = carouselOptions as any;
 
-			embla = EmblaCarousel( emblaRef.current!, {
+			embla = EmblaCarousel( viewportEl, {
 				loop: options?.loop ?? false,
 				dragFree: options?.dragFree ?? false,
 				containScroll: options?.containScroll || 'trimSnaps',
@@ -89,9 +117,12 @@ export default function Edit( {
 				direction: options?.direction || 'ltr',
 				slidesToScroll: options?.slidesToScroll || 1,
 				container: queryLoopContainer || undefined,
+				watchDrag: false, // Clicks in slide gaps must not trigger Embla scroll in the editor.
+				watchSlides: false, // Gutenberg injects block UI nodes into .embla__container; Embla's built-in MutationObserver would call reInit() on those, corrupting slide order and transforms.
+				watchResize: false, // Block toolbar appearing on selection can cause a layout shift that triggers an unwanted reInit.
 			} );
 
-			( emblaRef.current as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ] = embla;
+			( viewportEl as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ] = embla;
 
 			const onSelect = () => {
 				const canPrev = embla!.canScrollPrev();
@@ -103,7 +134,6 @@ export default function Edit( {
 			embla.on( 'select', onSelect );
 			embla.on( 'reInit', onSelect );
 
-			// Use requestAnimationFrame to ensure DOM has settled
 			requestAnimationFrame( () => {
 				onSelect();
 			} );
@@ -113,45 +143,40 @@ export default function Edit( {
 
 		initEmbla();
 
-		if ( emblaRef.current ) {
-			observer = new MutationObserver( ( mutations ) => {
-				let shouldReInit = false;
+		const observer = new MutationObserver( ( mutations ) => {
+			let shouldReInit = false;
 
-				for ( const mutation of mutations ) {
-					const target = mutation.target as HTMLElement;
+			for ( const mutation of mutations ) {
+				const target = mutation.target as HTMLElement;
 
-					// If the Post Template itself changed (children added/removed)
-					if ( target.classList.contains( 'wp-block-post-template' ) ) {
-						shouldReInit = true;
-						break;
-					}
+				if ( target.classList.contains( 'wp-block-post-template' ) ) {
+					shouldReInit = true;
+					break;
+				}
 
-					// If the Post Template was just added to the DOM
-					if (
-						mutation.addedNodes.length > 0 &&
+				if (
+					mutation.addedNodes.length > 0 &&
 						( target.querySelector( '.wp-block-post-template' ) ||
 							Array.from( mutation.addedNodes ).some(
 								( node ) =>
 									node instanceof HTMLElement &&
 									node.classList.contains( 'wp-block-post-template' ),
 							) )
-					) {
-						shouldReInit = true;
-						break;
-					}
+				) {
+					shouldReInit = true;
+					break;
 				}
+			}
 
-				if ( shouldReInit ) {
-					// Small debounce/timeout to allow render to settle
-					setTimeout( initEmbla, 10 );
-				}
-			} );
+			if ( shouldReInit ) {
+				setTimeout( initEmbla, 10 );
+			}
+		} );
 
-			observer.observe( emblaRef.current, {
-				childList: true,
-				subtree: true,
-			} );
-		}
+		observer.observe( viewportEl, {
+			childList: true,
+			subtree: true,
+		} );
 
 		return () => {
 			if ( embla ) {
@@ -160,11 +185,7 @@ export default function Edit( {
 			if ( observer ) {
 				observer.disconnect();
 			}
-			if ( emblaRef.current ) {
-				delete ( emblaRef.current as { [EMBLA_KEY]?: typeof embla } )[
-					EMBLA_KEY
-				];
-			}
+			delete ( viewportEl as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ];
 		};
 	}, [ setEmblaApi, setCanScrollPrev, setCanScrollNext, carouselOptions ] );
 

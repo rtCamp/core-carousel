@@ -4,6 +4,7 @@ import {
 	useInnerBlocksProps,
 	InspectorControls,
 	InspectorAdvancedControls,
+	BlockControls,
 } from '@wordpress/block-editor';
 import {
 	PanelBody,
@@ -13,25 +14,26 @@ import {
 	BaseControl,
 	TextControl,
 	RangeControl,
+	Placeholder,
+	Button,
+	ToolbarButton,
 } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
-import { useState, useMemo } from '@wordpress/element';
+import { plus } from '@wordpress/icons';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { useState, useMemo, useCallback } from '@wordpress/element';
+import { createBlock, type BlockConfiguration } from '@wordpress/blocks';
 import type { CarouselAttributes } from './types';
-import type { BlockConfiguration, Template } from '@wordpress/blocks';
 import { EditorCarouselContext } from './editor-context';
 import type { EmblaCarouselType } from 'embla-carousel';
-
-const TEMPLATE: Template[] = [
-	[ 'carousel-kit/carousel-viewport', {} ],
-	[ 'carousel-kit/carousel-controls', {} ],
-];
 
 export default function Edit( {
 	attributes,
 	setAttributes,
+	clientId,
 }: {
 	attributes: CarouselAttributes;
 	setAttributes: ( attrs: Partial<CarouselAttributes> ) => void;
+	clientId: string;
 } ) {
 	const {
 		loop,
@@ -54,12 +56,37 @@ export default function Edit( {
 	const [ canScrollPrev, setCanScrollPrev ] = useState( false );
 	const [ canScrollNext, setCanScrollNext ] = useState( false );
 
-	// Fetch all registered block types for suggestions
-	const blockTypes = useSelect( ( select ) => {
-		return (
+	const { replaceInnerBlocks, insertBlock } = useDispatch( 'core/block-editor' );
+
+	const hasInnerBlocks = useSelect(
+		( select ) =>
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			select( 'core/blocks' ) as any
-		).getBlockTypes() as BlockConfiguration[];
+			( select( 'core/block-editor' ) as any ).getBlockCount( clientId ) > 0,
+		[ clientId ],
+	);
+
+	const viewportClientId = useSelect(
+		( select ) => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const innerBlocks = ( select( 'core/block-editor' ) as any ).getBlocks( clientId ) as Array<{ name: string; clientId: string }>;
+			return innerBlocks.find( ( b ) => b.name === 'carousel-kit/carousel-viewport' )?.clientId;
+		},
+		[ clientId ],
+	);
+
+	const addSlide = useCallback( () => {
+		if ( ! viewportClientId ) {
+			return;
+		}
+		insertBlock( createBlock( 'carousel-kit/carousel-slide' ), undefined, viewportClientId );
+	}, [ insertBlock, viewportClientId ] );
+
+	const showSetup = ! hasInnerBlocks;
+
+	// Fetch registered block types for the allowed-blocks token field
+	const blockTypes = useSelect( ( select ) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		return ( select( 'core/blocks' ) as any ).getBlockTypes() as BlockConfiguration[];
 	}, [] );
 
 	const suggestions = blockTypes?.map( ( block ) => block.name ) || [];
@@ -75,11 +102,8 @@ export default function Edit( {
 		} as React.CSSProperties,
 	} );
 
-	const innerBlocksProps = useInnerBlocksProps( blockProps, {
-		template: TEMPLATE,
-	} );
+	const innerBlocksProps = useInnerBlocksProps( blockProps, {} );
 
-	// Memoize carouselOptions separately to prevent excessive viewport reinitializations
 	const carouselOptions = useMemo(
 		() => ( {
 			loop,
@@ -94,8 +118,6 @@ export default function Edit( {
 		[ loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll ],
 	);
 
-	// Memoize the context value to prevent infinite re-renders in children
-	// Note: setState functions are stable and don't need to be in dependencies
 	const contextValue = useMemo(
 		() => ( {
 			emblaApi,
@@ -117,8 +139,49 @@ export default function Edit( {
 		],
 	);
 
-	return (
-		<EditorCarouselContext.Provider value={ contextValue }>
+	const createNavGroup = () =>
+		createBlock(
+			'core/group',
+			{
+				layout: {
+					type: 'flex',
+					flexWrap: 'nowrap',
+					justifyContent: 'space-between',
+				},
+			},
+			[
+				createBlock( 'carousel-kit/carousel-controls', {} ),
+				createBlock( 'carousel-kit/carousel-dots', {} ),
+			],
+		);
+
+	const handleSetup = ( slideCount: number ) => {
+		const slides = Array.from( { length: slideCount }, () =>
+			createBlock( 'carousel-kit/carousel-slide', {}, [
+				createBlock( 'core/paragraph', {} ),
+			] ),
+		);
+
+		replaceInnerBlocks(
+			clientId,
+			[ createBlock( 'carousel-kit/carousel-viewport', {}, slides ), createNavGroup() ],
+			false,
+		);
+	};
+
+	/**
+	 * Skip — still creates the correct structure, just without slides.
+	 */
+	const handleSkip = () => {
+		replaceInnerBlocks(
+			clientId,
+			[ createBlock( 'carousel-kit/carousel-viewport', {} ), createNavGroup() ],
+			false,
+		);
+	};
+
+	const inspectorControls = (
+		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Carousel Settings', 'carousel-kit' ) }>
 					<ToggleControl
@@ -126,7 +189,7 @@ export default function Edit( {
 						checked={ loop }
 						onChange={ ( value ) => setAttributes( { loop: value } ) }
 						help={ __(
-							'Infinite scrolling of slides (Frontend only). Disabled in editor for stability.',
+							'Enables infinite scrolling of slides.',
 							'carousel-kit',
 						) }
 					/>
@@ -145,9 +208,7 @@ export default function Edit( {
 							{ label: __( 'End', 'carousel-kit' ), value: 'end' },
 						] }
 						onChange={ ( value ) =>
-							setAttributes( {
-								carouselAlign: value as CarouselAttributes['carouselAlign'],
-							} )
+							setAttributes( { carouselAlign: value as CarouselAttributes[ 'carouselAlign' ] } )
 						}
 					/>
 					<SelectControl
@@ -159,9 +220,7 @@ export default function Edit( {
 							{ label: __( 'None', 'carousel-kit' ), value: '' },
 						] }
 						onChange={ ( value ) =>
-							setAttributes( {
-								containScroll: value as CarouselAttributes['containScroll'],
-							} )
+							setAttributes( { containScroll: value as CarouselAttributes[ 'containScroll' ] } )
 						}
 						help={ __(
 							'Prevents excess scrolling at the beginning or end.',
@@ -171,8 +230,13 @@ export default function Edit( {
 					<ToggleControl
 						label={ __( 'Scroll Auto', 'carousel-kit' ) }
 						checked={ slidesToScroll === 'auto' }
-						onChange={ ( isAuto ) => setAttributes( { slidesToScroll: isAuto ? 'auto' : '1' } ) }
-						help={ __( 'Scrolls the number of slides currently visible in the viewport.', 'carousel-kit' ) }
+						onChange={ ( isAuto ) =>
+							setAttributes( { slidesToScroll: isAuto ? 'auto' : '1' } )
+						}
+						help={ __(
+							'Scrolls the number of slides currently visible in the viewport.',
+							'carousel-kit',
+						) }
 					/>
 					{ slidesToScroll !== 'auto' && (
 						<RangeControl
@@ -193,9 +257,7 @@ export default function Edit( {
 							{ label: __( 'Right to Left (RTL)', 'carousel-kit' ), value: 'rtl' },
 						] }
 						onChange={ ( value ) =>
-							setAttributes( {
-								direction: value as CarouselAttributes['direction'],
-							} )
+							setAttributes( { direction: value as CarouselAttributes[ 'direction' ] } )
 						}
 						help={ __(
 							'Choose content direction. RTL is typically used for Arabic, Hebrew, and other right-to-left languages.',
@@ -210,9 +272,7 @@ export default function Edit( {
 							{ label: __( 'Vertical', 'carousel-kit' ), value: 'y' },
 						] }
 						onChange={ ( value ) =>
-							setAttributes( {
-								axis: value as CarouselAttributes['axis'],
-							} )
+							setAttributes( { axis: value as CarouselAttributes[ 'axis' ] } )
 						}
 					/>
 					{ axis === 'y' && (
@@ -322,6 +382,57 @@ export default function Edit( {
 					/>
 				</PanelBody>
 			</InspectorControls>
+		</>
+	);
+
+	if ( showSetup ) {
+		return (
+			<EditorCarouselContext.Provider value={ contextValue }>
+				{ inspectorControls }
+				<div { ...blockProps }>
+					<Placeholder
+						icon="columns"
+						label={ __( 'Carousel', 'carousel-kit' ) }
+						instructions={ __( 'How many slides would you like to start with?', 'carousel-kit' ) }
+						className="carousel-kit-setup"
+					>
+						<div className="carousel-kit-setup__options">
+							{ [ 1, 2, 3, 4 ].map( ( count ) => (
+								<Button
+									key={ count }
+									variant="secondary"
+									className="carousel-kit-setup__option"
+									onClick={ () => handleSetup( count ) }
+								>
+									{ count === 1
+										? __( '1 Slide', 'carousel-kit' )
+										: `${ count } ${ __( 'Slides', 'carousel-kit' ) }` }
+								</Button>
+							) ) }
+						</div>
+						<Button
+							variant="link"
+							className="carousel-kit-setup__skip"
+							onClick={ handleSkip }
+						>
+							{ __( 'Skip', 'carousel-kit' ) }
+						</Button>
+					</Placeholder>
+				</div>
+			</EditorCarouselContext.Provider>
+		);
+	}
+
+	return (
+		<EditorCarouselContext.Provider value={ contextValue }>
+			<BlockControls>
+				<ToolbarButton
+					icon={ plus }
+					label={ __( 'Add Slide', 'carousel-kit' ) }
+					onClick={ addSlide }
+				/>
+			</BlockControls>
+			{ inspectorControls }
 			<div { ...innerBlocksProps } />
 		</EditorCarouselContext.Provider>
 	);

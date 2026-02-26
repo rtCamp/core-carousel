@@ -1,5 +1,27 @@
-## [1.0.1](https://github.com/rtCamp/carousel-kit/compare/v1.0.0...v1.0.1) (2026-02-20)
+## [1.0.3](https://github.com/rtCamp/carousel-system-interactivity-api/compare/v1.0.2...v1.0.3) (2026-02-24)
 
+
+### Bug Fixes
+
+* enable loop on editor ([fe4566a](https://github.com/rtCamp/carousel-system-interactivity-api/commit/fe4566afcf72e1e663c7eb481a7957d62c2d3365))
+* state corruption when clicking between slides ([637e4a5](https://github.com/rtCamp/carousel-system-interactivity-api/commit/637e4a507eb2c58576c4004d5460e8aa7295db9f))
+
+## [1.0.2](https://github.com/rtCamp/carousel-system-interactivity-api/compare/v1.0.1...v1.0.2) (2026-02-23)
+
+
+### Bug Fixes
+
+* **demo:** 4 slides per view ([e13817c](https://github.com/rtCamp/carousel-system-interactivity-api/commit/e13817c8e49e0e071580efbf95ff4c77d677e114))
+* replace PNG images with optimized WEBP format ([eb60082](https://github.com/rtCamp/carousel-system-interactivity-api/commit/eb6008251039ea700262c63db89a266072ee6c3f))
+* replace urls with webp alts ([000f894](https://github.com/rtCamp/carousel-system-interactivity-api/commit/000f894a9818bd8181977cb038231e0ea3d82386))
+
+### Features
+
+* setup wizard styles ([0be0bf7](https://github.com/rtCamp/carousel-system-interactivity-api/commit/0be0bf7cde8c9035cca1086dce7dce005e0d39b2))
+* slide appender and setup ([a42331d](https://github.com/rtCamp/carousel-system-interactivity-api/commit/a42331d10b225379408ddf8c0649e83484496a1e))
+
+
+# [1.0.1](https://github.com/rtCamp/carousel-system-interactivity-api/compare/1.0.0...1.0.1) (2026-02-16)
 
 ### Bug Fixes
 

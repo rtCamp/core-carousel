@@ -39,6 +39,14 @@ A modular, high-performance carousel block for WordPress, powered by the Interac
 * Logo showcases
 * Hero banners with multiple slides
 
+= Source Code =
+
+This plugin release includes transpiled production assets for performance. The complete, human-readable source code is publicly available at:
+
+* https://github.com/rtCamp/carousel-kit
+
+Build scripts, development files, and original TypeScript/JavaScript/PHP sources are maintained in that repository.
+
 == Installation ==
 
 1. Upload the `carousel-kit` folder to `/wp-content/plugins/`

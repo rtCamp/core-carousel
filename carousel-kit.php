@@ -16,7 +16,9 @@
  * @package carousel-kit
  */
 
-defined( 'ABSPATH' ) || exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
 define( 'CAROUSEL_KIT_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'CAROUSEL_KIT_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );

@@ -49,7 +49,6 @@ bin/
 docs/
 DEVELOPMENT.md
 CONTRIBUTING.md
-README.md
 
 # WordPress.org assets (separate from plugin)
 wp-assets/

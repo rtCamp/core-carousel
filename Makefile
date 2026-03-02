@@ -59,7 +59,6 @@ dist:
 		--exclude='composer.json' \
 		--exclude='composer.lock' \
 		--exclude='Makefile' \
-		--exclude='README.md' \
 		--exclude='CHANGELOG.md' \
 		--exclude='src' \
 		--exclude='$(BUILD_DIR)' \

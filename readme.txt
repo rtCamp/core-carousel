@@ -78,9 +78,6 @@ Yes. Each carousel instance maintains its own independent state.
 == Screenshots ==
 
 1. Carousel block in the editor with multiple slides
-2. Carousel controls and dots configuration
-3. Query Loop integration for dynamic content
-4. Frontend carousel with autoplay
 
 == Changelog ==
 

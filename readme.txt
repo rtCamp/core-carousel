@@ -3,8 +3,8 @@ Contributors: rtcamp, danish17, immasud
 Tags: carousel, slider, block, interactivity-api, embla
 Requires at least: 6.5
 Tested up to: 6.9
-Requires PHP: 7.4
-Stable tag: 1.0.2
+Requires PHP: 8.2
+Stable tag: 1.0.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,6 +84,11 @@ Yes. Each carousel instance maintains its own independent state.
 
 == Changelog ==
 
+= 1.0.3 =
+* Fix: (Editor): Prevent ghost slides and state corruption when clicking between slides
+* Fix: Swap misplaced editor images and remove hardcoded aspect ratio
+* Fix: Outdated plugin version in plugin header
+
 = 1.0.2 =
 * Fix: Demo pattern now shows 4 slides per view
 * Fix: Replace PNG images with optimized WEBP format
@@ -104,11 +109,8 @@ Yes. Each carousel instance maintains its own independent state.
 
 == Upgrade Notice ==
 
-= 1.0.2 =
-Improved demo patterns and setup wizard. Image optimization with WEBP format.
+= 1.0.3 =
+Fixes ghost slides and state corruption when clicking between slides
 
 = 1.0.1 =
 Fixes spacing issues in loop mode and editor preview behavior.
-
-= 1.0.0 =
-Initial release of Carousel Kit.

@@ -14,10 +14,18 @@ import { useContext, useEffect, useRef, useCallback, useState } from '@wordpress
 import { useMergeRefs } from '@wordpress/compose';
 import { EditorCarouselContext } from '../editor-context';
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
-import { useEmblaResizeObserver } from '../useEmblaResizeObserver';
-import { useEmblaQueryLoopObserver } from '../useEmblaQueryLoopObserver';
+import { useEmblaResizeObserver } from '../hooks/useEmblaResizeObserver';
+import { useEmblaQueryLoopObserver } from '../hooks/useEmblaQueryLoopObserver';
 
 const EMBLA_KEY = Symbol.for( 'carousel-system.carousel' );
+
+/**
+ * Delay before re-measuring Embla after initial mount.
+ * Wide/Full alignment CSS and the editor sidebar may not have settled
+ * when `init()` first runs, so we defer a `reInit()` to pick up the
+ * final viewport width.
+ */
+const LAYOUT_SETTLE_MS = 150;
 
 export default function Edit( {
 	clientId,
@@ -54,11 +62,9 @@ export default function Edit( {
 				index = ids.indexOf( selectedId );
 				if ( index === -1 ) {
 					const parents: string[] = s.getBlockParents( selectedId );
-					for ( const parentId of parents ) {
-						index = ids.indexOf( parentId );
-						if ( index !== -1 ) {
-							break;
-						}
+					const parentSlideId = parents.find( ( id ) => ids.includes( id ) );
+					if ( parentSlideId ) {
+						index = ids.indexOf( parentSlideId );
 					}
 				}
 			}
@@ -119,7 +125,8 @@ export default function Edit( {
 
 	useEffect( () => {
 		if ( emblaApiRef.current ) {
-			setTimeout( () => emblaApiRef.current?.reInit(), 10 );
+			// Defer until after React's commit phase so the new slide DOM is ready.
+			setTimeout( () => emblaApiRef.current?.reInit(), 0 );
 		}
 	}, [ slideCount ] );
 
@@ -205,6 +212,10 @@ export default function Edit( {
 		// Run initial setup.
 		init();
 
+		// Re-measure once the editor layout has stabilised (e.g. Wide/Full
+		// alignment CSS may not have been applied yet when init() ran).
+		const layoutTimer = setTimeout( () => embla?.reInit(), LAYOUT_SETTLE_MS );
+
 		// Keep ref in sync so observer hooks always call the latest init.
 		initEmblaRef.current = init;
 
@@ -229,6 +240,7 @@ export default function Edit( {
 		viewport.addEventListener( 'scroll', resetNativeScroll );
 
 		return () => {
+			clearTimeout( layoutTimer );
 			viewport.removeEventListener( 'scroll', resetNativeScroll );
 			embla?.destroy();
 			emblaApiRef.current = undefined;

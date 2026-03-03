@@ -106,3 +106,5 @@ Yes. Each carousel instance maintains its own independent state.
 * WordPress Interactivity API support
 * Query Loop integration
 * RTL and accessibility support
+
+[CHECK THE FULL CHANGELOG](https://github.com/rtCamp/carousel-kit/blob/main/CHANGELOG.md)

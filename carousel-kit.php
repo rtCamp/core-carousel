@@ -4,10 +4,11 @@
  * Description: Carousel block using Embla and WordPress Interactivity API.
  * Plugin URI:  https://github.com/rtCamp/carousel-kit
  * Requires at least: 6.5
- * Requires PHP: 7.4
+ * Requires PHP: 8.2
  * Author:      rtCamp
  * Author URI:  https://rtcamp.com
- * Contributors: iamdanih17, immasud
+ * Domain Path: /languages
+ * Contributors: rtcamp, iamdanih17, immasud
  * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Version:     1.0.3

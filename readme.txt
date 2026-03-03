@@ -106,11 +106,3 @@ Yes. Each carousel instance maintains its own independent state.
 * WordPress Interactivity API support
 * Query Loop integration
 * RTL and accessibility support
-
-== Upgrade Notice ==
-
-= 1.0.3 =
-Fixes ghost slides and state corruption when clicking between slides
-
-= 1.0.1 =
-Fixes spacing issues in loop mode and editor preview behavior.

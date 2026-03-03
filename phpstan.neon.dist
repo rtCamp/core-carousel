@@ -28,7 +28,7 @@ parameters:
 				- tests/
 				- vendor/
 			analyseAndScan:
-				- node_modules (?)
+				- node_modules/
 		ignoreErrors:
 			- # too noisy for now.
 				identifier: missingType.iterableValue

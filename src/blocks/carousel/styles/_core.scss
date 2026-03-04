@@ -4,7 +4,7 @@
 	--carousel-kit-slide-width: 100%;
 }
 
-/* Full and Wide alignments require to break out of the container */
+/* Full alignment needs to break out of the container */
 :where(.carousel-kit.alignfull) {
 	width: 100vw;
 }

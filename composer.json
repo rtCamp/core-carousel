@@ -69,6 +69,7 @@
 		"phpstan": "phpstan analyse --memory-limit=2G",
 		"test": "phpunit",
 		"test:unit": "phpunit --testsuite unit",
-		"test:coverage": "phpunit --coverage-html tests/_output/coverage"
+		"test:coverage": "phpunit --coverage-html tests/_output/coverage",
+		"pot": "XDEBUG_MODE=off wp i18n make-pot . languages/carousel-kit.pot --exclude=tests,.github,.husky,docs,examples,src"
 	}
 }

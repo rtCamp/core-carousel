@@ -2,7 +2,7 @@
 Contributors: rtcamp, danish17, immasud, gagan0123, up1512001
 Tags: carousel, slider, block, interactivity-api, embla
 Requires at least: 6.6
-Tested up to: 6.9.1
+Tested up to: 6.9
 Requires PHP: 8.2
 Stable tag: 1.0.3
 License: GPL-2.0-or-later

@@ -1,6 +1,6 @@
 # Configuration
 PLUGIN_SLUG := carousel-kit
-PLUGIN_VERSION := 1.0.0
+PLUGIN_VERSION := 1.0.4
 BUILD_DIR := build-dist
 ZIP_NAME := $(PLUGIN_SLUG).zip
 

@@ -13,19 +13,17 @@
 6. Activate the plugin.
 
 ## Composer Installation
-*Note: This plugin will soon be available via WPackagist. Until then, use the VCS method below:*
+*Note: If this plugin is not available via WPackagist, use the VCS method below:*
 
 1. **Add the repository to your existing `composer.json`:**
 
    ```json
-   {
-       "repositories": [
-           {
-               "type": "vcs",
-               "url": "https://github.com/rtCamp/carousel-kit"
-           }
-       ]
-   }
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/rtCamp/carousel-kit"
+        }
+    ]
    ```
 
 2. **Run the installation command (stable release):**

@@ -15,7 +15,7 @@
 ## Composer Installation
 *Note: This plugin will soon be available via WPackagist. Until then, use the VCS method below:*
 
-1. **Add the repository to `composer.json`:**
+1. **Add the repository to your existing `composer.json`:**
 
    ```json
    {
@@ -28,8 +28,8 @@
    }
    ```
 
-2. **Run the installation command:**
+2. **Run the installation command (stable release):**
 
    ```bash
-   composer require rtcamp/carousel-kit:dev-main
+   composer require rtcamp/carousel-kit:^1.0
    ```

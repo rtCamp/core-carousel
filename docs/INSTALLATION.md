@@ -18,14 +18,18 @@
 1. **Add the repository to `composer.json`:**
 
    ```json
-   "repositories": [
-       {
-           "type": "vcs",
-           "url": "https://github.com/rtCamp/carousel-kit"
-       }
-   ],
-2. Run the installation command:
+   {
+       "repositories": [
+           {
+               "type": "vcs",
+               "url": "https://github.com/rtCamp/carousel-kit"
+           }
+       ]
+   }
+   ```
 
-    ```bash
-    composer require rtcamp/carousel-kit:dev-main
-    ```
+2. **Run the installation command:**
+
+   ```bash
+   composer require rtcamp/carousel-kit:dev-main
+   ```

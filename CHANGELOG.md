@@ -60,7 +60,7 @@
 * slide appender and setup ([a42331d](https://github.com/rtCamp/carousel-kit/commit/a42331d10b225379408ddf8c0649e83484496a1e))
 
 
-# [1.0.1](https://github.com/rtCamp/carousel-kit/compare/1.0.0...1.0.1) (2026-02-16)
+# [1.0.1](https://github.com/rtCamp/carousel-kit/compare/v1.0.0...v1.0.1) (2026-02-16)
 
 ### Bug Fixes
 

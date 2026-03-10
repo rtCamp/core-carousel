@@ -34,8 +34,10 @@ export function useEmblaQueryLoopObserver(
 				? postTemplate.children.length
 				: 0;
 
-			if ( currentCount !== lastSlideCount && currentCount > 0 ) {
-				lastSlideCount = currentCount;
+			const changed = currentCount !== lastSlideCount;
+			lastSlideCount = currentCount;
+
+			if ( changed && currentCount > 0 ) {
 				initEmblaRef.current?.();
 			}
 		};

@@ -9,7 +9,7 @@ import { createBlock } from '@wordpress/blocks';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { plus } from '@wordpress/icons';
-import type { CarouselViewportAttributes } from '../types';
+import type { CarouselViewportAttributes, BlockEditorSelectors } from '../types';
 import { useContext, useEffect, useRef, useCallback, useState } from '@wordpress/element';
 import { useMergeRefs } from '@wordpress/compose';
 import { EditorCarouselContext } from '../editor-context';
@@ -42,18 +42,17 @@ export default function Edit( {
 	 */
 	const { slideCount, selectedSlideIndex } = useSelect(
 		( select ) => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const blockEditor = select( 'core/block-editor' ) as any;
-			const childBlocks: Array<{ clientId: string }> = blockEditor.getBlocks( clientId );
+			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
+			const childBlocks = blockEditor.getBlocks( clientId );
 			const slideClientIds = childBlocks.map( ( block ) => block.clientId );
 			const count = slideClientIds.length;
 
-			const selectedBlockId: string | null = blockEditor.getSelectedBlockClientId();
+			const selectedBlockId = blockEditor.getSelectedBlockClientId();
 			let index = -1;
 			if ( selectedBlockId ) {
 				index = slideClientIds.indexOf( selectedBlockId );
 				if ( index === -1 ) {
-					const ancestorIds: string[] = blockEditor.getBlockParents( selectedBlockId );
+					const ancestorIds = blockEditor.getBlockParents( selectedBlockId );
 					const parentSlideId = ancestorIds.find( ( id ) => slideClientIds.includes( id ) );
 					if ( parentSlideId ) {
 						index = slideClientIds.indexOf( parentSlideId );

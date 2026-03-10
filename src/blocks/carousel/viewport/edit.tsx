@@ -19,14 +19,6 @@ import { useEmblaQueryLoopObserver } from '../hooks/useEmblaQueryLoopObserver';
 
 const EMBLA_KEY = Symbol.for( 'carousel-system.carousel' );
 
-/**
- * Delay before re-measuring Embla after initial mount.
- * Wide/Full alignment CSS and the editor sidebar may not have settled
- * when `init()` first runs, so we defer a `reInit()` to pick up the
- * final viewport width.
- */
-const LAYOUT_SETTLE_MS = 150;
-
 export default function Edit( {
 	clientId,
 }: {
@@ -51,20 +43,20 @@ export default function Edit( {
 	const { slideCount, selectedSlideIndex } = useSelect(
 		( select ) => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const s = select( 'core/block-editor' ) as any;
-			const blocks: Array<{ clientId: string }> = s.getBlocks( clientId );
-			const ids = blocks.map( ( b ) => b.clientId );
-			const count = ids.length;
+			const blockEditor = select( 'core/block-editor' ) as any;
+			const childBlocks: Array<{ clientId: string }> = blockEditor.getBlocks( clientId );
+			const slideClientIds = childBlocks.map( ( block ) => block.clientId );
+			const count = slideClientIds.length;
 
-			const selectedId: string | null = s.getSelectedBlockClientId();
+			const selectedBlockId: string | null = blockEditor.getSelectedBlockClientId();
 			let index = -1;
-			if ( selectedId ) {
-				index = ids.indexOf( selectedId );
+			if ( selectedBlockId ) {
+				index = slideClientIds.indexOf( selectedBlockId );
 				if ( index === -1 ) {
-					const parents: string[] = s.getBlockParents( selectedId );
-					const parentSlideId = parents.find( ( id ) => ids.includes( id ) );
+					const ancestorIds: string[] = blockEditor.getBlockParents( selectedBlockId );
+					const parentSlideId = ancestorIds.find( ( id ) => slideClientIds.includes( id ) );
 					if ( parentSlideId ) {
-						index = ids.indexOf( parentSlideId );
+						index = slideClientIds.indexOf( parentSlideId );
 					}
 				}
 			}
@@ -79,7 +71,14 @@ export default function Edit( {
 	const emblaRef = useRef<HTMLDivElement>( null );
 	const emblaApiRef = useRef<EmblaCarouselType | undefined>();
 	const initEmblaRef = useRef<() => void>();
-	const ref = useMergeRefs( [ emblaRef, blockProps.ref ] );
+
+	// Callback ref to set viewportEl exactly once on mount, avoiding extra
+	// render cycles when useEffect re-runs due to carouselOptions changes.
+	const viewportCallbackRef = useCallback( ( node: HTMLDivElement | null ) => {
+		setViewportEl( node );
+	}, [] );
+
+	const ref = useMergeRefs( [ emblaRef, blockProps.ref, viewportCallbackRef ] );
 
 	const { insertBlock } = useDispatch( 'core/block-editor' );
 
@@ -212,35 +211,40 @@ export default function Edit( {
 		// Run initial setup.
 		init();
 
-		// Re-measure once the editor layout has stabilised (e.g. Wide/Full
-		// alignment CSS may not have been applied yet when init() ran).
-		const layoutTimer = setTimeout( () => embla?.reInit(), LAYOUT_SETTLE_MS );
-
 		// Keep ref in sync so observer hooks always call the latest init.
 		initEmblaRef.current = init;
-
-		// Expose viewport element to observer hooks (triggers their setup once).
-		setViewportEl( viewport );
 
 		/**
 		 * Prevent native scroll offsets from corrupting Embla transforms.
 		 * Gutenberg's scrollIntoView (triggered by List View / Block Tree
 		 * selection) sets scrollLeft/scrollTop on the overflow:hidden viewport.
 		 * Embla assumes these are always 0, so we reset them immediately.
+		 *
+		 * Uses a passive listener and defers DOM writes to rAF to avoid
+		 * blocking the compositor thread and forcing synchronous reflow.
 		 */
+		let scrollResetRafId: number | undefined;
 		const resetNativeScroll = () => {
-			if ( viewport.scrollLeft !== 0 ) {
-				viewport.scrollLeft = 0;
+			if ( scrollResetRafId ) {
+				return; // Already scheduled
 			}
-			if ( viewport.scrollTop !== 0 ) {
-				viewport.scrollTop = 0;
-			}
+			scrollResetRafId = requestAnimationFrame( () => {
+				scrollResetRafId = undefined;
+				if ( viewport.scrollLeft !== 0 ) {
+					viewport.scrollLeft = 0;
+				}
+				if ( viewport.scrollTop !== 0 ) {
+					viewport.scrollTop = 0;
+				}
+			} );
 		};
 
-		viewport.addEventListener( 'scroll', resetNativeScroll );
+		viewport.addEventListener( 'scroll', resetNativeScroll, { passive: true } );
 
 		return () => {
-			clearTimeout( layoutTimer );
+			if ( scrollResetRafId ) {
+				cancelAnimationFrame( scrollResetRafId );
+			}
 			viewport.removeEventListener( 'scroll', resetNativeScroll );
 			embla?.destroy();
 			emblaApiRef.current = undefined;

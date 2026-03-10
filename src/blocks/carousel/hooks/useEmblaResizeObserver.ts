@@ -21,17 +21,29 @@ export function useEmblaResizeObserver(
 		}
 
 		let resizeTimer: ReturnType<typeof setTimeout> | undefined;
-		let lastWidth = viewportEl.getBoundingClientRect().width;
+		let lastWidth: number | null = null;
 
 		const resizeObserver = new ResizeObserver( ( entries ) => {
-			// Debounce to avoid reInit on every pixel change during a resize.
+			const newWidth = entries[ 0 ]?.contentRect.width ?? 0;
+			const previousWidth = lastWidth;
+
+			// Always track the latest width to avoid drift from accumulated small changes.
+			lastWidth = newWidth;
+
+			// Skip the first observation — just establish the baseline.
+			if ( previousWidth === null ) {
+				return;
+			}
+
+			// Only reInit if change exceeds threshold.
+			if ( Math.abs( newWidth - previousWidth ) <= 1 ) {
+				return;
+			}
+
+			// Debounce to batch rapid resize events.
 			clearTimeout( resizeTimer );
 			resizeTimer = setTimeout( () => {
-				const newWidth = entries[ 0 ]?.contentRect.width ?? 0;
-				if ( Math.abs( newWidth - lastWidth ) > 1 && emblaRef.current ) {
-					lastWidth = newWidth;
-					emblaRef.current.reInit();
-				}
+				emblaRef.current?.reInit();
 			}, RESIZE_DEBOUNCE_MS );
 		} );
 

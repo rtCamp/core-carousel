@@ -11,6 +11,11 @@ const QUERY_LOOP_DEBOUNCE_MS = 150;
  * Observes DOM mutations inside the carousel viewport and re-initialises Embla
  * whenever the number of slides changes.
  *
+ * Uses a full destroy/recreate via `initEmblaRef` (not just `reInit()`) because
+ * Query Loop changes can alter the container DOM structure. Embla caches
+ * references to the container and slide elements, so when the `.wp-block-post-template`
+ * is replaced or its children change, a fresh Embla instance is required.
+ *
  * Uses a ref for `initEmbla` so the observer always calls the latest version
  * without needing to re-subscribe when carousel options change.
  */

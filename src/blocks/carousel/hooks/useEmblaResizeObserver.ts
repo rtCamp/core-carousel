@@ -10,6 +10,10 @@ const RESIZE_DEBOUNCE_MS = 200;
 /**
  * Observes width changes on the carousel viewport and re-initialises Embla
  * when a meaningful resize is detected (more than 1px change).
+ *
+ * Uses Embla's non-destructive `reInit()` because resize only affects
+ * measurements and scroll positions — the DOM structure remains unchanged.
+ * This is more efficient than a full destroy/recreate cycle.
  */
 export function useEmblaResizeObserver(
 	viewportEl: HTMLDivElement | null,

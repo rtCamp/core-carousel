@@ -8,12 +8,23 @@ import type { EmblaCarouselType } from 'embla-carousel';
 const RESIZE_DEBOUNCE_MS = 200;
 
 /**
- * Observes width changes on the carousel viewport and re-initialises Embla
- * when a meaningful resize is detected (more than 1px change).
+ * How long to wait after a DOM mutation before checking for new slides.
+ * Shorter than resize debounce since we're just checking element existence.
+ */
+const MUTATION_DEBOUNCE_MS = 50;
+
+/**
+ * Observes width changes on both the viewport and the first slide, and
+ * re-initialises Embla when a meaningful resize is detected (>1px change).
+ *
+ * - Viewport width changes occur on alignment changes (wide/full/none)
+ * - Slide width changes occur on column style changes (2/3/4 columns)
  *
  * Uses Embla's non-destructive `reInit()` because resize only affects
  * measurements and scroll positions — the DOM structure remains unchanged.
- * This is more efficient than a full destroy/recreate cycle.
+ *
+ * @param {HTMLDivElement | null}                                 viewportEl - The carousel viewport element to observe
+ * @param {React.MutableRefObject<EmblaCarouselType | undefined>} emblaRef   - Ref to the Embla instance for calling reInit()
  */
 export function useEmblaResizeObserver(
 	viewportEl: HTMLDivElement | null,
@@ -25,37 +36,80 @@ export function useEmblaResizeObserver(
 		}
 
 		let resizeTimer: ReturnType<typeof setTimeout> | undefined;
-		let lastWidth: number | null = null;
+		let mutationTimer: ReturnType<typeof setTimeout> | undefined;
+		// Track widths per element to detect meaningful changes
+		const lastWidths = new WeakMap<Element, number>();
 
 		const resizeObserver = new ResizeObserver( ( entries ) => {
-			const newWidth = entries[ 0 ]?.contentRect.width ?? 0;
-			const previousWidth = lastWidth;
+			let shouldReInit = false;
 
-			// Always track the latest width to avoid drift from accumulated small changes.
-			lastWidth = newWidth;
+			// Process ALL entries to keep width tracking accurate.
+			// We observe at most 2 elements (viewport + first slide), so this is trivially cheap.
+			for ( const entry of entries ) {
+				const el = entry.target;
+				const newWidth = entry.contentRect.width;
+				const previousWidth = lastWidths.get( el );
 
-			// Skip the first observation — just establish the baseline.
-			if ( previousWidth === null ) {
-				return;
+				// Always track the latest width.
+				lastWidths.set( el, newWidth );
+
+				// Skip first observation for this element — establish baseline.
+				if ( previousWidth === undefined ) {
+					continue;
+				}
+
+				// Trigger reInit if any observed element changed significantly.
+				if ( Math.abs( newWidth - previousWidth ) > 1 ) {
+					shouldReInit = true;
+				}
 			}
 
-			// Only reInit if change exceeds threshold.
-			if ( Math.abs( newWidth - previousWidth ) <= 1 ) {
-				return;
+			if ( shouldReInit ) {
+				// Debounce to batch rapid resize events.
+				clearTimeout( resizeTimer );
+				resizeTimer = setTimeout( () => {
+					emblaRef.current?.reInit();
+				}, RESIZE_DEBOUNCE_MS );
 			}
-
-			// Debounce to batch rapid resize events.
-			clearTimeout( resizeTimer );
-			resizeTimer = setTimeout( () => {
-				emblaRef.current?.reInit();
-			}, RESIZE_DEBOUNCE_MS );
 		} );
 
+		// Observe viewport for alignment changes (wide/full/none)
 		resizeObserver.observe( viewportEl );
+
+		// Track which slide we're currently observing to avoid duplicate observations
+		let observedSlide: Element | null = null;
+
+		// Observe first slide for column style changes (2/3/4 columns)
+		const observeFirstSlide = () => {
+			const container = viewportEl.querySelector( '.embla__container, .wp-block-post-template' );
+			const firstSlide = container?.querySelector( '.embla__slide, .wp-block-post' );
+
+			// Only re-observe if the first slide changed
+			if ( firstSlide && firstSlide !== observedSlide ) {
+				observedSlide = firstSlide;
+				resizeObserver.observe( firstSlide );
+			}
+		};
+
+		// Initial observation
+		observeFirstSlide();
+
+		// Re-observe when DOM changes. Use subtree:true to catch Query Loop
+		// rendering posts asynchronously (the .wp-block-post-template may not
+		// exist at initial setup). Debounced to avoid excessive calls from
+		// Gutenberg's frequent DOM mutations (typing, block UI updates, etc.).
+		const mutationObserver = new MutationObserver( () => {
+			clearTimeout( mutationTimer );
+			mutationTimer = setTimeout( observeFirstSlide, MUTATION_DEBOUNCE_MS );
+		} );
+
+		mutationObserver.observe( viewportEl, { childList: true, subtree: true } );
 
 		return () => {
 			clearTimeout( resizeTimer );
+			clearTimeout( mutationTimer );
 			resizeObserver.disconnect();
+			mutationObserver.disconnect();
 		};
 	}, [ viewportEl, emblaRef ] );
 }

@@ -18,6 +18,9 @@ const QUERY_LOOP_DEBOUNCE_MS = 150;
  *
  * Uses a ref for `initEmbla` so the observer always calls the latest version
  * without needing to re-subscribe when carousel options change.
+ *
+ * @param {HTMLDivElement | null}                     viewportEl   - The carousel viewport element to observe
+ * @param {React.RefObject<(() => void) | undefined>} initEmblaRef - Ref to the init function for full Embla recreate
  */
 export function useEmblaQueryLoopObserver(
 	viewportEl: HTMLDivElement | null,

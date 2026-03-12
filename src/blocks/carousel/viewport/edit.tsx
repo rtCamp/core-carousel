@@ -14,8 +14,7 @@ import { useContext, useEffect, useRef, useCallback, useState } from '@wordpress
 import { useMergeRefs } from '@wordpress/compose';
 import { EditorCarouselContext } from '../editor-context';
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
-import { useEmblaResizeObserver } from '../hooks/useEmblaResizeObserver';
-import { useEmblaQueryLoopObserver } from '../hooks/useEmblaQueryLoopObserver';
+import { useCarouselObservers } from '../hooks/useCarouselObservers';
 
 const EMBLA_KEY = Symbol.for( 'carousel-system.carousel' );
 
@@ -87,8 +86,7 @@ export default function Edit( {
 
 	const { insertBlock } = useDispatch( 'core/block-editor' );
 
-	useEmblaResizeObserver( viewportEl, emblaApiRef );
-	useEmblaQueryLoopObserver( viewportEl, initEmblaRef );
+	useCarouselObservers( viewportEl, emblaApiRef, initEmblaRef );
 
 	const addSlide = useCallback( () => {
 		const block = createBlock( 'carousel-kit/carousel-slide' );

@@ -8,6 +8,7 @@
  */
 
 import { createBlock, type BlockInstance } from '@wordpress/blocks';
+import { type IconType } from '@wordpress/components';
 import { applyFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import { columns, image, layout, gallery, post } from '@wordpress/icons';
@@ -19,8 +20,8 @@ export interface SlideTemplate {
 	label: string;
 	/** Short description shown below the label. */
 	description: string;
-	/** WordPress icon component used in the picker. */
-	icon: JSX.Element;
+	/** WordPress icon component used in the picker. Accepts any value supported by `<Icon>` from `@wordpress/components`. */
+	icon: IconType;
 	/**
 	 * Whether this template uses a Query Loop instead of individual slides.
 	 * When true, `slideCount` is ignored and a `core/query` block is placed
@@ -38,8 +39,8 @@ export interface SlideTemplate {
 
 const blankSlide: SlideTemplate = {
 	name: 'blank',
-	label: __( 'Blank Slides', 'carousel-kit' ),
-	description: __( 'Empty slides you can fill with any content.', 'carousel-kit' ),
+	label: __( 'Text Slides', 'carousel-kit' ),
+	description: __( 'Slides starting with a paragraph you can replace or extend.', 'carousel-kit' ),
 	icon: columns,
 	innerBlocks: () => [ createBlock( 'core/paragraph', {} ) ],
 };
@@ -131,8 +132,20 @@ const DEFAULT_TEMPLATES: SlideTemplate[] = [
  * ```
  */
 export function getSlideTemplates(): SlideTemplate[] {
-	return applyFilters(
+	const templates = applyFilters(
 		'rtcamp.carouselKit.slideTemplates',
 		DEFAULT_TEMPLATES,
-	) as SlideTemplate[];
+	);
+
+	if ( Array.isArray( templates ) ) {
+		return templates as SlideTemplate[];
+	}
+
+	// eslint-disable-next-line no-console
+	console.warn(
+		'rtcamp.carouselKit.slideTemplates filter returned a non-array value. Falling back to default slide templates.',
+		templates,
+	);
+
+	return DEFAULT_TEMPLATES;
 }

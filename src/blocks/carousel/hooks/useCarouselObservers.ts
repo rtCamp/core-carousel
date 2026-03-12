@@ -104,6 +104,13 @@ export function useCarouselObservers(
 			const changed = currentCount !== lastSlideCount;
 			lastSlideCount = currentCount;
 
+			if ( changed && currentCount === 0 ) {
+				// Template removed or emptied — destroy to avoid stale references.
+				emblaRef.current?.destroy();
+				emblaRef.current = undefined;
+				return false;
+			}
+
 			return changed && currentCount > 0;
 		};
 

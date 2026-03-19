@@ -13,6 +13,8 @@ Describe the change and why it is needed.
 
 ## Related issue(s)
 
+<!-- 'Closes' will automatically close the linked issue when this PR is merged. -->
+<!-- 'Relates to' is for issues that are relevant but won't be closed by this PR. -->
 Closes #
 Relates to #
 
@@ -21,6 +23,13 @@ Relates to #
 -
 -
 -
+
+## Breaking changes
+
+Does this introduce a breaking change? If yes, describe the impact and migration path below.
+
+- [ ] Yes — migration path: <!-- describe here -->
+- [ ] No
 
 ## Testing
 

@@ -95,6 +95,13 @@ store( 'carousel-kit/carousel', {
 	},
 	callbacks: {
 		isSlideActive: () => {
+			// Track initialization state to prevent errors when Embla isn't ready
+			// See: https://github.com/rtCamp/carousel-kit/issues/78
+			const context = getContext<CarouselContext>();
+			if ( ! context.initialized ) {
+				return false;
+			}
+
 			// Check for either standard slide or Query Loop post
 			const slide = getElementRef( getElement() )?.closest?.(
 				'.embla__slide, .wp-block-post',
@@ -214,6 +221,7 @@ store( 'carousel-kit/carousel', {
 					viewport[ EMBLA_KEY ] = embla;
 
 					const updateState = () => {
+						context.initialized = true;
 						context.canScrollPrev = embla.canScrollPrev();
 						context.canScrollNext = embla.canScrollNext();
 						context.selectedIndex = embla.selectedScrollSnap();

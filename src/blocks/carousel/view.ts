@@ -122,8 +122,7 @@ store( 'carousel-kit/carousel', {
 			if ( index === -1 ) {
 				return false;
 			}
-			const { selectedIndex } = getContext<CarouselContext>();
-			return selectedIndex === index;
+			return context.selectedIndex === index;
 		},
 		isDotActive: () => {
 			const context = getContext<CarouselContext>();

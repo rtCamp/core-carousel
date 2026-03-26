@@ -53,4 +53,5 @@ export type CarouselContext = {
 	canScrollNext: boolean;
 	ariaLabelPattern: string;
 	ref?: HTMLElement | null;
+	initialized?: boolean; // Internal state to track if the carousel has been initialized. See: https://github.com/rtCamp/carousel-kit/issues/78
 };

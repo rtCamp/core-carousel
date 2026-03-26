@@ -20,7 +20,7 @@ import {
 } from '@wordpress/components';
 import { plus } from '@wordpress/icons';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { useState, useMemo, useCallback } from '@wordpress/element';
+import { useState, useMemo, useCallback, useEffect } from '@wordpress/element';
 import { createBlock, type BlockConfiguration } from '@wordpress/blocks';
 import type { CarouselAttributes } from './types';
 import { EditorCarouselContext } from './editor-context';
@@ -55,6 +55,7 @@ export default function Edit( {
 	const [ emblaApi, setEmblaApi ] = useState<EmblaCarouselType | undefined>();
 	const [ canScrollPrev, setCanScrollPrev ] = useState( false );
 	const [ canScrollNext, setCanScrollNext ] = useState( false );
+	const [ scrollProgress, setScrollProgress ] = useState( 0 );
 
 	const { replaceInnerBlocks, insertBlock } = useDispatch( 'core/block-editor' );
 
@@ -126,18 +127,45 @@ export default function Edit( {
 			setCanScrollPrev,
 			canScrollNext,
 			setCanScrollNext,
+			scrollProgress,
+			setScrollProgress,
 			carouselOptions,
 		} ),
 		[
 			emblaApi,
 			canScrollPrev,
 			canScrollNext,
+			scrollProgress,
 			carouselOptions,
 			setEmblaApi,
 			setCanScrollPrev,
 			setCanScrollNext,
+			setScrollProgress,
 		],
 	);
+
+	// Subscribe to Embla scroll event to update scrollProgress
+	useEffect(() => {
+		if (!emblaApi) return;
+
+		const updateScrollProgress = () => {
+			setScrollProgress(emblaApi.scrollProgress());
+		};
+
+		emblaApi
+			.on('scroll', updateScrollProgress)
+			.on('select', updateScrollProgress)
+			.on('reInit', updateScrollProgress);
+
+		updateScrollProgress();
+
+		return () => {
+			emblaApi
+				.off('scroll', updateScrollProgress)
+				.off('select', updateScrollProgress)
+				.off('reInit', updateScrollProgress);
+		};
+	}, [emblaApi]);
 
 	const createNavGroup = () =>
 		createBlock(

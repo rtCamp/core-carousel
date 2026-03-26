@@ -1,4 +1,5 @@
 import { useBlockProps } from '@wordpress/block-editor';
+import { __ } from '@wordpress/i18n';
 
 export default function Save() {
 	return (
@@ -10,6 +11,10 @@ export default function Save() {
 		>
 			<div
 				className="carousel-kit-progress__bar"
+				role="progressbar"
+				aria-label={ __( 'Carousel progress', 'carousel-kit' ) }
+				aria-valuemin={0}
+				aria-valuemax={100}
 				data-wp-bind--style="callbacks.getProgressBarStyle"
 			/>
 		</div>

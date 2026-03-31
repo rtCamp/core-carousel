@@ -48,6 +48,8 @@ export default function Save( {
 		scrollSnaps: [],
 		canScrollPrev: false,
 		canScrollNext: false,
+		scrollProgress: 0,
+		slideCount: 0,
 		/* translators: %d: slide number */
 		ariaLabelPattern: __( 'Go to slide %d', 'carousel-kit' ),
 	};

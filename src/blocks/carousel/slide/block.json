@@ -21,7 +21,8 @@
 		}
 	},
 	"usesContext": [
-		"carousel-kit/carousel/allowedSlideBlocks"
+		"carousel-kit/carousel/allowedSlideBlocks",
+		"carousel-kit/carousel/lazyLoadImages"
 	],
 	"editorScript": "file:./index.js"
 }

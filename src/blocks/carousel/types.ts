@@ -1,4 +1,5 @@
 import type { EmblaOptionsType } from 'embla-carousel';
+import type { BlockVerticalAlignmentToolbar } from '@wordpress/block-editor';
 
 export type CarouselAttributes = {
 	loop: boolean;
@@ -20,7 +21,9 @@ export type CarouselAttributes = {
 };
 
 export type CarouselViewportAttributes = Record<string, never>;
-export type CarouselSlideAttributes = Record<string, never>;
+export type CarouselSlideAttributes = {
+	verticalAlignment?: BlockVerticalAlignmentToolbar.Value;
+};
 export type CarouselControlsAttributes = Record<string, never>;
 export type CarouselDotsAttributes = Record<string, never>;
 export type CarouselProgressAttributes = Record<string, never>;
@@ -56,4 +59,5 @@ export type CarouselContext = {
 	ariaLabelPattern: string;
 	ref?: HTMLElement | null;
 	slideCount: number;
+	initialized?: boolean; // Internal state to track if the carousel has been initialized. See: https://github.com/rtCamp/carousel-kit/issues/78
 };

@@ -18,7 +18,7 @@ Easily theme the carousel using CSS variables or block supports. Navigation bloc
 | `--rt-carousel-control-size`            | `2.5rem`                              | Width/Height of buttons     |
 | `--rt-carousel-control-padding`         | `0.5rem`                              | Padding inside buttons      |
 | `--rt-carousel-control-border`          | `1.25px solid rgba(28, 28, 28, 0.3)`  | Border style                |
-| `--rt-carousel-control-radius`          | `1rem`                                | Border radius               |
+| `--rt-carousel-control-radius`          | `50%`                                 | Border radius               |
 | `--rt-carousel-control-bg-hover`        | `rgba(248, 248, 248, 1)`              | Background on hover         |
 | `--rt-carousel-control-border-hover`    | `1.25px solid rgba(28, 28, 28, 0.75)` | Border on hover             |
 | `--rt-carousel-control-color-hover`     | `inherit`                             | Icon color on hover         |
@@ -31,7 +31,7 @@ Easily theme the carousel using CSS variables or block supports. Navigation bloc
 | `--rt-carousel-dot-color`           | `rgb(221, 221, 221)`  | Color of inactive dots |
 | `--rt-carousel-dot-radius`          | `50%`                 | Shape of the dots      |
 | `--rt-carousel-dot-border`          | `none`                | Border style for dots  |
-| `--rt-carousel-dot-active-scale`    | `0.75rem`             | Size of active dot     |
+| `--rt-carousel-dot-active-scale`    | `1.5`                | Scale multiplier for active dot (unitless) |
 | `--rt-carousel-dot-active-color`    | `rgba(28, 28, 28, 1)` | Color of active dot    |
 
 ## Overriding Styles

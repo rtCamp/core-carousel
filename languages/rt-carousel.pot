@@ -2,8 +2,8 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Carousel Kit 1.0.3\n"
-"Report-Msgid-Bugs-To: https://github.com/rtCamp/carousel-kit/issues\n"
+"Project-Id-Version: rtCarousel 1.0.3\n"
+"Report-Msgid-Bugs-To: https://github.com/rtCamp/rt-carousel/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,37 +12,37 @@ msgstr ""
 "POT-Creation-Date: 2026-03-03T21:59:45+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: carousel-kit\n"
+"X-Domain: rt-carousel\n"
 
 #. Plugin Name of the plugin
-#: carousel-kit.php
+#: rt-carousel.php
 #: inc/Plugin.php:57
 #: inc/Plugin.php:96
-msgid "Carousel Kit"
+msgid "rtCarousel"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: carousel-kit.php
-msgid "https://github.com/rtCamp/carousel-kit"
+#: rt-carousel.php
+msgid "https://github.com/rtCamp/rt-carousel"
 msgstr ""
 
 #. Description of the plugin
-#: carousel-kit.php
+#: rt-carousel.php
 msgid "Carousel block using Embla and WordPress Interactivity API."
 msgstr ""
 
 #. Author of the plugin
-#: carousel-kit.php
+#: rt-carousel.php
 msgid "rtCamp"
 msgstr ""
 
 #. Author URI of the plugin
-#: carousel-kit.php
+#: rt-carousel.php
 msgid "https://rtcamp.com"
 msgstr ""
 
 #: inc/Autoloader.php:70
-msgid "Carousel Kit: The Composer autoloader was not found. If you installed the plugin from the GitHub source code, make sure to run `composer install`."
+msgid "rtCarousel: The Composer autoloader was not found. If you installed the plugin from the GitHub source code, make sure to run `composer install`."
 msgstr ""
 
 #: inc/Plugin.php:97

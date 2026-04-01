@@ -2,14 +2,14 @@
 /**
  * Plugin manifest class.
  *
- * @package Carousel_Kit
+ * @package Rt_Carousel
  */
 
 declare(strict_types=1);
 
-namespace Carousel_Kit;
+namespace Rt_Carousel;
 
-use Carousel_Kit\Traits\Singleton;
+use Rt_Carousel\Traits\Singleton;
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
@@ -53,8 +53,8 @@ class Plugin {
 			$categories,
 			[
 				[
-					'slug'  => 'carousel-kit',
-					'title' => __( 'Carousel Kit', 'carousel-kit' ),
+					'slug'  => 'rt-carousel',
+					'title' => __( 'rtCarousel', 'rt-carousel' ),
 				],
 			]
 		);
@@ -76,11 +76,11 @@ class Plugin {
 
 		foreach ( $blocks as $block ) {
 			// Ensure path constant is defined before use to avoid fatal errors.
-			if ( ! defined( 'CAROUSEL_KIT_BUILD_PATH' ) ) {
+			if ( ! defined( 'RT_CAROUSEL_BUILD_PATH' ) ) {
 				continue;
 			}
 
-			register_block_type( CAROUSEL_KIT_BUILD_PATH . '/blocks/' . $block );
+			register_block_type( RT_CAROUSEL_BUILD_PATH . '/blocks/' . $block );
 		}
 	}
 
@@ -91,10 +91,10 @@ class Plugin {
 	 */
 	public function register_pattern_category(): void {
 		register_block_pattern_category(
-			'carousel-kit',
+			'rt-carousel',
 			[
-				'label'       => __( 'Carousel Kit', 'carousel-kit' ),
-				'description' => __( 'Pre-configured carousel patterns for various use cases.', 'carousel-kit' ),
+				'label'       => __( 'rtCarousel', 'rt-carousel' ),
+				'description' => __( 'Pre-configured carousel patterns for various use cases.', 'rt-carousel' ),
 			]
 		);
 	}
@@ -108,12 +108,12 @@ class Plugin {
 	 * @return void
 	 */
 	public function register_block_patterns(): void {
-		if ( ! defined( 'CAROUSEL_KIT_PATH' ) ) {
+		if ( ! defined( 'RT_CAROUSEL_PATH' ) ) {
 			return;
 		}
 
 		// Use cached patterns if available and not in debug mode.
-		$cache_key = 'carousel_kit_patterns_cache';
+		$cache_key = 'rt_carousel_patterns_cache';
 		$patterns  = get_transient( $cache_key );
 
 		if ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) || false === $patterns ) {
@@ -138,7 +138,7 @@ class Plugin {
 	 * @return array
 	 */
 	private function load_patterns_from_disk(): array {
-		$patterns_dir = CAROUSEL_KIT_PATH . '/examples/patterns';
+		$patterns_dir = RT_CAROUSEL_PATH . '/examples/patterns';
 		$data         = [];
 
 		if ( ! is_dir( $patterns_dir ) ) {
@@ -183,7 +183,7 @@ class Plugin {
 			// Parse categories.
 			$categories = ! empty( $file_headers['categories'] )
 			? array_filter( array_map( 'trim', explode( ',', $file_headers['categories'] ) ) )
-			: [ 'carousel-kit' ];
+			: [ 'rt-carousel' ];
 
 			$data[] = [
 				'slug' => $file_headers['slug'],

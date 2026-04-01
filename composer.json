@@ -1,5 +1,5 @@
 {
-	"name": "rtcamp/carousel-kit",
+	"name": "rtcamp/rt-carousel",
 	"type": "wordpress-plugin",
 	"config": {
 		"allow-plugins": {
@@ -53,12 +53,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Carousel_Kit\\": "inc/"
+			"Rt_Carousel\\": "inc/"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Carousel_Kit\\Tests\\": "tests/php/"
+			"Rt_Carousel\\Tests\\": "tests/php/"
 		}
 	},
 	"scripts": {

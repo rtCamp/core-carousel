@@ -52,6 +52,7 @@ function uninstall(): void {
  */
 function delete_plugin_data(): void {
 	delete_transient( 'rt_carousel_patterns_cache' );
+	delete_transient( 'carousel_kit_patterns_cache' );
 	delete_option( 'rt_carousel_migrated_from_carousel_kit' );
 }
 

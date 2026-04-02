@@ -66,7 +66,7 @@ class Migration {
 		$now = time();
 		if ( ! add_option( self::LOCK_OPTION, $now, '', false ) ) {
 			$locked_at = (int) get_option( self::LOCK_OPTION );
-			if ( ( $now - $locked_at ) < self::LOCK_TIMEOUT ) {
+			if ( $now - $locked_at < self::LOCK_TIMEOUT ) {
 				return; // Another process is still running.
 			}
 			// Lock is stale (process crashed) — reclaim it.

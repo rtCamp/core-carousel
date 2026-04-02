@@ -136,8 +136,14 @@ class Migration {
 			}
 
 			// LIKE matched but REPLACE changed nothing — likely a collation mismatch.
+			// Break rather than return false to avoid infinite retries across requests.
 			if ( 0 === $result ) {
-				return false;
+				break;
+			}
+
+			// Flush post caches so persistent object caches serve updated content.
+			foreach ( $ids as $id ) {
+				clean_post_cache( (int) $id );
 			}
 		}
 

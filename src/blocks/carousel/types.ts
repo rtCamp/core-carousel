@@ -26,6 +26,7 @@ export type CarouselSlideAttributes = {
 };
 export type CarouselControlsAttributes = Record<string, never>;
 export type CarouselDotsAttributes = Record<string, never>;
+export type CarouselProgressAttributes = Record<string, never>;
 
 /**
  * Typed subset of the block editor store selectors used in this plugin.
@@ -54,7 +55,9 @@ export type CarouselContext = {
 	scrollSnaps: { index: number }[];
 	canScrollPrev: boolean;
 	canScrollNext: boolean;
+	scrollProgress: number;
 	ariaLabelPattern: string;
 	ref?: HTMLElement | null;
+	slideCount: number;
 	initialized?: boolean; // Internal state to track if the carousel has been initialized. See: https://github.com/rtCamp/carousel-kit/issues/78
 };

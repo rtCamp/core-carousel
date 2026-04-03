@@ -65,6 +65,8 @@ const createMockContext = (
 	scrollSnaps: [ { index: 0 }, { index: 1 }, { index: 2 } ],
 	canScrollPrev: true,
 	canScrollNext: true,
+	scrollProgress: 0,
+	slideCount: 3,
 	ariaLabelPattern: 'Go to slide %d',
 	...overrides,
 } );
@@ -513,6 +515,114 @@ describe( 'Carousel View Module', () => {
 				const result = storeConfig.callbacks.getDotLabel();
 
 				expect( result ).toBe( 'Go to slide 1' );
+			} );
+		} );
+
+		describe( 'getProgressBarNow', () => {
+			it( 'should return 0 when slideCount is 0', () => {
+				const mockContext = createMockContext( { slideCount: 0 } );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarNow();
+				expect( result ).toBe( 0 );
+			} );
+
+			it( 'should return 0 when slideCount is 1', () => {
+				const mockContext = createMockContext( { slideCount: 1 } );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarNow();
+				expect( result ).toBe( 0 );
+			} );
+
+			it( 'should use index-based progress in loop mode', () => {
+				const mockContext = createMockContext( {
+					options: { loop: true },
+					selectedIndex: 1,
+					slideCount: 3,
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarNow();
+				expect( result ).toBe( 50 );
+			} );
+
+			it( 'should return 100 at last slide in loop mode', () => {
+				const mockContext = createMockContext( {
+					options: { loop: true },
+					selectedIndex: 2,
+					slideCount: 3,
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarNow();
+				expect( result ).toBe( 100 );
+			} );
+
+			it( 'should use scrollProgress in non-loop mode', () => {
+				const mockContext = createMockContext( {
+					options: { loop: false },
+					scrollProgress: 0.75,
+					slideCount: 4,
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarNow();
+				expect( result ).toBe( 75 );
+			} );
+
+			it( 'should clamp scrollProgress to [0, 1] in non-loop mode', () => {
+				const mockContext = createMockContext( {
+					options: { loop: false },
+					scrollProgress: 1.5,
+					slideCount: 3,
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarNow();
+				expect( result ).toBe( 100 );
+			} );
+		} );
+
+		describe( 'getProgressBarStyle', () => {
+			it( 'should return display:none when slideCount is 0', () => {
+				const mockContext = createMockContext( { slideCount: 0 } );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarStyle();
+				expect( result ).toBe( 'display:none' );
+			} );
+
+			it( 'should return display:none when slideCount is 1', () => {
+				const mockContext = createMockContext( { slideCount: 1 } );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarStyle();
+				expect( result ).toBe( 'display:none' );
+			} );
+
+			it( 'should return transform style with index-based progress in loop mode', () => {
+				const mockContext = createMockContext( {
+					options: { loop: true },
+					selectedIndex: 1,
+					slideCount: 3,
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarStyle();
+				expect( result ).toBe( 'transform:translate3d(50%, 0px, 0px)' );
+			} );
+
+			it( 'should return transform style with scrollProgress in non-loop mode', () => {
+				const mockContext = createMockContext( {
+					options: { loop: false },
+					scrollProgress: 0.5,
+					slideCount: 3,
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result = storeConfig.callbacks.getProgressBarStyle();
+				expect( result ).toBe( 'transform:translate3d(50%, 0px, 0px)' );
 			} );
 		} );
 

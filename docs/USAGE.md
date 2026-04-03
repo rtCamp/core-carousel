@@ -31,7 +31,7 @@ The parent block acts as the controller and wrapper. It handles configuration, s
 ### Creating Restricted Carousels
 To create a specialized carousel (e.g., testimonials only), set the `allowedSlideBlocks` attribute on the parent block:
 
-```json
+```html
 <!-- wp:rt-carousel/carousel {"allowedSlideBlocks":["rt-blocks/testimonial-card"]} -->
     <!-- wp:core/heading {"content":"User Testimonials"} /-->
     <!-- wp:rt-carousel/carousel-viewport -->

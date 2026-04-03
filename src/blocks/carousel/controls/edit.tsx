@@ -1,19 +1,48 @@
 import { useBlockProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import { useContext, useRef } from '@wordpress/element';
+import { useDispatch, useSelect } from '@wordpress/data';
 import { EditorCarouselContext } from '../editor-context';
 import { NextIcon, PreviousIcon } from './components/icons';
 import type { EmblaCarouselType } from 'embla-carousel';
+import type { BlockEditorSelectors } from '../types';
 
 const EMBLA_KEY = Symbol.for( 'carousel-system.carousel' );
 
-export default function Edit() {
+export default function Edit( { clientId } : { clientId: string } ) {
 	const {
 		emblaApi: contextApi,
 		canScrollPrev,
 		canScrollNext,
 	} = useContext( EditorCarouselContext );
 	const ref = useRef<HTMLDivElement>( null );
+
+	const { clearSelectedBlock } = useDispatch( 'core/block-editor' );
+
+	/**
+	 * Clear block selection when navigating slides, but only if the selected block
+	 * belongs to this carousel — avoids disrupting selections outside it.
+	 */
+	const shouldClearSelection = useSelect( ( select ) => {
+		const store = select( 'core/block-editor' ) as BlockEditorSelectors;
+
+		const selectedId = store.getSelectedBlockClientId();
+		if ( ! selectedId ) {
+			return false;
+		}
+
+		const carouselClientId = store.getBlockParentsByBlockName(
+			clientId,
+			'carousel-kit/carousel',
+		)?.[ 0 ];
+
+		if ( ! carouselClientId ) {
+			return false;
+		}
+
+		const parents = store.getBlockParents( selectedId );
+		return parents.includes( carouselClientId );
+	}, [ clientId ] );
 
 	const blockProps = useBlockProps( {
 		className: 'carousel-kit-controls',
@@ -37,12 +66,18 @@ export default function Edit() {
 
 	const handleScroll = ( direction: 'prev' | 'next' ) => {
 		const api = contextApi || getEmblaFromDOM();
-		if ( api ) {
-			if ( direction === 'prev' ) {
-				api.scrollPrev();
-			} else {
-				api.scrollNext();
-			}
+		if ( ! api ) {
+			return;
+		}
+
+		if ( direction === 'prev' ) {
+			api.scrollPrev();
+		} else {
+			api.scrollNext();
+		}
+
+		if ( shouldClearSelection ) {
+			clearSelectedBlock();
 		}
 	};
 

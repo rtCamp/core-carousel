@@ -100,7 +100,7 @@ class Migration {
 			$ids = $wpdb->get_col(
 				$wpdb->prepare(
 					"SELECT ID FROM {$wpdb->posts}
-					 WHERE post_content LIKE %s OR post_content LIKE %s
+					 WHERE post_content LIKE BINARY %s OR post_content LIKE BINARY %s
 					 LIMIT %d",
 					'%carousel-kit%',
 					'%Carousel Kit%',
@@ -138,6 +138,7 @@ class Migration {
 			// LIKE matched but REPLACE changed nothing — likely a collation mismatch.
 			// Break rather than return false to avoid infinite retries across requests.
 			if ( 0 === $result ) {
+				error_log( 'rt_carousel migration: LIKE matched posts but REPLACE changed nothing — possible collation mismatch.' );
 				break;
 			}
 

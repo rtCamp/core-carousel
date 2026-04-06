@@ -1,0 +1,9 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/wp-env.json",
+	"plugins": [ "." ],
+	"env": {
+		"development": {
+			"phpmyadminPort": 9000
+		}
+	}
+}

@@ -12,6 +12,46 @@ make dev
 npm start
 ```
 
+## Local WordPress Environment
+
+To test this plugin, you’ll need a working WordPress installation. If you already have a local WordPress environment set up, you can use this build like any standard plugin—simply place the plugin directory inside your wp-content/plugins/ folder and activate it from the admin dashboard.
+
+If you don’t already have a local environment, you can quickly set one up using Docker and wp-env by following the steps below.
+
+### Using Docker and wp-env
+
+Ensure Docker is running, then start wp-env from within the plugin directory:
+
+```bash
+npm run wp-env start
+```
+
+This command spins up a Docker-based WordPress environment using the latest image and mounts your local plugin code into it as a volume. As a result, any changes you make locally are instantly reflected in the running WordPress instance, and are persisted.
+
+If the setup completes successfully, you should see output similar to the following in your terminal:
+
+```bash
+WordPress development site started at http://localhost:8888
+WordPress test site started at http://localhost:8889
+phpMyAdmin started at http://localhost:9000
+
+ ✔ Done! (in 194s 153ms)
+```
+
+To stop the running environment:
+
+```bash
+npm run wp-env stop
+```
+
+#### Accessing the Environment
+
+The WordPress site should now be accessible at http://localhost:8888
+
+You can access the Dashboard at: http://localhost:8888/wp-admin/ using Username: admin, Password: password. You'll notice the plugin installed and activated, this is your local build.
+
+You can read more about wp-env and its configuration in the [official documentation](https://github.com/WordPress/gutenberg/blob/trunk/packages/env/README.md).
+
 ## Available Commands
 
 ### Build & Watch

@@ -20,10 +20,16 @@ If you don’t already have a local environment, you can quickly set one up usin
 
 ### Using Docker and wp-env
 
+Install the wp-env package globally:
+
+```bash
+npm -g i @wordpress/env
+```
+
 Ensure Docker is running, then start wp-env from within the plugin directory:
 
 ```bash
-npm run wp-env start
+wp-env start
 ```
 
 This command spins up a Docker-based WordPress environment using the latest image and mounts your local plugin code into it as a volume. As a result, any changes you make locally are instantly reflected in the running WordPress instance, and are persisted.
@@ -32,16 +38,16 @@ If the setup completes successfully, you should see output similar to the follow
 
 ```bash
 WordPress development site started at http://localhost:8888
-WordPress test site started at http://localhost:8889
+MySQL is listening on port 61440
 phpMyAdmin started at http://localhost:9000
 
- ✔ Done! (in 194s 153ms)
+ ✔ Done! (in 23s 90ms)
 ```
 
 To stop the running environment:
 
 ```bash
-npm run wp-env stop
+wp-env stop
 ```
 
 #### Accessing the Environment

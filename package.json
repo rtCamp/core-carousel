@@ -31,8 +31,7 @@
     "test:actions": "act",
     "test:js": "wp-scripts test-unit-js",
     "test:js:watch": "wp-scripts test-unit-js --watch",
-    "test:js:coverage": "wp-scripts test-unit-js --coverage",
-	"wp-env": "wp-env"
+    "test:js:coverage": "wp-scripts test-unit-js --coverage"
   },
   "dependencies": {
     "@wordpress/babel-preset-default": "8.38.0",
@@ -61,7 +60,6 @@
     "@types/react-dom": "^18.3.7",
     "@types/wordpress__block-editor": "15.0.0",
     "@types/wordpress__blocks": "12.5.18",
-    "@wordpress/env": "10.39.0",
     "@wordpress/scripts": "^31.5.0",
     "eslint-plugin-eslint-comments": "3.2.0",
     "husky": "9.1.7",

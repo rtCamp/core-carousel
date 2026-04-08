@@ -17,7 +17,7 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
 
 // Symbol key used by the view.ts for Embla instances
-const EMBLA_KEY = Symbol.for( 'carousel-kit.carousel' );
+const EMBLA_KEY = Symbol.for( 'rt-carousel.carousel' );
 
 // Type for viewport element with Embla instance attached
 type EmblaViewportElement = HTMLElement & {
@@ -31,7 +31,7 @@ import '../view';
 
 // Get the store config that was passed to store()
 const storeCall = ( store as jest.Mock ).mock.calls.find(
-	( call: unknown[] ) => call[ 0 ] === 'carousel-kit/carousel',
+	( call: unknown[] ) => call[ 0 ] === 'rt-carousel/carousel',
 );
 const storeConfig = storeCall ? storeCall[ 1 ] : null;
 
@@ -81,7 +81,7 @@ const createMockCarouselDOM = () => {
 	viewport.className = 'embla';
 
 	const wrapper = document.createElement( 'div' );
-	wrapper.className = 'carousel-kit';
+	wrapper.className = 'rt-carousel';
 	wrapper.appendChild( viewport );
 
 	const button = document.createElement( 'button' );
@@ -116,7 +116,7 @@ describe( 'Carousel View Module', () => {
 			// storeCall being defined proves store was called with the correct namespace
 			expect( storeCall ).toBeDefined();
 			expect( storeConfig ).not.toBeNull();
-			expect( storeCall[ 0 ] ).toBe( 'carousel-kit/carousel' );
+			expect( storeCall[ 0 ] ).toBe( 'rt-carousel/carousel' );
 		} );
 
 		it( 'should register store with all required sections', () => {
@@ -385,7 +385,7 @@ describe( 'Carousel View Module', () => {
 				container.appendChild( slide1 );
 				container.appendChild( slide2 );
 
-				const mockContext = createMockContext( { selectedIndex: 1 } );
+				const mockContext = createMockContext( { selectedIndex: 1, initialized: true } );
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 				( getElement as jest.Mock ).mockReturnValue( { ref: slide2 } );
 
@@ -406,7 +406,7 @@ describe( 'Carousel View Module', () => {
 				container.appendChild( slide1 );
 				container.appendChild( slide2 );
 
-				const mockContext = createMockContext( { selectedIndex: 0 } );
+				const mockContext = createMockContext( { selectedIndex: 0, initialized: true } );
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 				( getElement as jest.Mock ).mockReturnValue( { ref: slide2 } );
 
@@ -426,7 +426,7 @@ describe( 'Carousel View Module', () => {
 				container.appendChild( post1 );
 				container.appendChild( post2 );
 
-				const mockContext = createMockContext( { selectedIndex: 0 } );
+				const mockContext = createMockContext( { selectedIndex: 0, initialized: true } );
 				( getContext as jest.Mock ).mockReturnValue( mockContext );
 				( getElement as jest.Mock ).mockReturnValue( { ref: post1 } );
 
@@ -811,6 +811,7 @@ describe( 'Edge Cases and Error Handling', () => {
 		const mockContext = createMockContext( {
 			selectedIndex: 0,
 			scrollSnaps: [],
+			initialized: true,
 		} );
 
 		( getContext as jest.Mock ).mockReturnValue( mockContext );

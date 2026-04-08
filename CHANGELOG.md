@@ -18,7 +18,7 @@
 
 ### Refactors
 
-* rename plugin from "Carousel Kit" to "rtCarousel" ([#101](https://github.com/rtCamp/rt-carousel/pull/101)) ([9788ed7](https://github.com/rtCamp/rt-carousel/commit/9788ed7))
+* rename plugin from "Carousel Kit" to "rtCarousel" with automatic block content migration ([#101](https://github.com/rtCamp/rt-carousel/pull/101)) ([9788ed7](https://github.com/rtCamp/rt-carousel/commit/9788ed7))
 
 
 ## [1.0.4](https://github.com/rtCamp/carousel-kit/compare/v1.0.3...v1.0.4) (2026-03-09)

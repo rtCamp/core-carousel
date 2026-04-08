@@ -75,6 +75,10 @@ Yes. The carousel follows W3C accessibility guidelines with proper ARIA roles, l
 
 Yes. Each carousel instance maintains its own independent state.
 
+= I was using "Carousel Kit". How do I upgrade? =
+
+rtCarousel is the successor to Carousel Kit. Simply install and activate rtCarousel — it will automatically migrate all existing carousel blocks in your content and deactivate the old plugin. No manual steps are needed. You can safely delete the old Carousel Kit plugin afterward.
+
 == Screenshots ==
 
 1. Carousel block in the editor with multiple slides
@@ -89,7 +93,7 @@ Yes. Each carousel instance maintains its own independent state.
 * Fix: Block toolbar remaining visible when selected slide scrolls out of view
 * Fix: Carousel initialization state not properly tracked
 * Fix: Remove development files from distribution package
-* Refactor: Rename plugin from "Carousel Kit" to "rtCarousel"
+* Refactor: Rename plugin from "Carousel Kit" to "rtCarousel" with automatic content migration
 
 
 = 1.0.4 =
@@ -121,3 +125,8 @@ Yes. Each carousel instance maintains its own independent state.
 * New: Slide appender and setup wizard
 
 [CHECK THE FULL CHANGELOG](https://github.com/rtCamp/rt-carousel/blob/main/CHANGELOG.md)
+
+== Upgrade Notice ==
+
+= 1.1.0 =
+Plugin renamed from "Carousel Kit" to "rtCarousel". Existing carousel blocks are automatically migrated on activation. The old Carousel Kit plugin is deactivated automatically and can be safely deleted.

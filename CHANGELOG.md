@@ -1,4 +1,6 @@
-# [1.1.0](https://github.com/rtCamp/rt-carousel/compare/v1.0.4...v1.1.0) (2026-04-08)
+# Changelog
+
+## [1.1.0](https://github.com/rtCamp/rt-carousel/compare/v1.0.4...v1.1.0) (2026-04-08)
 
 
 ### Bug Fixes
@@ -83,14 +85,14 @@
 * slide appender and setup ([a42331d](https://github.com/rtCamp/carousel-kit/commit/a42331d10b225379408ddf8c0649e83484496a1e))
 
 
-# [1.0.1](https://github.com/rtCamp/carousel-kit/compare/v1.0.0...v1.0.1) (2026-02-16)
+## [1.0.1](https://github.com/rtCamp/carousel-kit/compare/v1.0.0...v1.0.1) (2026-02-16)
 
 ### Bug Fixes
 
 * **carousel:** resolve spacing issues in loop mode where gaps were missing between last and first slide
 * **carousel:** allow infinite loop in editor viewport to match frontend behavior
 
-# 1.0.0 (2026-02-03)
+## 1.0.0 (2026-02-03)
 
 
 ### Bug Fixes

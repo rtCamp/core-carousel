@@ -20,7 +20,7 @@
 }
 
 // ── Setup chooser ────────────────────────────────────────────────────────────
-.carousel-kit-setup {
+.rt-carousel-setup {
 
 	&__options {
 		display: flex;
@@ -41,7 +41,7 @@
 }
 
 // ── Template picker ──────────────────────────────────────────────────────────
-.carousel-kit-template-picker {
+.rt-carousel-template-picker {
 	width: 100%;
 
 	&__grid {
@@ -106,7 +106,7 @@
 // ── Viewport empty state ─────────────────────────────────────────────────────
 // Rendered via renderAppender inside .embla__container (a flex row).
 // flex: 0 0 100% makes it fill the full container width as a single flex item.
-.carousel-kit-viewport-empty {
+.rt-carousel-viewport-empty {
 	flex: 0 0 100%;
 	display: flex;
 	justify-content: center;
@@ -119,11 +119,11 @@
 
 // Give slides a minimum visual height in the editor so they are
 // easy to click and populate. Does not affect the frontend.
-.carousel-kit .embla__slide {
+.rt-carousel .embla__slide {
 	min-height: 200px;
 }
 
-.carousel-kit {
+.rt-carousel {
 
 	/* Ensure selectable area */
 	padding: 0.625rem;

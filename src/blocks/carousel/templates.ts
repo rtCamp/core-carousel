@@ -39,33 +39,33 @@ export interface SlideTemplate {
 
 const blankSlide: SlideTemplate = {
 	name: 'blank',
-	label: __( 'Text Slides', 'carousel-kit' ),
-	description: __( 'Slides starting with a paragraph you can replace or extend.', 'carousel-kit' ),
+	label: __( 'Text Slides', 'rt-carousel' ),
+	description: __( 'Slides starting with a paragraph you can replace or extend.', 'rt-carousel' ),
 	icon: columns,
 	innerBlocks: () => [ createBlock( 'core/paragraph', {} ) ],
 };
 
 const imageSlide: SlideTemplate = {
 	name: 'image',
-	label: __( 'Image Slides', 'carousel-kit' ),
-	description: __( 'Slides prefilled with an image block.', 'carousel-kit' ),
+	label: __( 'Image Slides', 'rt-carousel' ),
+	description: __( 'Slides prefilled with an image block.', 'rt-carousel' ),
 	icon: image,
 	innerBlocks: () => [ createBlock( 'core/image', {} ) ],
 };
 
 const heroSlide: SlideTemplate = {
 	name: 'hero',
-	label: __( 'Image + Heading + Text + CTA', 'carousel-kit' ),
-	description: __( 'Marketing slider with heading, paragraph, and button.', 'carousel-kit' ),
+	label: __( 'Image + Heading + Text + CTA', 'rt-carousel' ),
+	description: __( 'Marketing slider with heading, paragraph, and button.', 'rt-carousel' ),
 	icon: layout,
 	innerBlocks: () => [
 		createBlock( 'core/cover', {}, [
 			createBlock( 'core/heading', {
 				level: 2,
-				placeholder: __( 'Slide Heading', 'carousel-kit' ),
+				placeholder: __( 'Slide Heading', 'rt-carousel' ),
 			} ),
 			createBlock( 'core/paragraph', {
-				placeholder: __( 'Slide description text…', 'carousel-kit' ),
+				placeholder: __( 'Slide description text…', 'rt-carousel' ),
 			} ),
 			createBlock( 'core/buttons', {}, [
 				createBlock( 'core/button', {} ),
@@ -76,21 +76,21 @@ const heroSlide: SlideTemplate = {
 
 const imageCaptionSlide: SlideTemplate = {
 	name: 'image-caption',
-	label: __( 'Image + Caption', 'carousel-kit' ),
-	description: __( 'Image with supporting text below.', 'carousel-kit' ),
+	label: __( 'Image + Caption', 'rt-carousel' ),
+	description: __( 'Image with supporting text below.', 'rt-carousel' ),
 	icon: gallery,
 	innerBlocks: () => [
 		createBlock( 'core/image', {} ),
 		createBlock( 'core/paragraph', {
-			placeholder: __( 'Caption text…', 'carousel-kit' ),
+			placeholder: __( 'Caption text…', 'rt-carousel' ),
 		} ),
 	],
 };
 
 const queryLoopSlide: SlideTemplate = {
 	name: 'query-loop',
-	label: __( 'Query Loop Slides', 'carousel-kit' ),
-	description: __( 'Dynamically generate slides from posts.', 'carousel-kit' ),
+	label: __( 'Query Loop Slides', 'rt-carousel' ),
+	description: __( 'Dynamically generate slides from posts.', 'rt-carousel' ),
 	icon: post,
 	isQueryLoop: true,
 	innerBlocks: () => [], // Not used — Query Loop is handled specially.

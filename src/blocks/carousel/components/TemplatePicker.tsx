@@ -28,22 +28,22 @@ export default function TemplatePicker( {
 	}, [] );
 
 	return (
-		<div className="carousel-kit-template-picker">
-			<div ref={ gridRef } className="carousel-kit-template-picker__grid">
+		<div className="rt-carousel-template-picker">
+			<div ref={ gridRef } className="rt-carousel-template-picker__grid">
 				{ templates.map( ( template ) => (
 					<button
 						key={ template.name }
 						type="button"
-						className="carousel-kit-template-picker__item"
+						className="rt-carousel-template-picker__item"
 						onClick={ () => onSelect( template ) }
 					>
-						<div className="carousel-kit-template-picker__icon">
+						<div className="rt-carousel-template-picker__icon">
 							<Icon icon={ template.icon } size={ 28 } />
 						</div>
-						<div className="carousel-kit-template-picker__label">
+						<div className="rt-carousel-template-picker__label">
 							{ template.label }
 						</div>
-						<div className="carousel-kit-template-picker__description">
+						<div className="rt-carousel-template-picker__description">
 							{ template.description }
 						</div>
 					</button>
@@ -51,10 +51,10 @@ export default function TemplatePicker( {
 			</div>
 			<Button
 				variant="link"
-				className="carousel-kit-template-picker__back"
+				className="rt-carousel-template-picker__back"
 				onClick={ onBack }
 			>
-				{ __( 'Back', 'carousel-kit' ) }
+				{ __( 'Back', 'rt-carousel' ) }
 			</Button>
 		</div>
 	);

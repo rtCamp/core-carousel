@@ -1,5 +1,5 @@
 # Configuration
-PLUGIN_SLUG := carousel-kit
+PLUGIN_SLUG := rt-carousel
 BUILD_DIR := build-dist
 ZIP_NAME := $(PLUGIN_SLUG).zip
 
@@ -43,7 +43,7 @@ dist:
 	@echo "Creating distribution package..."
 	@rm -rf $(BUILD_DIR)
 	@mkdir -p $(BUILD_DIR)/$(PLUGIN_SLUG)
-	
+
 	@# Copy Files
 	@rsync -r \
 		--exclude='.*' \
@@ -61,8 +61,6 @@ dist:
 		--exclude='package-lock.json' \
 		--exclude='blueprint.json' \
 		--exclude='tsconfig.json' \
-		--exclude='composer.json' \
-		--exclude='composer.lock' \
 		--exclude='Makefile' \
 		--exclude='CHANGELOG.md' \
 		--exclude='DEVELOPMENT.md' \
@@ -70,7 +68,7 @@ dist:
 		--exclude='$(BUILD_DIR)' \
 		--exclude='*.zip' \
 		./ $(BUILD_DIR)/$(PLUGIN_SLUG)/
-	
+
 	@echo "Zipping..."
 	@cd $(BUILD_DIR) && zip -r ../$(ZIP_NAME) $(PLUGIN_SLUG)
 	@echo "Done! Plugin zip created at $(ZIP_NAME)"

@@ -43,7 +43,7 @@ dist:
 	@echo "Creating distribution package..."
 	@rm -rf $(BUILD_DIR)
 	@mkdir -p $(BUILD_DIR)/$(PLUGIN_SLUG)
-	
+
 	@# Copy Files
 	@rsync -r \
 		--exclude='.*' \
@@ -68,7 +68,7 @@ dist:
 		--exclude='$(BUILD_DIR)' \
 		--exclude='*.zip' \
 		./ $(BUILD_DIR)/$(PLUGIN_SLUG)/
-	
+
 	@echo "Zipping..."
 	@cd $(BUILD_DIR) && zip -r ../$(ZIP_NAME) $(PLUGIN_SLUG)
 	@echo "Done! Plugin zip created at $(ZIP_NAME)"

@@ -4,7 +4,7 @@ Tags: carousel, slider, block, interactivity-api, embla
 Requires at least: 6.6
 Tested up to: 6.9
 Requires PHP: 8.2
-Stable tag: 1.0.4
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,11 +75,26 @@ Yes. The carousel follows W3C accessibility guidelines with proper ARIA roles, l
 
 Yes. Each carousel instance maintains its own independent state.
 
+= I am using "Carousel Kit". How do I upgrade to rtCarousel? =
+
+rtCarousel is the successor to Carousel Kit. Simply install and activate rtCarousel — it will automatically migrate all existing carousel blocks in your content and deactivate the old plugin. No manual steps are needed. You can safely delete the old Carousel Kit plugin afterward.
+
 == Screenshots ==
 
 1. Carousel block in the editor with multiple slides
 
 == Changelog ==
+
+= 1.1.0 =
+* New: Carousel progress bar block
+* New: Vertical alignment support for carousel slides
+* New: wp-env configuration for local development
+* Fix: Navigation buttons and drag not working in vertical Query Loop carousels
+* Fix: Block toolbar remaining visible when selected slide scrolls out of view
+* Fix: Carousel initialization state not properly tracked
+* Fix: Remove development files from distribution package
+* Refactor: Rename plugin from "Carousel Kit" to "rtCarousel" with automatic content migration
+
 
 = 1.0.4 =
 * New: Update minimum requirements to PHP 8.2 and WordPress 6.6
@@ -110,3 +125,8 @@ Yes. Each carousel instance maintains its own independent state.
 * New: Slide appender and setup wizard
 
 [CHECK THE FULL CHANGELOG](https://github.com/rtCamp/rt-carousel/blob/main/CHANGELOG.md)
+
+== Upgrade Notice ==
+
+= 1.1.0 =
+Plugin renamed from "Carousel Kit" to "rtCarousel". Existing carousel blocks are automatically migrated on activation. The old Carousel Kit plugin is deactivated automatically and can be safely deleted.

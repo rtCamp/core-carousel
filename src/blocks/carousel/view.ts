@@ -4,12 +4,13 @@ import EmblaCarousel, {
 	type EmblaCarouselType,
 } from 'embla-carousel';
 import Autoplay, { type AutoplayOptionsType } from 'embla-carousel-autoplay';
+import Fade from 'embla-carousel-fade';
 import type { CarouselContext } from './types';
 import {
 	DYNAMIC_LIST_CONTAINER_SELECTOR,
 	CAROUSEL_SLIDE_SELECTOR,
 } from './dynamic-list-selectors';
-import { normalizeContainScroll } from './embla-options';
+import { normalizeContainScroll, applyTransitionOverrides } from './embla-options';
 
 type ElementWithRef = {
 	ref?: HTMLElement | null;
@@ -295,16 +296,23 @@ store( 'rt-carousel/carousel', {
 						slidesToScroll = rawOptions.slidesToScroll;
 					}
 
-					const options: EmblaOptionsType = {
-						...rawOptions,
-						align,
-						containScroll: normalizeContainScroll( rawOptions.containScroll ),
-						direction,
-						slidesToScroll,
-						container: dynamicListContainer || null,
-					};
+					const options: EmblaOptionsType = applyTransitionOverrides(
+						{
+							...rawOptions,
+							align,
+							containScroll: normalizeContainScroll( rawOptions.containScroll ),
+							direction,
+							slidesToScroll,
+							container: dynamicListContainer || null,
+						},
+						context.transition,
+					);
 
 					const plugins = [];
+
+					if ( context.transition === 'fade' ) {
+						plugins.push( Fade() );
+					}
 
 					if ( context.autoplay ) {
 						plugins.push( Autoplay( context.autoplay as AutoplayOptionsType ) );

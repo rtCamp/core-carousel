@@ -8,6 +8,7 @@ export default function Save( {
 	attributes: CarouselAttributes;
 } ) {
 	const {
+		transition,
 		loop,
 		dragFree,
 		carouselAlign,
@@ -26,6 +27,7 @@ export default function Save( {
 
 	// Pass configuration to the frontend via data-wp-context
 	const context: CarouselContext = {
+		transition,
 		options: {
 			loop,
 			dragFree,

@@ -40,6 +40,7 @@ export default function Edit( {
 	clientId: string;
 } ) {
 	const {
+		transition,
 		loop,
 		dragFree,
 		carouselAlign,
@@ -170,6 +171,7 @@ export default function Edit( {
 
 	const carouselOptions = useMemo(
 		() => ( {
+			transition,
 			loop,
 			dragFree,
 			align: carouselAlign,
@@ -179,7 +181,7 @@ export default function Edit( {
 			height,
 			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
 		} ),
-		[ loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll ],
+		[ transition, loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll ],
 	);
 
 	const contextValue = useMemo(
@@ -311,6 +313,21 @@ export default function Edit( {
 		<>
 			<InspectorControls>
 				<PanelBody title={ __( 'Carousel Settings', 'rt-carousel' ) }>
+					<SelectControl
+						label={ __( 'Transition', 'rt-carousel' ) }
+						value={ transition }
+						options={ [
+							{ label: __( 'Slide', 'rt-carousel' ), value: 'slide' },
+							{ label: __( 'Fade', 'rt-carousel' ), value: 'fade' },
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { transition: value as CarouselAttributes[ 'transition' ] } )
+						}
+						help={ __(
+							'Choose how slides transition: sliding horizontally or cross-fading.',
+							'rt-carousel',
+						) }
+					/>
 					<ToggleControl
 						label={ __( 'Loop', 'rt-carousel' ) }
 						checked={ loop }
@@ -320,52 +337,60 @@ export default function Edit( {
 							'rt-carousel',
 						) }
 					/>
-					<ToggleControl
-						label={ __( 'Free Drag', 'rt-carousel' ) }
-						checked={ dragFree }
-						onChange={ ( value ) => setAttributes( { dragFree: value } ) }
-						help={ __( 'Enables momentum scrolling.', 'rt-carousel' ) }
-					/>
-					<SelectControl
-						label={ __( 'Alignment', 'rt-carousel' ) }
-						value={ carouselAlign }
-						options={ [
-							{ label: __( 'Start', 'rt-carousel' ), value: 'start' },
-							{ label: __( 'Center', 'rt-carousel' ), value: 'center' },
-							{ label: __( 'End', 'rt-carousel' ), value: 'end' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { carouselAlign: value as CarouselAttributes[ 'carouselAlign' ] } )
-						}
-					/>
-					<SelectControl
-						label={ __( 'Contain Scroll', 'rt-carousel' ) }
-						value={ containScroll }
-						options={ [
-							{ label: __( 'Trim Snaps', 'rt-carousel' ), value: 'trimSnaps' },
-							{ label: __( 'Keep Snaps', 'rt-carousel' ), value: 'keepSnaps' },
-							{ label: __( 'None', 'rt-carousel' ), value: '' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { containScroll: value as CarouselAttributes[ 'containScroll' ] } )
-						}
-						help={ __(
-							'Prevents excess scrolling at the beginning or end.',
-							'rt-carousel',
-						) }
-					/>
-					<ToggleControl
-						label={ __( 'Scroll Auto', 'rt-carousel' ) }
-						checked={ slidesToScroll === 'auto' }
-						onChange={ ( isAuto ) =>
-							setAttributes( { slidesToScroll: isAuto ? 'auto' : '1' } )
-						}
-						help={ __(
-							'Scrolls the number of slides currently visible in the viewport.',
-							'rt-carousel',
-						) }
-					/>
-					{ slidesToScroll !== 'auto' && (
+					{ transition !== 'fade' && (
+						<ToggleControl
+							label={ __( 'Free Drag', 'rt-carousel' ) }
+							checked={ dragFree }
+							onChange={ ( value ) => setAttributes( { dragFree: value } ) }
+							help={ __( 'Enables momentum scrolling.', 'rt-carousel' ) }
+						/>
+					) }
+					{ transition !== 'fade' && (
+						<SelectControl
+							label={ __( 'Alignment', 'rt-carousel' ) }
+							value={ carouselAlign }
+							options={ [
+								{ label: __( 'Start', 'rt-carousel' ), value: 'start' },
+								{ label: __( 'Center', 'rt-carousel' ), value: 'center' },
+								{ label: __( 'End', 'rt-carousel' ), value: 'end' },
+							] }
+							onChange={ ( value ) =>
+								setAttributes( { carouselAlign: value as CarouselAttributes[ 'carouselAlign' ] } )
+							}
+						/>
+					) }
+					{ transition !== 'fade' && (
+						<SelectControl
+							label={ __( 'Contain Scroll', 'rt-carousel' ) }
+							value={ containScroll }
+							options={ [
+								{ label: __( 'Trim Snaps', 'rt-carousel' ), value: 'trimSnaps' },
+								{ label: __( 'Keep Snaps', 'rt-carousel' ), value: 'keepSnaps' },
+								{ label: __( 'None', 'rt-carousel' ), value: '' },
+							] }
+							onChange={ ( value ) =>
+								setAttributes( { containScroll: value as CarouselAttributes[ 'containScroll' ] } )
+							}
+							help={ __(
+								'Prevents excess scrolling at the beginning or end.',
+								'rt-carousel',
+							) }
+						/>
+					) }
+					{ transition !== 'fade' && (
+						<ToggleControl
+							label={ __( 'Scroll Auto', 'rt-carousel' ) }
+							checked={ slidesToScroll === 'auto' }
+							onChange={ ( isAuto ) =>
+								setAttributes( { slidesToScroll: isAuto ? 'auto' : '1' } )
+							}
+							help={ __(
+								'Scrolls the number of slides currently visible in the viewport.',
+								'rt-carousel',
+							) }
+						/>
+					) }
+					{ transition !== 'fade' && slidesToScroll !== 'auto' && (
 						<RangeControl
 							label={ __( 'Slides to Scroll', 'rt-carousel' ) }
 							value={ parseInt( slidesToScroll, 10 ) || 1 }

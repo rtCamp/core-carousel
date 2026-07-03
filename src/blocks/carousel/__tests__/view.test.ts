@@ -15,6 +15,7 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
+import Fade from 'embla-carousel-fade';
 
 // Symbol key used by the view.ts for Embla instances
 const EMBLA_KEY = Symbol.for( 'rt-carousel.carousel' );
@@ -57,6 +58,7 @@ const setEmblaOnViewport = (
 const createMockContext = (
 	overrides: Partial<CarouselContext> = {},
 ): CarouselContext => ( {
+	transition: 'slide',
 	options: { loop: true },
 	autoplay: false,
 	isPlaying: false,
@@ -823,6 +825,88 @@ describe( 'Carousel View Module', () => {
 
 					expect( mockContext.announcement ).toBe( 'Slide 2 of 5 (2/5)' );
 					expect( mockContext.shouldAnnounce ).toBe( false );
+				} finally {
+					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
+						originalIntersectionObserver;
+				}
+			} );
+
+			it( 'includes the Fade plugin when transition is fade', () => {
+				const mockContext = createMockContext( { transition: 'fade' } );
+				const { wrapper, viewport } = createMockCarouselDOM();
+				const originalIntersectionObserver = window.IntersectionObserver;
+
+				viewport.getBoundingClientRect = jest.fn( () => ( {
+					width: 100,
+					height: 0,
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0,
+					x: 0,
+					y: 0,
+					toJSON: () => ( {} ),
+				} ) );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: wrapper } );
+				( EmblaCarousel as unknown as jest.Mock ).mockReturnValue(
+					createMockEmblaInstance( {
+						scrollProgress: jest.fn( () => 0 ),
+						slideNodes: jest.fn( () => [] ),
+					} ),
+				);
+				delete ( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver;
+
+				try {
+					storeConfig.callbacks.initCarousel();
+
+					const lastCall = ( EmblaCarousel as unknown as jest.Mock ).mock.calls.at( -1 );
+					expect( lastCall?.[ 1 ] ).toMatchObject( {
+						align: 'center',
+						containScroll: false,
+						dragFree: false,
+						slidesToScroll: 1,
+					} );
+					expect( lastCall?.[ 2 ] ).toContainEqual( ( Fade as unknown as jest.Mock ).mock.results.at( -1 )?.value );
+				} finally {
+					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
+						originalIntersectionObserver;
+				}
+			} );
+
+			it( 'does not include the Fade plugin when transition is slide', () => {
+				const mockContext = createMockContext( { transition: 'slide' } );
+				const { wrapper, viewport } = createMockCarouselDOM();
+				const originalIntersectionObserver = window.IntersectionObserver;
+
+				viewport.getBoundingClientRect = jest.fn( () => ( {
+					width: 100,
+					height: 0,
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0,
+					x: 0,
+					y: 0,
+					toJSON: () => ( {} ),
+				} ) );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: wrapper } );
+				( EmblaCarousel as unknown as jest.Mock ).mockReturnValue(
+					createMockEmblaInstance( {
+						scrollProgress: jest.fn( () => 0 ),
+						slideNodes: jest.fn( () => [] ),
+					} ),
+				);
+				delete ( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver;
+
+				try {
+					storeConfig.callbacks.initCarousel();
+
+					const lastCall = ( EmblaCarousel as unknown as jest.Mock ).mock.calls.at( -1 );
+					expect( lastCall?.[ 2 ] ).toEqual( [] );
 				} finally {
 					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
 						originalIntersectionObserver;

@@ -28,6 +28,11 @@
 			"type": "array",
 			"default": []
 		},
+		"transition": {
+			"type": "string",
+			"default": "slide",
+			"enum": ["slide", "fade"]
+		},
 		"loop": {
 			"type": "boolean",
 			"default": false

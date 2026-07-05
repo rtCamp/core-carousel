@@ -2,6 +2,7 @@ import type { EmblaOptionsType } from 'embla-carousel';
 import type { BlockVerticalAlignmentToolbar } from '@wordpress/block-editor';
 
 export type CarouselAttributes = {
+	transition: 'slide' | 'fade';
 	loop: boolean;
 	dragFree: boolean;
 	carouselAlign: 'start' | 'center' | 'end';
@@ -40,6 +41,7 @@ export interface BlockEditorSelectors {
 }
 
 export type CarouselContext = {
+	transition: 'slide' | 'fade';
 	options: EmblaOptionsType & {
 		slidesToScroll?: number | 'auto';
 	};

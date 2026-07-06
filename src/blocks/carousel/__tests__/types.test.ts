@@ -33,6 +33,12 @@ describe( 'CarouselAttributes Type', () => {
 				ariaLabel: 'Image carousel',
 				slideGap: 16,
 				slidesToScroll: '1',
+				autoScroll: false,
+				autoScrollSpeed: 2,
+				autoScrollDirection: 'forward',
+				autoScrollStartDelay: 1000,
+				autoScrollStopOnInteraction: true,
+				autoScrollStopOnMouseEnter: false,
 			};
 
 			expect( attributes ).toBeDefined();
@@ -58,6 +64,12 @@ describe( 'CarouselAttributes Type', () => {
 				ariaLabel: '',
 				slideGap: 0,
 				slidesToScroll: 'auto',
+				autoScroll: false,
+				autoScrollSpeed: 2,
+				autoScrollDirection: 'forward',
+				autoScrollStartDelay: 1000,
+				autoScrollStopOnInteraction: true,
+				autoScrollStopOnMouseEnter: false,
 			};
 
 			// Verify all keys exist
@@ -254,6 +266,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 2,
 				ariaLabelPattern: 'Go to slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.autoplay ).toBe( false );
@@ -280,6 +293,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0.5,
 				slideCount: 3,
 				ariaLabelPattern: 'Slide %d of 3',
+				autoScroll: false,
 			};
 
 			expect( context.autoplay ).not.toBe( false );
@@ -307,6 +321,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 3,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.selectedIndex ).toBe( 0 );
@@ -327,6 +342,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0.5,
 				slideCount: 3,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.selectedIndex ).toBe( 1 );
@@ -347,6 +363,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 1,
 				slideCount: 3,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.selectedIndex ).toBe( 2 );
@@ -367,6 +384,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 1,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.scrollSnaps ).toHaveLength( 1 );
@@ -389,6 +407,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 1,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.timerIterationId ).toBe( 5 );
@@ -411,6 +430,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.timerIterationId ).toBe( 0 );
@@ -434,6 +454,7 @@ describe( 'CarouselContext Type', () => {
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
 				ref: element,
+				autoScroll: false,
 			};
 
 			expect( context.ref ).toBe( element );
@@ -454,6 +475,7 @@ describe( 'CarouselContext Type', () => {
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
 				ref: null,
+				autoScroll: false,
 			};
 
 			expect( context.ref ).toBeNull();
@@ -472,6 +494,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.ref ).toBeUndefined();
@@ -495,6 +518,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.options.slidesToScroll ).toBe( 2 );
@@ -516,6 +540,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.options.slidesToScroll ).toBe( 'auto' );
@@ -544,6 +569,7 @@ describe( 'CarouselContext Type', () => {
 					scrollProgress: 0,
 					slideCount: 0,
 					ariaLabelPattern: pattern,
+					autoScroll: false,
 				};
 
 				expect( context.ariaLabelPattern ).toBe( pattern );
@@ -565,6 +591,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.scrollSnaps ).toHaveLength( 0 );
@@ -591,6 +618,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 5,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.scrollSnaps ).toHaveLength( 5 );

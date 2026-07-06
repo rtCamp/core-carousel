@@ -233,6 +233,4 @@ describe( 'Carousel Edit setup flow', () => {
 		expect( attributes.autoScrollStopOnInteraction ).toBe( true );
 		expect( attributes.autoScrollStopOnMouseEnter ).toBe( false );
 	} );
-
-
 } );

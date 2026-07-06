@@ -78,7 +78,7 @@ export default function Save( {
 			stopOnMouseEnter: autoScrollStopOnMouseEnter,
 			stopOnFocusIn: true,
 		}
-		: false,
+			: false,
 	};
 
 	const blockProps = useBlockProps.save( {

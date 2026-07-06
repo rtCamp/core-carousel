@@ -312,8 +312,8 @@ store( 'rt-carousel/carousel', {
 						plugins.push( Autoplay( context.autoplay as AutoplayOptionsType ) );
 					}
 
-					if (context.autoScroll) {
-						plugins.push( AutoScroll( context.autoScroll as AutoScrollOptionsType) );
+					if ( context.autoScroll ) {
+						plugins.push( AutoScroll( context.autoScroll as AutoScrollOptionsType ) );
 					}
 
 					const embla = EmblaCarousel( viewport, options, plugins );

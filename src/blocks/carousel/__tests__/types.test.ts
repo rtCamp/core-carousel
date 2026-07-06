@@ -18,6 +18,7 @@ describe( 'CarouselAttributes Type', () => {
 	describe( 'Structure Validation', () => {
 		it( 'should accept valid complete attributes', () => {
 			const attributes: CarouselAttributes = {
+				transition: 'fade',
 				loop: true,
 				dragFree: false,
 				carouselAlign: 'center',
@@ -49,6 +50,7 @@ describe( 'CarouselAttributes Type', () => {
 
 		it( 'should have all required properties', () => {
 			const attributes: CarouselAttributes = {
+				transition: 'slide',
 				loop: false,
 				dragFree: true,
 				carouselAlign: 'start',
@@ -74,6 +76,7 @@ describe( 'CarouselAttributes Type', () => {
 
 			// Verify all keys exist
 			const requiredKeys = [
+				'transition',
 				'loop',
 				'dragFree',
 				'carouselAlign',
@@ -95,6 +98,16 @@ describe( 'CarouselAttributes Type', () => {
 				expect( attributes ).toHaveProperty( key );
 			} );
 		} );
+	} );
+
+	describe( 'Transition Options', () => {
+		it.each( [ 'slide', 'fade' ] as const )(
+			'should accept transition value: %s',
+			( transition ) => {
+				const attributes: Partial< CarouselAttributes > = { transition };
+				expect( attributes.transition ).toBe( transition );
+			},
+		);
 	} );
 
 	describe( 'Alignment Options', () => {
@@ -252,6 +265,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Autoplay State', () => {
 		it( 'should accept context with autoplay disabled', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {
 					loop: false,
 					align: 'start',
@@ -275,6 +289,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should accept context with autoplay configuration object', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {
 					loop: true,
 					align: 'center',
@@ -310,6 +325,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Scroll State Management', () => {
 		it( 'should track first slide state correctly', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: { loop: false },
 				autoplay: false,
 				isPlaying: false,
@@ -331,6 +347,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should track middle slide state correctly', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: { loop: false },
 				autoplay: false,
 				isPlaying: false,
@@ -352,6 +369,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should track last slide state correctly', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: { loop: false },
 				autoplay: false,
 				isPlaying: false,
@@ -373,6 +391,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should handle single slide carousel', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -396,6 +415,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Timer and Animation State', () => {
 		it( 'should track timerIterationId for animation resets', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: { delay: 3000, stopOnInteraction: true, stopOnMouseEnter: false },
 				isPlaying: true,
@@ -419,6 +439,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should have initial timerIterationId of 0', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -442,6 +463,7 @@ describe( 'CarouselContext Type', () => {
 			const element = document.createElement( 'div' );
 
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -463,6 +485,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should allow null ref', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -483,6 +506,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should work without ref property', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -504,6 +528,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Embla Options Integration', () => {
 		it( 'should accept slidesToScroll as number in options', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {
 					loop: true,
 					slidesToScroll: 2,
@@ -526,6 +551,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should accept slidesToScroll as "auto" in options', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {
 					loop: true,
 					slidesToScroll: 'auto',
@@ -558,6 +584,7 @@ describe( 'CarouselContext Type', () => {
 
 			patterns.forEach( ( pattern ) => {
 				const context: CarouselContext = {
+					transition: 'slide',
 					options: {},
 					autoplay: false,
 					isPlaying: false,
@@ -580,6 +607,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Scroll Snaps Array', () => {
 		it( 'should accept empty scrollSnaps array', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -607,6 +635,7 @@ describe( 'CarouselContext Type', () => {
 			];
 
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,

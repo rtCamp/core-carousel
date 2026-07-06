@@ -1,6 +1,6 @@
 {
   "name": "rt-carousel",
-  "version": "2.0.1",
+  "version": "2.0.3",
   "description": "Carousel block using Embla and WordPress Interactivity API",
   "author": "rtCamp",
   "private": true,
@@ -49,6 +49,7 @@
     "embla-carousel": "8.6.0",
     "embla-carousel-auto-scroll": "8.6.0",
     "embla-carousel-autoplay": "8.6.0",
+    "embla-carousel-fade": "8.6.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -73,7 +74,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "webpack-dev-server": ">=5.2.1",
-    "minimatch": ">=10.2.1",
     "serialize-javascript": ">=7.0.3"
   }
 }

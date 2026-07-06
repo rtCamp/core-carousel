@@ -49,6 +49,19 @@ jest.mock( 'embla-carousel-autoplay', () => ( {
 } ) );
 
 /**
+ * Mock embla-carousel-fade module.
+ */
+jest.mock( 'embla-carousel-fade', () => ( {
+	__esModule: true,
+	default: jest.fn( () => ( {
+		name: 'fade',
+		options: {},
+		init: jest.fn(),
+		destroy: jest.fn(),
+	} ) ),
+} ) );
+
+/**
  * Mock WordPress block editor components.
  */
 jest.mock( '@wordpress/block-editor', () => ( {

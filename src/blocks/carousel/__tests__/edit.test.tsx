@@ -9,6 +9,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Edit from '../edit';
 import type { CarouselAttributes } from '../types';
 import type { ReactNode as MockReactNode } from 'react';
+import { SelectControl, ToggleControl, RangeControl } from '@wordpress/components';
 
 let mockBlockCount = 0;
 
@@ -142,6 +143,7 @@ jest.mock( '../components/TemplatePicker', () => ( {
 } ) );
 
 const createAttributes = (): CarouselAttributes => ( {
+	transition: 'slide',
 	loop: false,
 	dragFree: false,
 	carouselAlign: 'start',
@@ -232,5 +234,72 @@ describe( 'Carousel Edit setup flow', () => {
 		expect( attributes.autoScrollStartDelay ).toBe( 1000 );
 		expect( attributes.autoScrollStopOnInteraction ).toBe( true );
 		expect( attributes.autoScrollStopOnMouseEnter ).toBe( false );
+	})
+	
+	it( 'renders a Transition select and hides slide-only controls when fade is active', () => {
+		render(
+			<Edit
+				attributes={ { ...createAttributes(), transition: 'fade' } }
+				setAttributes={ jest.fn() }
+				clientId="client-fade"
+			/>,
+		);
+
+		const selectLabels = ( SelectControl as unknown as jest.Mock ).mock.calls.map(
+			( [ props ] ) => props.label,
+		);
+		const toggleLabels = ( ToggleControl as unknown as jest.Mock ).mock.calls.map(
+			( [ props ] ) => props.label,
+		);
+
+		expect( selectLabels ).toContain( 'Transition' );
+		expect( selectLabels ).not.toContain( 'Alignment' );
+		expect( selectLabels ).not.toContain( 'Contain Scroll' );
+		expect( toggleLabels ).not.toContain( 'Free Drag' );
+		expect( toggleLabels ).not.toContain( 'Scroll Auto' );
+		expect( ( RangeControl as unknown as jest.Mock ).mock.calls.some(
+			( [ props ] ) => props.label === 'Slides to Scroll',
+		) ).toBe( false );
+	} );
+
+	it( 'keeps slide-only controls visible when slide transition is active', () => {
+		render(
+			<Edit
+				attributes={ createAttributes() }
+				setAttributes={ jest.fn() }
+				clientId="client-slide"
+			/>,
+		);
+
+		const selectLabels = ( SelectControl as unknown as jest.Mock ).mock.calls.map(
+			( [ props ] ) => props.label,
+		);
+		const toggleLabels = ( ToggleControl as unknown as jest.Mock ).mock.calls.map(
+			( [ props ] ) => props.label,
+		);
+
+		expect( selectLabels ).toContain( 'Alignment' );
+		expect( selectLabels ).toContain( 'Contain Scroll' );
+		expect( toggleLabels ).toContain( 'Free Drag' );
+		expect( toggleLabels ).toContain( 'Scroll Auto' );
+	} );
+
+	it( 'calls setAttributes with the selected transition', () => {
+		const setAttributes = jest.fn();
+		render(
+			<Edit
+				attributes={ createAttributes() }
+				setAttributes={ setAttributes }
+				clientId="client-transition-change"
+			/>,
+		);
+
+		const transitionCall = ( SelectControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Transition',
+		);
+
+		transitionCall[ 0 ].onChange( 'fade' );
+
+		expect( setAttributes ).toHaveBeenCalledWith( { transition: 'fade' } );
 	} );
 } );

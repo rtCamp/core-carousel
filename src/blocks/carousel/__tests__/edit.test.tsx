@@ -234,8 +234,8 @@ describe( 'Carousel Edit setup flow', () => {
 		expect( attributes.autoScrollStartDelay ).toBe( 1000 );
 		expect( attributes.autoScrollStopOnInteraction ).toBe( true );
 		expect( attributes.autoScrollStopOnMouseEnter ).toBe( false );
-	})
-	
+	} );
+
 	it( 'renders a Transition select and hides slide-only controls when fade is active', () => {
 		render(
 			<Edit

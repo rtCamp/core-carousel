@@ -506,7 +506,7 @@ export default function Edit( {
 						onChange={ ( value ) => setAttributes( {
 							autoScroll: value,
 							autoplay: value ? false : autoplay,
-							loop: autoScrollDirection === 'backward' ? true : loop,
+							loop: ( value && autoScrollDirection === 'backward' ) ? true : loop,
 						} ) }
 					/>
 					{ autoScroll && ( <>

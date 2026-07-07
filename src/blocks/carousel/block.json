@@ -101,7 +101,7 @@
 		},
 		"autoScrollDirection": {
 			"type": "string",
-			"default": "ltr",
+			"default": "forward",
 			"enum": ["forward", "backward"]
 		},
 		"autoScrollStartDelay": {

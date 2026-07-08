@@ -4,7 +4,7 @@ Tags: carousel, slider, block, interactivity-api, embla
 Requires at least: 6.6
 Tested up to: 7.0
 Requires PHP: 8.2
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -84,6 +84,10 @@ rtCarousel is the successor to Carousel Kit. Simply install and activate rtCarou
 1. Carousel block in the editor with multiple slides
 
 == Changelog ==
+
+= 2.0.4 =
+* New: Embla Auto Scroll plugin support with editor controls
+* New: Fade transition option
 
 = 2.0.3 =
 * Tweak: Update plugin display name to a more descriptive title for discoverability.

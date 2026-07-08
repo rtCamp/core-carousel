@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.0.4](https://github.com/rtCamp/rt-carousel/compare/2.0.3...2.0.4) (2026-07-08)
+
+
+### Features
+
+* add Embla Auto Scroll plugin support with editor controls ([#152](https://github.com/rtCamp/rt-carousel/pull/152)) ([9e190c1](https://github.com/rtCamp/rt-carousel/commit/9e190c1))
+* add fade transition option ([#159](https://github.com/rtCamp/rt-carousel/pull/159)) ([12949f5](https://github.com/rtCamp/rt-carousel/commit/12949f5))
+
+
 ## [2.0.3](https://github.com/rtCamp/rt-carousel/compare/2.0.2...2.0.3) (2026-06-24)
 
 

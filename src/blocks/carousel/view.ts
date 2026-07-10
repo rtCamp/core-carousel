@@ -125,6 +125,53 @@ const markForAnnouncement = (): void => {
 	getContext<CarouselContext>().shouldAnnounce = true;
 };
 
+const stopPluginsOnInteraction = (
+	embla: EmblaCarouselType,
+	context: CarouselContext,
+): void => {
+	if ( typeof embla.plugins !== 'function' ) {
+		return;
+	}
+	const plugins = embla.plugins() as {
+		autoplay?: { stop?: () => void; destroy?: () => void; reset?: () => void };
+		autoScroll?: { stop?: () => void; destroy?: () => void; reset?: () => void };
+	};
+	const autoplay = plugins.autoplay;
+	const autoScroll = plugins.autoScroll;
+
+	if ( autoplay && typeof autoplay.stop === 'function' ) {
+		if (
+			context.autoplay === true ||
+			( typeof context.autoplay === 'object' &&
+				context.autoplay.stopOnInteraction )
+		) {
+			if ( typeof autoplay.destroy === 'function' ) {
+				autoplay.destroy();
+			} else {
+				autoplay.stop();
+			}
+		} else if ( typeof autoplay.reset === 'function' ) {
+			autoplay.reset();
+		}
+	}
+
+	if ( autoScroll && typeof autoScroll.stop === 'function' ) {
+		if (
+			context.autoScroll === true ||
+			( typeof context.autoScroll === 'object' &&
+				context.autoScroll.stopOnInteraction )
+		) {
+			if ( typeof autoScroll.destroy === 'function' ) {
+				autoScroll.destroy();
+			} else {
+				autoScroll.stop();
+			}
+		} else if ( typeof autoScroll.reset === 'function' ) {
+			autoScroll.reset();
+		}
+	}
+};
+
 store( 'rt-carousel/carousel', {
 	state: {
 		get canScrollPrev() {
@@ -141,6 +188,9 @@ store( 'rt-carousel/carousel', {
 			const element = getElementRef( getElement() );
 			const embla = getEmblaFromElement( element );
 			if ( embla ) {
+				const context = getContext<CarouselContext>();
+				stopPluginsOnInteraction( embla, context );
+
 				if ( embla.canScrollPrev() ) {
 					markForAnnouncement();
 				}
@@ -154,6 +204,9 @@ store( 'rt-carousel/carousel', {
 			const element = getElementRef( getElement() );
 			const embla = getEmblaFromElement( element );
 			if ( embla ) {
+				const context = getContext<CarouselContext>();
+				stopPluginsOnInteraction( embla, context );
+
 				if ( embla.canScrollNext() ) {
 					markForAnnouncement();
 				}
@@ -173,6 +226,8 @@ store( 'rt-carousel/carousel', {
 				const element = getElementRef( getElement() );
 				const embla = getEmblaFromElement( element );
 				if ( embla ) {
+					stopPluginsOnInteraction( embla, context );
+
 					if ( snap.index !== context.selectedIndex ) {
 						markForAnnouncement();
 					}

@@ -125,6 +125,12 @@ const markForAnnouncement = (): void => {
 	getContext<CarouselContext>().shouldAnnounce = true;
 };
 
+type StoppablePlugin = {
+	stop?: () => void;
+	destroy?: () => void;
+	reset?: () => void;
+};
+
 const stopPluginsOnInteraction = (
 	embla: EmblaCarouselType,
 	context: CarouselContext,
@@ -133,8 +139,8 @@ const stopPluginsOnInteraction = (
 		return;
 	}
 	const plugins = embla.plugins() as {
-		autoplay?: { stop?: () => void; destroy?: () => void; reset?: () => void };
-		autoScroll?: { stop?: () => void; destroy?: () => void; reset?: () => void };
+		autoplay?: StoppablePlugin;
+		autoScroll?: StoppablePlugin;
 	};
 	const autoplay = plugins.autoplay;
 	const autoScroll = plugins.autoScroll;
@@ -143,7 +149,7 @@ const stopPluginsOnInteraction = (
 		if (
 			context.autoplay === true ||
 			( typeof context.autoplay === 'object' &&
-				context.autoplay.stopOnInteraction )
+				context.autoplay.stopOnInteraction !== false )
 		) {
 			if ( typeof autoplay.destroy === 'function' ) {
 				autoplay.destroy();
@@ -159,7 +165,7 @@ const stopPluginsOnInteraction = (
 		if (
 			context.autoScroll === true ||
 			( typeof context.autoScroll === 'object' &&
-				context.autoScroll.stopOnInteraction )
+				context.autoScroll.stopOnInteraction !== false )
 		) {
 			if ( typeof autoScroll.destroy === 'function' ) {
 				autoScroll.destroy();

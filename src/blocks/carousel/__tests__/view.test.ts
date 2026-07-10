@@ -343,6 +343,47 @@ describe( 'Carousel View Module', () => {
 
 				document.body.removeChild( wrapper );
 			} );
+
+			it( 'should stop (destroy) autoplay and autoscroll if stopOnInteraction is omitted/undefined (defaults to true)', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						// stopOnInteraction omitted
+						stopOnMouseEnter: true,
+					} as unknown as CarouselContext[ 'autoplay' ],
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						// stopOnInteraction omitted
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					} as unknown as CarouselContext[ 'autoScroll' ],
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				storeConfig.actions.scrollPrev();
+
+				expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+				expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+
+				document.body.removeChild( wrapper );
+			} );
 		} );
 
 		describe( 'scrollNext', () => {
@@ -380,6 +421,47 @@ describe( 'Carousel View Module', () => {
 				);
 
 				consoleSpy.mockRestore();
+			} );
+
+			it( 'should stop autoplay and autoscroll if stopOnInteraction is true', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+					},
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					},
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				storeConfig.actions.scrollNext();
+
+				expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+				expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+
+				document.body.removeChild( wrapper );
 			} );
 		} );
 
@@ -439,6 +521,50 @@ describe( 'Carousel View Module', () => {
 				storeConfig.actions.onDotClick();
 
 				expect( mockEmbla.scrollTo ).toHaveBeenCalledWith( 0 );
+
+				document.body.removeChild( wrapper );
+			} );
+
+			it( 'should stop autoplay and autoscroll if stopOnInteraction is true', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+					},
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					},
+				} );
+				( mockContext as CarouselContext & { snap?: { index: number } } ).snap = {
+					index: 2,
+				};
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				storeConfig.actions.onDotClick();
+
+				expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+				expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
 
 				document.body.removeChild( wrapper );
 			} );

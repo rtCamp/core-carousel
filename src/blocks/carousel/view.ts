@@ -145,15 +145,16 @@ const stopPluginsOnInteraction = (
 	const autoplay = plugins.autoplay;
 	const autoScroll = plugins.autoScroll;
 
-	if ( autoplay && typeof autoplay.stop === 'function' ) {
-		if (
+	if ( autoplay ) {
+		const shouldStop =
 			context.autoplay === true ||
 			( typeof context.autoplay === 'object' &&
-				context.autoplay.stopOnInteraction !== false )
-		) {
+				context.autoplay.stopOnInteraction !== false );
+
+		if ( shouldStop ) {
 			if ( typeof autoplay.destroy === 'function' ) {
 				autoplay.destroy();
-			} else {
+			} else if ( typeof autoplay.stop === 'function' ) {
 				autoplay.stop();
 			}
 		} else if ( typeof autoplay.reset === 'function' ) {
@@ -161,15 +162,16 @@ const stopPluginsOnInteraction = (
 		}
 	}
 
-	if ( autoScroll && typeof autoScroll.stop === 'function' ) {
-		if (
+	if ( autoScroll ) {
+		const shouldStop =
 			context.autoScroll === true ||
 			( typeof context.autoScroll === 'object' &&
-				context.autoScroll.stopOnInteraction !== false )
-		) {
+				context.autoScroll.stopOnInteraction !== false );
+
+		if ( shouldStop ) {
 			if ( typeof autoScroll.destroy === 'function' ) {
 				autoScroll.destroy();
-			} else {
+			} else if ( typeof autoScroll.stop === 'function' ) {
 				autoScroll.stop();
 			}
 		} else if ( typeof autoScroll.reset === 'function' ) {

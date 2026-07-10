@@ -291,14 +291,16 @@ describe( 'Carousel View Module', () => {
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
 				document.body.appendChild( wrapper );
 
-				storeConfig.actions.scrollPrev();
+				try {
+					storeConfig.actions.scrollPrev();
 
-				expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
-				expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
-				expect( mockAutoplay.reset ).not.toHaveBeenCalled();
-				expect( mockAutoScroll.reset ).not.toHaveBeenCalled();
-
-				document.body.removeChild( wrapper );
+					expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoplay.reset ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.reset ).not.toHaveBeenCalled();
+				} finally {
+					document.body.removeChild( wrapper );
+				}
 			} );
 
 			it( 'should reset autoplay and autoscroll if stopOnInteraction is false', () => {
@@ -334,14 +336,16 @@ describe( 'Carousel View Module', () => {
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
 				document.body.appendChild( wrapper );
 
-				storeConfig.actions.scrollPrev();
+				try {
+					storeConfig.actions.scrollPrev();
 
-				expect( mockAutoplay.destroy ).not.toHaveBeenCalled();
-				expect( mockAutoScroll.destroy ).not.toHaveBeenCalled();
-				expect( mockAutoplay.reset ).toHaveBeenCalledTimes( 1 );
-				expect( mockAutoScroll.reset ).toHaveBeenCalledTimes( 1 );
-
-				document.body.removeChild( wrapper );
+					expect( mockAutoplay.destroy ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.destroy ).not.toHaveBeenCalled();
+					expect( mockAutoplay.reset ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.reset ).toHaveBeenCalledTimes( 1 );
+				} finally {
+					document.body.removeChild( wrapper );
+				}
 			} );
 
 			it( 'should stop (destroy) autoplay and autoscroll if stopOnInteraction is omitted/undefined (defaults to true)', () => {
@@ -377,12 +381,14 @@ describe( 'Carousel View Module', () => {
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
 				document.body.appendChild( wrapper );
 
-				storeConfig.actions.scrollPrev();
+				try {
+					storeConfig.actions.scrollPrev();
 
-				expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
-				expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
-
-				document.body.removeChild( wrapper );
+					expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+				} finally {
+					document.body.removeChild( wrapper );
+				}
 			} );
 		} );
 
@@ -456,12 +462,14 @@ describe( 'Carousel View Module', () => {
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
 				document.body.appendChild( wrapper );
 
-				storeConfig.actions.scrollNext();
+				try {
+					storeConfig.actions.scrollNext();
 
-				expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
-				expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
-
-				document.body.removeChild( wrapper );
+					expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+				} finally {
+					document.body.removeChild( wrapper );
+				}
 			} );
 		} );
 
@@ -561,12 +569,14 @@ describe( 'Carousel View Module', () => {
 				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
 				document.body.appendChild( wrapper );
 
-				storeConfig.actions.onDotClick();
+				try {
+					storeConfig.actions.onDotClick();
 
-				expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
-				expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
-
-				document.body.removeChild( wrapper );
+					expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+				} finally {
+					document.body.removeChild( wrapper );
+				}
 			} );
 		} );
 	} );

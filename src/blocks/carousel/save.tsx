@@ -72,7 +72,7 @@ export default function Save( {
 			'Slide {{currentSlide}} of {{totalSlides}}',
 			'rt-carousel',
 		),
-		autoScroll: autoScroll ? {
+		autoScroll: ( transition !== 'fade' && autoScroll ) ? {
 			speed: autoScrollSpeed,
 			direction: autoScrollDirection,
 			startDelay: autoScrollStartDelay,

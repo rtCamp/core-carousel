@@ -320,7 +320,7 @@ store( 'rt-carousel/carousel', {
 						plugins.push( Autoplay( context.autoplay as AutoplayOptionsType ) );
 					}
 
-					if ( context.autoScroll ) {
+					if ( context.autoScroll && context.transition !== 'fade' ) {
 						plugins.push( AutoScroll( context.autoScroll as AutoScrollOptionsType ) );
 					}
 

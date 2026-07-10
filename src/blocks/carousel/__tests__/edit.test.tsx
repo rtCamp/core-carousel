@@ -257,6 +257,7 @@ describe( 'Carousel Edit setup flow', () => {
 		expect( selectLabels ).not.toContain( 'Contain Scroll' );
 		expect( toggleLabels ).not.toContain( 'Free Drag' );
 		expect( toggleLabels ).not.toContain( 'Scroll Auto' );
+		expect( toggleLabels ).not.toContain( 'Enable Auto Scroll' );
 		expect( ( RangeControl as unknown as jest.Mock ).mock.calls.some(
 			( [ props ] ) => props.label === 'Slides to Scroll',
 		) ).toBe( false );
@@ -282,6 +283,7 @@ describe( 'Carousel Edit setup flow', () => {
 		expect( selectLabels ).toContain( 'Contain Scroll' );
 		expect( toggleLabels ).toContain( 'Free Drag' );
 		expect( toggleLabels ).toContain( 'Scroll Auto' );
+		expect( toggleLabels ).toContain( 'Enable Auto Scroll' );
 	} );
 
 	it( 'calls setAttributes with the selected transition', () => {
@@ -300,6 +302,6 @@ describe( 'Carousel Edit setup flow', () => {
 
 		transitionCall[ 0 ].onChange( 'fade' );
 
-		expect( setAttributes ).toHaveBeenCalledWith( { transition: 'fade' } );
+		expect( setAttributes ).toHaveBeenCalledWith( { transition: 'fade', autoScroll: false } );
 	} );
 } );

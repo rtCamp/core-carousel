@@ -16,6 +16,7 @@ import { store, getContext, getElement } from '@wordpress/interactivity';
 
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
 import Fade from 'embla-carousel-fade';
+import AutoScroll from 'embla-carousel-auto-scroll';
 
 // Symbol key used by the view.ts for Embla instances
 const EMBLA_KEY = Symbol.for( 'rt-carousel.carousel' );
@@ -908,6 +909,57 @@ describe( 'Carousel View Module', () => {
 
 					const lastCall = ( EmblaCarousel as unknown as jest.Mock ).mock.calls.at( -1 );
 					expect( lastCall?.[ 2 ] ).toEqual( [] );
+				} finally {
+					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
+						originalIntersectionObserver;
+				}
+			} );
+
+			it( 'does not include the AutoScroll plugin when transition is fade', () => {
+				const mockContext = createMockContext( {
+					transition: 'fade',
+					autoScroll: {
+						speed: 2,
+						direction: 'forward',
+						startDelay: 1000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: false,
+					},
+				} );
+				const { wrapper, viewport } = createMockCarouselDOM();
+				const originalIntersectionObserver = window.IntersectionObserver;
+
+				viewport.getBoundingClientRect = jest.fn( () => ( {
+					width: 100,
+					height: 0,
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0,
+					x: 0,
+					y: 0,
+					toJSON: () => ( {} ),
+				} ) );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: wrapper } );
+				( EmblaCarousel as unknown as jest.Mock ).mockReturnValue(
+					createMockEmblaInstance( {
+						scrollProgress: jest.fn( () => 0 ),
+						slideNodes: jest.fn( () => [] ),
+					} ),
+				);
+				delete ( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver;
+
+				try {
+					storeConfig.callbacks.initCarousel();
+
+					const lastCall = ( EmblaCarousel as unknown as jest.Mock ).mock.calls.at( -1 );
+					expect( lastCall?.[ 2 ] ).toContainEqual( ( Fade as unknown as jest.Mock ).mock.results.at( -1 )?.value );
+					const autoScrollMockResult = ( AutoScroll as unknown as jest.Mock ).mock.results.at( -1 )?.value;
+					if ( autoScrollMockResult ) {
+						expect( lastCall?.[ 2 ] ).not.toContainEqual( autoScrollMockResult );
+					}
 				} finally {
 					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
 						originalIntersectionObserver;

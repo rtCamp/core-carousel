@@ -9,6 +9,7 @@ The parent block acts as the controller and wrapper. It handles configuration, s
 
 | Attribute                   | Type    | Default       | Description                                 |
 | :-------------------------- | :------ | :------------ | :------------------------------------------ |
+| `transition`                | string  | `'slide'`     | Transition style: `'slide'` or `'fade'`. When `'fade'`, `carouselAlign`, `containScroll`, `dragFree`, and `slidesToScroll` are overridden at runtime (center/false/false/1). |
 | `loop`                      | boolean | `false`       | Infinite scrolling.                         |
 | `dragFree`                  | boolean | `false`       | Momentum scrolling.                         |
 | `carouselAlign`             | string  | `'start'`     | Slide alignment (`start`, `center`, `end`). |

@@ -28,6 +28,11 @@
 			"type": "array",
 			"default": []
 		},
+		"transition": {
+			"type": "string",
+			"default": "slide",
+			"enum": ["slide", "fade"]
+		},
 		"loop": {
 			"type": "boolean",
 			"default": false
@@ -89,6 +94,31 @@
 		"lazyLoadImages": {
 			"type": "boolean",
 			"default": true
+		},
+		"autoScroll": {
+			"type": "boolean",
+			"default": false
+		},
+		"autoScrollSpeed": {
+			"type": "number",
+			"default": 2
+		},
+		"autoScrollDirection": {
+			"type": "string",
+			"default": "forward",
+			"enum": ["forward", "backward"]
+		},
+		"autoScrollStartDelay": {
+			"type": "number",
+			"default": 1000
+		},
+		"autoScrollStopOnInteraction": {
+			"type": "boolean",
+			"default": true
+		},
+		"autoScrollStopOnMouseEnter": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"editorScript": "file:./index.js",

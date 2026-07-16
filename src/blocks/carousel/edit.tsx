@@ -322,24 +322,22 @@ export default function Edit( {
 					<SelectControl
 						label={ __( 'Transition', 'rt-carousel' ) }
 						value={ transition }
+						disabled={ autoScroll }
 						options={ [
 							{ label: __( 'Slide', 'rt-carousel' ), value: 'slide' },
 							{ label: __( 'Fade', 'rt-carousel' ), value: 'fade' },
 						] }
-						onChange={ ( value ) => {
-							const nextTransition = value as CarouselAttributes[ 'transition' ];
-							const nextAttributes: Partial< CarouselAttributes > = {
-								transition: nextTransition,
-							};
-							if ( nextTransition === 'fade' ) {
-								nextAttributes.autoScroll = false;
-							}
-							setAttributes( nextAttributes );
-						} }
-						help={ __(
-							'Choose how slides transition: sliding horizontally or cross-fading.',
-							'rt-carousel',
-						) }
+						onChange={ ( value ) =>
+							setAttributes( { transition: value as CarouselAttributes[ 'transition' ] } )
+						}
+						help={
+							autoScroll
+								? __( 'Auto Scroll does not support transitions.', 'rt-carousel' )
+								: __(
+									'Choose how slides transition: sliding horizontally or cross-fading.',
+									'rt-carousel',
+								)
+						}
 					/>
 					<ToggleControl
 						label={ __( 'Loop', 'rt-carousel' ) }
@@ -503,73 +501,77 @@ export default function Edit( {
 						</>
 					) }
 				</PanelBody>
-				{ transition !== 'fade' && (
-					<PanelBody
-						title={ __( 'Auto Scroll', 'rt-carousel' ) }
-						initialOpen={ false }
-					>
-						<ToggleControl
-							label={ __( 'Enable Auto Scroll', 'rt-carousel' ) }
-							checked={ autoScroll }
-							onChange={ ( value ) => setAttributes( {
+				<PanelBody
+					title={ __( 'Auto Scroll', 'rt-carousel' ) }
+					initialOpen={ false }
+				>
+					<ToggleControl
+						label={ __( 'Enable Auto Scroll', 'rt-carousel' ) }
+						checked={ autoScroll }
+						onChange={ ( value ) => {
+							const nextAttributes: Partial< CarouselAttributes > = {
 								autoScroll: value,
 								autoplay: value ? false : autoplay,
 								loop: ( value && autoScrollDirection === 'backward' ) ? true : loop,
-							} ) }
+							};
+							if ( value ) {
+								nextAttributes.transition = 'slide';
+							}
+							setAttributes( nextAttributes );
+						} }
+					/>
+					{ autoScroll && ( <>
+						<RangeControl
+							label={ __( 'Speed', 'rt-carousel' ) }
+							value={ autoScrollSpeed }
+							onChange={ ( value ) =>
+								setAttributes( { autoScrollSpeed: value ?? 2 } )
+							}
+							min={ 1 }
+							max={ 10 }
 						/>
-						{ autoScroll && ( <>
-							<RangeControl
-								label={ __( 'Speed', 'rt-carousel' ) }
-								value={ autoScrollSpeed }
-								onChange={ ( value ) =>
-									setAttributes( { autoScrollSpeed: value ?? 2 } )
-								}
-								min={ 1 }
-								max={ 10 }
-							/>
-							<SelectControl
-								label={ __( 'Direction', 'rt-carousel' ) }
-								value={ autoScrollDirection }
-								options={ [
-									{ label: __( 'Forward', 'rt-carousel' ), value: 'forward' },
-									{ label: __( 'Backward', 'rt-carousel' ), value: 'backward' },
-								] }
-								onChange={ ( value ) =>
-									setAttributes( {
-										autoScrollDirection: value as CarouselAttributes['autoScrollDirection'],
-										loop: value === 'backward' ? true : loop,
-									} )
-								}
-							/>
-							<RangeControl
-								label={ __( 'Start Delay (ms)', 'rt-carousel' ) }
-								value={ autoScrollStartDelay }
-								onChange={ ( value ) =>
-									setAttributes( { autoScrollStartDelay: value ?? 1000 } )
-								}
-								min={ 0 }
-								max={ 10000 }
-								step={ 100 }
-							/>
-							<ToggleControl
-								label={ __( 'Stop on Interaction', 'rt-carousel' ) }
-								checked={ autoScrollStopOnInteraction }
-								onChange={ ( value ) =>
-									setAttributes( { autoScrollStopOnInteraction: value } )
-								}
-								help={ __( 'Stop auto scroll when user interacts with carousel.', 'rt-carousel' ) }
-							/>
-							<ToggleControl
-								label={ __( 'Stop on Mouse Enter', 'rt-carousel' ) }
-								checked={ autoScrollStopOnMouseEnter }
-								onChange={ ( value ) =>
-									setAttributes( { autoScrollStopOnMouseEnter: value } )
-								}
-								help={ __( 'Stop auto scroll when mouse hovers over carousel.', 'rt-carousel' ) }
-							/>
-						</> ) }
-					</PanelBody>
-				) }
+						<SelectControl
+							label={ __( 'Direction', 'rt-carousel' ) }
+							value={ autoScrollDirection }
+							options={ [
+								{ label: __( 'Forward', 'rt-carousel' ), value: 'forward' },
+								{ label: __( 'Backward', 'rt-carousel' ), value: 'backward' },
+							] }
+							onChange={ ( value ) =>
+								setAttributes( {
+									autoScrollDirection: value as CarouselAttributes['autoScrollDirection'],
+									loop: value === 'backward' ? true : loop,
+								} )
+							}
+						/>
+						<RangeControl
+							label={ __( 'Start Delay (ms)', 'rt-carousel' ) }
+							value={ autoScrollStartDelay }
+							onChange={ ( value ) =>
+								setAttributes( { autoScrollStartDelay: value ?? 1000 } )
+							}
+							min={ 0 }
+							max={ 10000 }
+							step={ 100 }
+						/>
+						<ToggleControl
+							label={ __( 'Stop on Interaction', 'rt-carousel' ) }
+							checked={ autoScrollStopOnInteraction }
+							onChange={ ( value ) =>
+								setAttributes( { autoScrollStopOnInteraction: value } )
+							}
+							help={ __( 'Stop auto scroll when user interacts with carousel.', 'rt-carousel' ) }
+						/>
+						<ToggleControl
+							label={ __( 'Stop on Mouse Enter', 'rt-carousel' ) }
+							checked={ autoScrollStopOnMouseEnter }
+							onChange={ ( value ) =>
+								setAttributes( { autoScrollStopOnMouseEnter: value } )
+							}
+							help={ __( 'Stop auto scroll when mouse hovers over carousel.', 'rt-carousel' ) }
+						/>
+					</> ) }
+				</PanelBody>
 			</InspectorControls>
 			<InspectorAdvancedControls>
 				<TextControl

@@ -129,11 +129,11 @@ store( 'rt-carousel/carousel', {
 	state: {
 		get canScrollPrev() {
 			const context = getContext<CarouselContext>();
-			return context.canScrollPrev;
+			return context.autoScroll ? true : context.canScrollPrev;
 		},
 		get canScrollNext() {
 			const context = getContext<CarouselContext>();
-			return context.canScrollNext;
+			return context.autoScroll ? true : context.canScrollNext;
 		},
 	},
 	actions: {
@@ -320,7 +320,7 @@ store( 'rt-carousel/carousel', {
 						plugins.push( Autoplay( context.autoplay as AutoplayOptionsType ) );
 					}
 
-					if ( context.autoScroll && context.transition !== 'fade' ) {
+					if ( context.autoScroll ) {
 						plugins.push( AutoScroll( context.autoScroll as AutoScrollOptionsType ) );
 					}
 

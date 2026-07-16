@@ -175,6 +175,29 @@ describe( 'Carousel View Module', () => {
 
 				expect( result ).toBe( false );
 			} );
+
+			it( 'should return true when autoScroll is enabled', () => {
+				const mockContext = createMockContext( {
+					canScrollPrev: false,
+					autoScroll: {
+						speed: 2,
+						direction: 'forward',
+						startDelay: 1000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: false,
+						stopOnFocusIn: true,
+					},
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result =
+					Object.getOwnPropertyDescriptor(
+						storeConfig.state,
+						'canScrollPrev',
+					)?.get?.() ?? false;
+
+				expect( result ).toBe( true );
+			} );
 		} );
 
 		describe( 'canScrollNext', () => {
@@ -202,6 +225,29 @@ describe( 'Carousel View Module', () => {
 					)?.get?.() ?? true;
 
 				expect( result ).toBe( false );
+			} );
+
+			it( 'should return true when autoScroll is enabled', () => {
+				const mockContext = createMockContext( {
+					canScrollNext: false,
+					autoScroll: {
+						speed: 2,
+						direction: 'forward',
+						startDelay: 1000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: false,
+						stopOnFocusIn: true,
+					},
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result =
+					Object.getOwnPropertyDescriptor(
+						storeConfig.state,
+						'canScrollNext',
+					)?.get?.() ?? false;
+
+				expect( result ).toBe( true );
 			} );
 		} );
 	} );
@@ -915,7 +961,7 @@ describe( 'Carousel View Module', () => {
 				}
 			} );
 
-			it( 'does not include the AutoScroll plugin when transition is fade', () => {
+			it( 'includes the AutoScroll plugin when transition is fade', () => {
 				const mockContext = createMockContext( {
 					transition: 'fade',
 					autoScroll: {
@@ -924,6 +970,7 @@ describe( 'Carousel View Module', () => {
 						startDelay: 1000,
 						stopOnInteraction: true,
 						stopOnMouseEnter: false,
+						stopOnFocusIn: true,
 					},
 				} );
 				const { wrapper, viewport } = createMockCarouselDOM();
@@ -957,9 +1004,7 @@ describe( 'Carousel View Module', () => {
 					const lastCall = ( EmblaCarousel as unknown as jest.Mock ).mock.calls.at( -1 );
 					expect( lastCall?.[ 2 ] ).toContainEqual( ( Fade as unknown as jest.Mock ).mock.results.at( -1 )?.value );
 					const autoScrollMockResult = ( AutoScroll as unknown as jest.Mock ).mock.results.at( -1 )?.value;
-					if ( autoScrollMockResult ) {
-						expect( lastCall?.[ 2 ] ).not.toContainEqual( autoScrollMockResult );
-					}
+					expect( lastCall?.[ 2 ] ).toContainEqual( autoScrollMockResult );
 				} finally {
 					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
 						originalIntersectionObserver;

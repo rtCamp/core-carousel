@@ -257,7 +257,7 @@ describe( 'Carousel Edit setup flow', () => {
 		expect( selectLabels ).not.toContain( 'Contain Scroll' );
 		expect( toggleLabels ).not.toContain( 'Free Drag' );
 		expect( toggleLabels ).not.toContain( 'Scroll Auto' );
-		expect( toggleLabels ).not.toContain( 'Enable Auto Scroll' );
+		expect( toggleLabels ).toContain( 'Enable Auto Scroll' );
 		expect( ( RangeControl as unknown as jest.Mock ).mock.calls.some(
 			( [ props ] ) => props.label === 'Slides to Scroll',
 		) ).toBe( false );
@@ -302,6 +302,45 @@ describe( 'Carousel Edit setup flow', () => {
 
 		transitionCall[ 0 ].onChange( 'fade' );
 
-		expect( setAttributes ).toHaveBeenCalledWith( { transition: 'fade', autoScroll: false } );
+		expect( setAttributes ).toHaveBeenCalledWith( { transition: 'fade' } );
+	} );
+
+	it( 'disables the transition dropdown with notice when autoScroll is enabled', () => {
+		render(
+			<Edit
+				attributes={ { ...createAttributes(), autoScroll: true } }
+				setAttributes={ jest.fn() }
+				clientId="client-transition-disabled"
+			/>,
+		);
+
+		const transitionCall = ( SelectControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Transition',
+		);
+
+		expect( transitionCall[ 0 ].disabled ).toBe( true );
+		expect( transitionCall[ 0 ].help ).toBe( 'Auto Scroll does not support transitions.' );
+	} );
+
+	it( 'switches transition to slide when autoScroll is enabled', () => {
+		const setAttributes = jest.fn();
+		render(
+			<Edit
+				attributes={ { ...createAttributes(), transition: 'fade' } }
+				setAttributes={ setAttributes }
+				clientId="client-autoscroll-toggle"
+			/>,
+		);
+
+		const autoScrollToggle = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Enable Auto Scroll',
+		);
+
+		autoScrollToggle[ 0 ].onChange( true );
+
+		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( {
+			autoScroll: true,
+			transition: 'slide',
+		} ) );
 	} );
 } );

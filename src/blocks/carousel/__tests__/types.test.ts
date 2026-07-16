@@ -79,6 +79,7 @@ describe( 'CarouselAttributes Type', () => {
 				'ariaLabel',
 				'slideGap',
 				'slidesToScroll',
+				'lazyLoadImages',
 			];
 
 			requiredKeys.forEach( ( key ) => {

@@ -267,13 +267,13 @@ class Plugin {
 	/**
 	 * Add loading="lazy" to images in carousel slides.
 	 *
-	 * @param string    $block_content The block content.
-	 * @param array     $parsed_block  The parsed block.
-	 * @param \WP_Block $instance      The block instance.
+	 * @param string         $block_content The block content.
+	 * @param array          $parsed_block  The parsed block.
+	 * @param \WP_Block|null $instance      The block instance.
 	 *
 	 * @return string Modified block content.
 	 */
-	public function handle_lazy_load_images( string $block_content, array $parsed_block, WP_Block $instance ): string {
+	public function handle_lazy_load_images( string $block_content, array $parsed_block, ?WP_Block $instance ): string {
 		// $instance was added in WP 5.9.0, if it's not available, return the block content unmodified.
 		if ( ! $instance ) {
 			return $block_content;
@@ -292,26 +292,29 @@ class Plugin {
 		}
 
 		// Use WP_HTML_Tag_Processor to add loading="lazy" to <img> tags.
-		$processor = new WP_HTML_Tag_Processor( $block_content );
+		$processor   = new WP_HTML_Tag_Processor( $block_content );
 		$slide_index = 0;
 
-		while ( $processor->next_tag(  ) ) {
+		while ( $processor->next_tag() ) {
 			$tag = $processor->get_tag();
 
 			// Keep a track of the slide index to determine if an image is in the first slide or subsequent slides.
 			if ( 'DIV' === $tag && $processor->has_class( 'embla__slide' ) ) {
-				$slide_index++;
+				++$slide_index;
 			}
 
-			// If it's the first slide, set loading="lazy". For subsequent slides, set loading="eager" and fetchpriority="high".
-			if ( 'IMG' === $tag && null === $processor->get_attribute( 'loading' ) ) {
-				if ( 1 === $slide_index ) {
-					$processor->set_attribute( 'loading', 'eager' );
-					$processor->set_attribute( 'fetchpriority', 'high' );
-				} else {
-					$processor->set_attribute( 'loading', 'lazy' );
-				}
+			if ( 'IMG' !== $tag || null !== $processor->get_attribute( 'loading' ) ) {
+				continue;
 			}
+
+			// The first slide's image loads eager (LCP); subsequent slides load lazy.
+			if ( 1 === $slide_index ) {
+				$processor->set_attribute( 'loading', 'eager' );
+				$processor->set_attribute( 'fetchpriority', 'high' );
+				continue;
+			}
+
+			$processor->set_attribute( 'loading', 'lazy' );
 		}
 
 		return $processor->get_updated_html();

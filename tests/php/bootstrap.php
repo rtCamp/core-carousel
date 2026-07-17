@@ -12,6 +12,9 @@ namespace Rt_Carousel\Tests;
 // Load Composer autoloader.
 require_once dirname( __DIR__, 2 ) . '/vendor/autoload.php';
 
+// Load stand-ins for WordPress core classes not provided by Brain\Monkey.
+require_once __DIR__ . '/stubs.php';
+
 // Define plugin constants for testing.
 define( 'RT_CAROUSEL_PATH', dirname( __DIR__, 2 ) );
 define( 'RT_CAROUSEL_URL', 'https://example.com/wp-content/plugins/rt-carousel' );

@@ -55,6 +55,7 @@ export default function Edit( {
 		autoplayStopOnMouseEnter,
 		ariaLabel,
 		slidesToScroll = '1',
+		lazyLoadImages,
 		autoScroll,
 		autoScrollSpeed,
 		autoScrollDirection,
@@ -351,6 +352,15 @@ export default function Edit( {
 							help={ __( 'Enables momentum scrolling.', 'rt-carousel' ) }
 						/>
 					) }
+					<ToggleControl
+						label={ __( 'Lazy Load Images', 'rt-carousel' ) }
+						checked={ lazyLoadImages }
+						onChange={ ( value ) => setAttributes( { lazyLoadImages: value } ) }
+						help={ __(
+							'Load images only when they enter the viewport.',
+							'rt-carousel',
+						) }
+					/>
 					{ transition !== 'fade' && (
 						<SelectControl
 							label={ __( 'Alignment', 'rt-carousel' ) }

@@ -34,6 +34,7 @@ describe( 'CarouselAttributes Type', () => {
 				ariaLabel: 'Image carousel',
 				slideGap: 16,
 				slidesToScroll: '1',
+				lazyLoadImages: true,
 				autoScroll: false,
 				autoScrollSpeed: 2,
 				autoScrollDirection: 'forward',
@@ -66,6 +67,7 @@ describe( 'CarouselAttributes Type', () => {
 				ariaLabel: '',
 				slideGap: 0,
 				slidesToScroll: 'auto',
+				lazyLoadImages: false,
 				autoScroll: false,
 				autoScrollSpeed: 2,
 				autoScrollDirection: 'forward',
@@ -92,6 +94,7 @@ describe( 'CarouselAttributes Type', () => {
 				'ariaLabel',
 				'slideGap',
 				'slidesToScroll',
+				'lazyLoadImages',
 			];
 
 			requiredKeys.forEach( ( key ) => {

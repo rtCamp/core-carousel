@@ -91,6 +91,10 @@
 			"type": "string",
 			"default": "1"
 		},
+		"lazyLoadImages": {
+			"type": "boolean",
+			"default": true
+		},
 		"autoScroll": {
 			"type": "boolean",
 			"default": false

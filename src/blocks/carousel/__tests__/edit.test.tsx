@@ -159,6 +159,7 @@ const createAttributes = (): CarouselAttributes => ( {
 	ariaLabel: 'Carousel',
 	slidesToScroll: '1',
 	slideGap: 0,
+	lazyLoadImages: true,
 	autoScroll: false,
 	autoScrollSpeed: 2,
 	autoScrollDirection: 'forward' as const,

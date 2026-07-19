@@ -278,7 +278,6 @@ store( 'rt-carousel/carousel', {
 			return context.selectedIndex !== index;
 		},
 		getSlideTabPanelId: () => {
-			const context = getContext<CarouselContext>();
 			const slide = getElementRef( getElement() )?.closest?.(
 				CAROUSEL_SLIDE_SELECTOR,
 			);
@@ -287,6 +286,7 @@ store( 'rt-carousel/carousel', {
 				return '';
 			}
 
+			const context = getContext<CarouselContext>();
 			const slides = Array.from( slide.parentElement.children ).filter(
 				( child: Element ) => child.matches( CAROUSEL_SLIDE_SELECTOR ),
 			);
@@ -295,7 +295,6 @@ store( 'rt-carousel/carousel', {
 			return `rt-carousel-panel-${ context.carouselId }-${ index }`;
 		},
 		getSlideTabLabelledBy: () => {
-			const context = getContext<CarouselContext>();
 			const slide = getElementRef( getElement() )?.closest?.(
 				CAROUSEL_SLIDE_SELECTOR,
 			);
@@ -304,6 +303,7 @@ store( 'rt-carousel/carousel', {
 				return '';
 			}
 
+			const context = getContext<CarouselContext>();
 			const slides = Array.from( slide.parentElement.children ).filter(
 				( child: Element ) => child.matches( CAROUSEL_SLIDE_SELECTOR ),
 			);

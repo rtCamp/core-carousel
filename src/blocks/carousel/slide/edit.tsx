@@ -28,7 +28,9 @@ export default function Edit( {
 		( select ) => {
 			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
 			const parentId = blockEditor.getBlockRootClientId( clientId );
-			if ( ! parentId ) return -1;
+			if ( ! parentId ) {
+				return -1;
+			}
 			const siblings = blockEditor.getBlocks( parentId );
 			return siblings.findIndex( ( b ) => b.clientId === clientId );
 		},

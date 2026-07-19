@@ -65,7 +65,7 @@ export default function Edit( {
 					title={ __( 'Active Tab Colours', 'rt-carousel' ) }
 					initialOpen={ false }
 				>
-					<BaseControl label={ __( 'Background', 'rt-carousel' ) }>
+					<BaseControl id="rt-tab-active-bg" label={ __( 'Background', 'rt-carousel' ) }>
 						<ColorPalette
 							value={ activeTabBackgroundColor }
 							onChange={ ( color ) =>
@@ -73,7 +73,7 @@ export default function Edit( {
 							}
 						/>
 					</BaseControl>
-					<BaseControl label={ __( 'Text', 'rt-carousel' ) }>
+					<BaseControl id="rt-tab-active-text" label={ __( 'Text', 'rt-carousel' ) }>
 						<ColorPalette
 							value={ activeTabTextColor }
 							onChange={ ( color ) =>

@@ -1,0 +1,43 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"version": "1.0.0",
+	"name": "rt-carousel/carousel-tab-list",
+	"title": "Carousel Tab List",
+	"category": "rt-carousel",
+	"icon": "list-view",
+	"description": "Labeled tab navigation for a carousel in tabs mode.",
+	"textdomain": "rt-carousel",
+	"ancestor": [
+		"rt-carousel/carousel"
+	],
+	"attributes": {
+		"labels": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"default": []
+		},
+		"orientation": {
+			"type": "string",
+			"enum": [ "horizontal", "vertical" ],
+			"default": "horizontal"
+		},
+		"activeTabBackgroundColor": {
+			"type": "string",
+			"default": ""
+		},
+		"activeTabTextColor": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"interactivity": true,
+		"html": false
+	},
+	"editorScript": "file:./index.ts",
+	"style": "file:./style-index.css",
+	"viewScriptModule": "file:./view.ts"
+}

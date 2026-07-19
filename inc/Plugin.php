@@ -129,6 +129,7 @@ class Plugin {
 	public function register_blocks(): void {
 		$blocks = [
 			'carousel',
+			'carousel/carousel-tab-list',
 			'carousel/controls',
 			'carousel/counter',
 			'carousel/dots',

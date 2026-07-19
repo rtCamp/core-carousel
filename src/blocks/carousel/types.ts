@@ -18,6 +18,7 @@ export type CarouselAttributes = {
 	ariaLabel: string;
 	slideGap: number;
 	slidesToScroll: string;
+	useTabs: boolean;
 };
 
 export type CarouselViewportAttributes = Record<string, never>;
@@ -37,6 +38,7 @@ export interface BlockEditorSelectors {
 	getBlocks: ( clientId: string ) => Array<{ clientId: string }>;
 	getSelectedBlockClientId: () => string | null;
 	getBlockParents: ( clientId: string ) => string[];
+	getBlockRootClientId: ( clientId: string ) => string | null;
 }
 
 export type CarouselContext = {
@@ -65,4 +67,6 @@ export type CarouselContext = {
 	ref?: HTMLElement | null;
 	slideCount: number;
 	initialized?: boolean;
+	useTabs?: boolean;
+	carouselId?: string;
 };

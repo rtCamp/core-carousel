@@ -33,6 +33,7 @@ describe( 'CarouselAttributes Type', () => {
 				ariaLabel: 'Image carousel',
 				slideGap: 16,
 				slidesToScroll: '1',
+				useTabs: false,
 			};
 
 			expect( attributes ).toBeDefined();
@@ -58,6 +59,7 @@ describe( 'CarouselAttributes Type', () => {
 				ariaLabel: '',
 				slideGap: 0,
 				slidesToScroll: 'auto',
+				useTabs: false,
 			};
 
 			// Verify all keys exist

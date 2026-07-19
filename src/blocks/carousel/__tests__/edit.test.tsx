@@ -157,6 +157,7 @@ const createAttributes = (): CarouselAttributes => ( {
 	ariaLabel: 'Carousel',
 	slidesToScroll: '1',
 	slideGap: 0,
+	useTabs: false,
 } );
 
 describe( 'Carousel Edit setup flow', () => {

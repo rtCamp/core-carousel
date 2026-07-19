@@ -22,6 +22,7 @@ export default function Save( {
 		axis,
 		height,
 		slidesToScroll,
+		useTabs = false,
 	} = attributes;
 
 	// Pass configuration to the frontend via data-wp-context
@@ -34,6 +35,8 @@ export default function Save( {
 			direction,
 			axis,
 			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+			// Instant switch in tabs mode — no scroll animation
+			...( useTabs ? { duration: 0 } : {} ),
 		},
 		autoplay: autoplay
 			? {
@@ -64,12 +67,14 @@ export default function Save( {
 			'Slide {{currentSlide}} of {{totalSlides}}',
 			'rt-carousel',
 		),
+		useTabs,
+		carouselId: '', // Set at runtime by initCarousel in view.ts
 	};
 
 	const blockProps = useBlockProps.save( {
 		className: 'rt-carousel',
 		role: 'region',
-		'aria-roledescription': 'carousel',
+		...( ! useTabs ? { 'aria-roledescription': 'carousel' } : {} ),
 		'aria-label': ariaLabel,
 		dir: direction,
 		'data-axis': axis,

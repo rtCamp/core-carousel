@@ -219,6 +219,7 @@ export default function Edit( {
 				align: options?.align || 'start',
 				direction: options?.direction || 'ltr',
 				slidesToScroll: options?.slidesToScroll || 1,
+				duration: options?.duration,
 				container: dynamicListContainer || undefined,
 				watchDrag: false, // Clicks in slide gaps must not trigger Embla scroll in the editor.
 				watchSlides: false, // Gutenberg injects block UI nodes into .embla__container; Embla's built-in MutationObserver would call reInit() on those, corrupting slide order and transforms.

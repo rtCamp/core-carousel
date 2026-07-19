@@ -44,7 +44,15 @@ jest.mock( '@wordpress/components', () => {
 
 	return {
 		PanelBody: Passthrough,
-		ToggleControl: jest.fn( () => null ),
+		ToggleControl: jest.fn( ( { onChange, checked, label } ) => (
+			<input
+				type="checkbox"
+				aria-label={ label }
+				checked={ checked }
+				onChange={ ( e ) => onChange?.( e.target.checked ) }
+				readOnly={ ! onChange }
+			/>
+		) ),
 		SelectControl: jest.fn( () => null ),
 		FormTokenField: jest.fn( () => null ),
 		BaseControl: Passthrough,
@@ -217,5 +225,23 @@ describe( 'Carousel Edit setup flow', () => {
 		if ( originalDocumentDescriptor?.configurable ) {
 			Object.defineProperty( globalThis, 'document', originalDocumentDescriptor );
 		}
+	} );
+} );
+
+describe( 'useTabs toggle', () => {
+	it( 'renders Use as Tabs toggle when inner blocks exist', () => {
+		mockBlockCount = 2;
+
+		render(
+			<Edit
+				attributes={ createAttributes() }
+				setAttributes={ jest.fn() }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggle = screen.getByRole( 'checkbox', { name: /use as tabs/i } );
+		expect( toggle ).toBeInTheDocument();
+		expect( toggle ).not.toBeChecked();
 	} );
 } );

@@ -31,14 +31,51 @@ export type CarouselProgressAttributes = Record<string, never>;
 export type CarouselCounterAttributes = Record<string, never>;
 
 /**
+ * Recursive block-editor block shape. Covers the fields this plugin reads.
+ */
+export interface WPBlock {
+	clientId: string;
+	name: string;
+	innerBlocks?: WPBlock[];
+}
+
+/**
  * Typed subset of the block editor store selectors used in this plugin.
  * This avoids `as any` casts while keeping dot-notation and type safety.
  */
 export interface BlockEditorSelectors {
-	getBlocks: ( clientId: string ) => Array<{ clientId: string }>;
+	getBlocks: ( clientId: string ) => WPBlock[];
 	getSelectedBlockClientId: () => string | null;
 	getBlockParents: ( clientId: string ) => string[];
+	/** Returns ancestor clientIds filtered by block name (closest last). */
+	getBlockParentsByBlockName: ( clientId: string, name: string ) => string[];
 	getBlockRootClientId: ( clientId: string ) => string | null;
+}
+
+/**
+ * Depth-first search for the first block of `name` anywhere in the tree.
+ *
+ * @template {Object} T - Block-like value with a `name` and optional `innerBlocks`.
+ * @param {T[]}    blocks - Block tree to search (must include innerBlocks).
+ * @param {string} name   - Block name to match.
+ * @return {T | undefined} First matching block, if any.
+ */
+export function findBlockDeep<T extends { name: string; innerBlocks?: T[] }>(
+	blocks: T[],
+	name: string,
+): T | undefined {
+	for ( const block of blocks ) {
+		if ( block.name === name ) {
+			return block;
+		}
+		if ( block.innerBlocks?.length ) {
+			const found = findBlockDeep( block.innerBlocks, name );
+			if ( found ) {
+				return found;
+			}
+		}
+	}
+	return undefined;
 }
 
 export type CarouselContext = {

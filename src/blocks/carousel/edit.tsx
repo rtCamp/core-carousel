@@ -22,7 +22,7 @@ import { plus } from '@wordpress/icons';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useState, useMemo, useCallback, useEffect, useRef } from '@wordpress/element';
 import { createBlock, type BlockConfiguration } from '@wordpress/blocks';
-import type { CarouselAttributes } from './types';
+import { findBlockDeep, type CarouselAttributes, type BlockEditorSelectors } from './types';
 import { EditorCarouselContext } from './editor-context';
 import type { EmblaCarouselType } from 'embla-carousel';
 import { getSlideTemplates, type SlideTemplate } from './templates';
@@ -67,6 +67,11 @@ export default function Edit( {
 	const [ scrollSnaps, setScrollSnaps ] = useState<number[]>( [] );
 	const [ slideCount, setSlideCount ] = useState( 0 );
 
+	/* Mirror useTabs into a ref so Embla's select/reInit handlers always read
+	 * the latest value without forcing this effect to re-subscribe. */
+	const useTabsRef = useRef( useTabs );
+	useTabsRef.current = useTabs;
+
 	const slideTemplates = useMemo( getSlideTemplates, [ getSlideTemplates ] );
 
 	const { replaceInnerBlocks, insertBlock } = useDispatch( 'core/block-editor' );
@@ -80,9 +85,10 @@ export default function Edit( {
 
 	const viewportClientId = useSelect(
 		( select ) => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const innerBlocks = ( select( 'core/block-editor' ) as any ).getBlocks( clientId ) as Array<{ name: string; clientId: string }>;
-			return innerBlocks.find( ( b ) => b.name === 'rt-carousel/carousel-viewport' )?.clientId;
+			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
+			const innerBlocks = blockEditor.getBlocks( clientId );
+			// Viewport may be nested through columns/group for side-by-side tab layouts.
+			return findBlockDeep( innerBlocks, 'rt-carousel/carousel-viewport' )?.clientId;
 		},
 		[ clientId ],
 	);
@@ -196,6 +202,7 @@ export default function Edit( {
 			scrollProgress,
 			setScrollProgress,
 			selectedIndex,
+			setSelectedIndex,
 			scrollSnaps,
 			slideCount,
 			carouselOptions,
@@ -229,7 +236,11 @@ export default function Edit( {
 		};
 
 		const updateState = () => {
-			setSelectedIndex( emblaApi.selectedScrollSnap() );
+			// In tabs mode selectedIndex is driven by tab clicks / tree-view selection,
+			// not Embla's scroll position (hidden slides have 0-width, breaking snaps).
+			if ( ! useTabsRef.current ) {
+				setSelectedIndex( emblaApi.selectedScrollSnap() );
+			}
 			setScrollSnaps( emblaApi.scrollSnapList() );
 			setSlideCount( emblaApi.slideNodes().length );
 			updateScrollProgress();
@@ -439,21 +450,6 @@ export default function Edit( {
 							) }
 						</>
 					) }
-					<SelectControl
-						label={ __( 'Direction', 'rt-carousel' ) }
-						value={ direction }
-						options={ [
-							{ label: __( 'Left to Right (LTR)', 'rt-carousel' ), value: 'ltr' },
-							{ label: __( 'Right to Left (RTL)', 'rt-carousel' ), value: 'rtl' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { direction: value as CarouselAttributes[ 'direction' ] } )
-						}
-						help={ __(
-							'Choose content direction. RTL is typically used for Arabic, Hebrew, and other right-to-left languages.',
-							'rt-carousel',
-						) }
-					/>
 				</PanelBody>
 				{ ! useTabs && (
 					<PanelBody

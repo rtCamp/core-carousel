@@ -1012,64 +1012,6 @@ describe( 'Edge Cases and Error Handling', () => {
 	} );
 } );
 
-describe( 'isSlideHiddenForTabs', () => {
-	const isSlideHiddenForTabs = storeConfig?.callbacks?.isSlideHiddenForTabs;
-
-	it( 'returns false when useTabs is false', () => {
-		( getContext as jest.Mock ).mockReturnValue(
-			createMockContext( { useTabs: false, carouselId: '1', selectedIndex: 0, initialized: true } ),
-		);
-		( getElement as jest.Mock ).mockReturnValue( document.createElement( 'div' ) );
-
-		expect( isSlideHiddenForTabs() ).toBe( false );
-	} );
-
-	it( 'returns false when useTabs is true and slide is active (index 0)', () => {
-		const container = document.createElement( 'div' );
-		container.className = 'embla__container';
-		const slide = document.createElement( 'div' );
-		slide.className = 'embla__slide';
-		container.appendChild( slide );
-		const viewport = document.createElement( 'div' );
-		viewport.className = 'embla';
-		viewport.appendChild( container );
-		const wrapper = document.createElement( 'div' );
-		wrapper.className = 'rt-carousel';
-		wrapper.appendChild( viewport );
-
-		( getContext as jest.Mock ).mockReturnValue(
-			createMockContext( { useTabs: true, carouselId: '1', selectedIndex: 0, initialized: true } ),
-		);
-		( getElement as jest.Mock ).mockReturnValue( slide );
-
-		expect( isSlideHiddenForTabs() ).toBe( false );
-	} );
-
-	it( 'returns true when useTabs is true and slide is not active', () => {
-		const container = document.createElement( 'div' );
-		container.className = 'embla__container';
-		const slide0 = document.createElement( 'div' );
-		slide0.className = 'embla__slide';
-		const slide1 = document.createElement( 'div' );
-		slide1.className = 'embla__slide';
-		container.appendChild( slide0 );
-		container.appendChild( slide1 );
-		const viewport = document.createElement( 'div' );
-		viewport.className = 'embla';
-		viewport.appendChild( container );
-		const wrapper = document.createElement( 'div' );
-		wrapper.className = 'rt-carousel';
-		wrapper.appendChild( viewport );
-
-		( getContext as jest.Mock ).mockReturnValue(
-			createMockContext( { useTabs: true, carouselId: '1', selectedIndex: 0, initialized: true } ),
-		);
-		( getElement as jest.Mock ).mockReturnValue( slide1 );
-
-		expect( isSlideHiddenForTabs() ).toBe( true );
-	} );
-} );
-
 describe( 'getSlideTabPanelId', () => {
 	const getSlideTabPanelId = storeConfig?.callbacks?.getSlideTabPanelId;
 

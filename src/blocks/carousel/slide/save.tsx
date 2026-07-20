@@ -22,7 +22,7 @@ export default function Save( {
 			? {
 				'data-wp-bind--id': 'callbacks.getSlideTabPanelId',
 				'data-wp-bind--aria-labelledby': 'callbacks.getSlideTabLabelledBy',
-				'data-wp-bind--hidden': 'callbacks.isSlideHiddenForTabs',
+				'data-wp-class--is-active': 'callbacks.isSlideActive',
 			}
 			: {
 				'data-wp-class--is-active': 'callbacks.isSlideActive',

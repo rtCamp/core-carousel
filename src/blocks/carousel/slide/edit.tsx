@@ -37,6 +37,15 @@ export default function Edit( {
 		[ clientId ],
 	);
 
+	// In tabs mode, slideIndex < 0 is unexpected — surface it in dev builds.
+	if ( useTabs && slideIndex < 0 && typeof console !== 'undefined' ) {
+		// eslint-disable-next-line no-console
+		console.warn(
+			'rt-carousel: slide could not locate its index in the viewport. ' +
+				'The block may be rendered outside a carousel-viewport.',
+		);
+	}
+
 	const isActive = ! useTabs || slideIndex < 0 || slideIndex === selectedIndex;
 
 	const { verticalAlignment } = attributes;

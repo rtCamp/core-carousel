@@ -250,33 +250,6 @@ store( 'rt-carousel/carousel', {
 			}
 			return `transform:translate3d(${ getProgress() * 100 }%, 0px, 0px)`;
 		},
-		isSlideHiddenForTabs: () => {
-			const context = getContext<CarouselContext>();
-			if ( ! context.useTabs ) {
-				return false;
-			}
-			if ( ! context.initialized ) {
-				return true;
-			}
-
-			const slide = getElementRef( getElement() )?.closest?.(
-				CAROUSEL_SLIDE_SELECTOR,
-			);
-
-			if ( ! slide || ! slide.parentElement ) {
-				return false;
-			}
-
-			const slides = Array.from( slide.parentElement.children ).filter(
-				( child: Element ) => child.matches( CAROUSEL_SLIDE_SELECTOR ),
-			);
-
-			const index = slides.indexOf( slide );
-			if ( index === -1 ) {
-				return false;
-			}
-			return context.selectedIndex !== index;
-		},
 		getSlideTabPanelId: () => {
 			const slide = getElementRef( getElement() )?.closest?.(
 				CAROUSEL_SLIDE_SELECTOR,

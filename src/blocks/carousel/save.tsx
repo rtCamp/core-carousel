@@ -1,6 +1,7 @@
 import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import type { CarouselAttributes, CarouselContext } from './types';
+import { encodeContext } from './encode-context';
 
 export default function Save( {
 	attributes,
@@ -79,8 +80,9 @@ export default function Save( {
 		dir: direction,
 		'data-axis': axis,
 		'data-loop': loop ? 'true' : undefined,
+		...( useTabs ? { 'data-is-tabs': 'true' } : {} ),
 		'data-wp-interactive': 'rt-carousel/carousel',
-		'data-wp-context': JSON.stringify( context ),
+		'data-wp-context': encodeContext( JSON.stringify( context ) ),
 		'data-wp-init': 'callbacks.initCarousel', // Use init for mounting
 		style: {
 			'--rt-carousel-gap': `${ slideGap }px`,

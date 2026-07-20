@@ -2,6 +2,7 @@ import type { EmblaOptionsType } from 'embla-carousel';
 import type { BlockVerticalAlignmentToolbar } from '@wordpress/block-editor';
 
 export type CarouselAttributes = {
+	transition: 'slide' | 'fade';
 	loop: boolean;
 	dragFree: boolean;
 	carouselAlign: 'start' | 'center' | 'end';
@@ -18,6 +19,13 @@ export type CarouselAttributes = {
 	ariaLabel: string;
 	slideGap: number;
 	slidesToScroll: string;
+	lazyLoadImages: boolean;
+	autoScroll: boolean;
+	autoScrollSpeed: number;
+	autoScrollDirection: 'forward' | 'backward';
+	autoScrollStartDelay: number;
+	autoScrollStopOnInteraction: boolean;
+	autoScrollStopOnMouseEnter: boolean;
 	useTabs: boolean;
 };
 
@@ -79,6 +87,7 @@ export function findBlockDeep<T extends { name: string; innerBlocks?: T[] }>(
 }
 
 export type CarouselContext = {
+	transition: 'slide' | 'fade';
 	options: EmblaOptionsType & {
 		slidesToScroll?: number | 'auto';
 	};
@@ -104,6 +113,14 @@ export type CarouselContext = {
 	ref?: HTMLElement | null;
 	slideCount: number;
 	initialized?: boolean;
+	autoScroll: boolean | {
+		speed: number;
+		direction: 'forward' | 'backward';
+		startDelay: number;
+		stopOnInteraction: boolean;
+		stopOnMouseEnter: boolean;
+		stopOnFocusIn: boolean;
+	};
 	useTabs?: boolean;
 	carouselId?: string;
 };

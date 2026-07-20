@@ -13,10 +13,11 @@ import type { CarouselViewportAttributes, BlockEditorSelectors } from '../types'
 import { useContext, useEffect, useRef, useCallback, useState } from '@wordpress/element';
 import { useMergeRefs } from '@wordpress/compose';
 import { EditorCarouselContext } from '../editor-context';
-import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
+import EmblaCarousel, { type EmblaCarouselType, type EmblaPluginType } from 'embla-carousel';
+import Fade from 'embla-carousel-fade';
 import { useCarouselObservers } from '../hooks/useCarouselObservers';
 import { DYNAMIC_LIST_CONTAINER_SELECTOR } from '../dynamic-list-selectors';
-import { normalizeContainScroll } from '../embla-options';
+import { normalizeContainScroll, applyTransitionOverrides } from '../embla-options';
 
 const EMBLA_KEY = Symbol.for( 'carousel-system.carousel' );
 
@@ -219,20 +220,27 @@ export default function Edit( {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const options = carouselOptions as any;
 
-			embla = EmblaCarousel( viewport, {
-				loop: options?.loop ?? false,
-				dragFree: options?.dragFree ?? false,
-				containScroll: normalizeContainScroll( options?.containScroll ),
-				axis: options?.axis || 'x',
-				align: options?.align || 'start',
-				direction: options?.direction || 'ltr',
-				slidesToScroll: options?.slidesToScroll || 1,
-				duration: options?.duration,
-				container: dynamicListContainer || undefined,
-				watchDrag: false, // Clicks in slide gaps must not trigger Embla scroll in the editor.
-				watchSlides: false, // Gutenberg injects block UI nodes into .embla__container; Embla's built-in MutationObserver would call reInit() on those, corrupting slide order and transforms.
-				watchResize: false, // Replaced by a manual debounced ResizeObserver in useCarouselObservers.
-			} );
+			const emblaOptions = applyTransitionOverrides(
+				{
+					loop: options?.loop ?? false,
+					dragFree: options?.dragFree ?? false,
+					containScroll: normalizeContainScroll( options?.containScroll ),
+					axis: options?.axis || 'x',
+					align: options?.align || 'start',
+					direction: options?.direction || 'ltr',
+					slidesToScroll: options?.slidesToScroll || 1,
+					duration: options?.duration,
+					container: dynamicListContainer || undefined,
+					watchDrag: false, // Clicks in slide gaps must not trigger Embla scroll in the editor.
+					watchSlides: false, // Gutenberg injects block UI nodes into .embla__container; Embla's built-in MutationObserver would call reInit() on those, corrupting slide order and transforms.
+					watchResize: false, // Replaced by a manual debounced ResizeObserver in useCarouselObservers.
+				},
+				options?.transition || 'slide',
+			);
+
+			const plugins: EmblaPluginType[] = options?.transition === 'fade' ? [ Fade() ] : [];
+
+			embla = EmblaCarousel( viewport, emblaOptions, plugins );
 
 			( viewport as { [EMBLA_KEY]?: typeof embla } )[ EMBLA_KEY ] = embla;
 			emblaApiRef.current = embla;

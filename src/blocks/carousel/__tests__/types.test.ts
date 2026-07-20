@@ -18,6 +18,7 @@ describe( 'CarouselAttributes Type', () => {
 	describe( 'Structure Validation', () => {
 		it( 'should accept valid complete attributes', () => {
 			const attributes: CarouselAttributes = {
+				transition: 'fade',
 				loop: true,
 				dragFree: false,
 				carouselAlign: 'center',
@@ -34,6 +35,13 @@ describe( 'CarouselAttributes Type', () => {
 				slideGap: 16,
 				slidesToScroll: '1',
 				useTabs: false,
+				lazyLoadImages: true,
+				autoScroll: false,
+				autoScrollSpeed: 2,
+				autoScrollDirection: 'forward',
+				autoScrollStartDelay: 1000,
+				autoScrollStopOnInteraction: true,
+				autoScrollStopOnMouseEnter: false,
 			};
 
 			expect( attributes ).toBeDefined();
@@ -44,6 +52,7 @@ describe( 'CarouselAttributes Type', () => {
 
 		it( 'should have all required properties', () => {
 			const attributes: CarouselAttributes = {
+				transition: 'slide',
 				loop: false,
 				dragFree: true,
 				carouselAlign: 'start',
@@ -60,10 +69,18 @@ describe( 'CarouselAttributes Type', () => {
 				slideGap: 0,
 				slidesToScroll: 'auto',
 				useTabs: false,
+				lazyLoadImages: false,
+				autoScroll: false,
+				autoScrollSpeed: 2,
+				autoScrollDirection: 'forward',
+				autoScrollStartDelay: 1000,
+				autoScrollStopOnInteraction: true,
+				autoScrollStopOnMouseEnter: false,
 			};
 
 			// Verify all keys exist
 			const requiredKeys = [
+				'transition',
 				'loop',
 				'dragFree',
 				'carouselAlign',
@@ -79,12 +96,30 @@ describe( 'CarouselAttributes Type', () => {
 				'ariaLabel',
 				'slideGap',
 				'slidesToScroll',
+				'useTabs',
+				'lazyLoadImages',
+				'autoScroll',
+				'autoScrollSpeed',
+				'autoScrollDirection',
+				'autoScrollStartDelay',
+				'autoScrollStopOnInteraction',
+				'autoScrollStopOnMouseEnter',
 			];
 
 			requiredKeys.forEach( ( key ) => {
 				expect( attributes ).toHaveProperty( key );
 			} );
 		} );
+	} );
+
+	describe( 'Transition Options', () => {
+		it.each( [ 'slide', 'fade' ] as const )(
+			'should accept transition value: %s',
+			( transition ) => {
+				const attributes: Partial< CarouselAttributes > = { transition };
+				expect( attributes.transition ).toBe( transition );
+			},
+		);
 	} );
 
 	describe( 'Alignment Options', () => {
@@ -242,6 +277,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Autoplay State', () => {
 		it( 'should accept context with autoplay disabled', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {
 					loop: false,
 					align: 'start',
@@ -256,6 +292,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 2,
 				ariaLabelPattern: 'Go to slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.autoplay ).toBe( false );
@@ -264,6 +301,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should accept context with autoplay configuration object', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {
 					loop: true,
 					align: 'center',
@@ -282,6 +320,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0.5,
 				slideCount: 3,
 				ariaLabelPattern: 'Slide %d of 3',
+				autoScroll: false,
 			};
 
 			expect( context.autoplay ).not.toBe( false );
@@ -298,6 +337,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Scroll State Management', () => {
 		it( 'should track first slide state correctly', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: { loop: false },
 				autoplay: false,
 				isPlaying: false,
@@ -309,6 +349,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 3,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.selectedIndex ).toBe( 0 );
@@ -318,6 +359,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should track middle slide state correctly', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: { loop: false },
 				autoplay: false,
 				isPlaying: false,
@@ -329,6 +371,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0.5,
 				slideCount: 3,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.selectedIndex ).toBe( 1 );
@@ -338,6 +381,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should track last slide state correctly', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: { loop: false },
 				autoplay: false,
 				isPlaying: false,
@@ -349,6 +393,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 1,
 				slideCount: 3,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.selectedIndex ).toBe( 2 );
@@ -358,6 +403,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should handle single slide carousel', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -369,6 +415,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 1,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.scrollSnaps ).toHaveLength( 1 );
@@ -380,6 +427,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Timer and Animation State', () => {
 		it( 'should track timerIterationId for animation resets', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: { delay: 3000, stopOnInteraction: true, stopOnMouseEnter: false },
 				isPlaying: true,
@@ -391,6 +439,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 1,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.timerIterationId ).toBe( 5 );
@@ -402,6 +451,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should have initial timerIterationId of 0', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -413,6 +463,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.timerIterationId ).toBe( 0 );
@@ -424,6 +475,7 @@ describe( 'CarouselContext Type', () => {
 			const element = document.createElement( 'div' );
 
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -436,6 +488,7 @@ describe( 'CarouselContext Type', () => {
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
 				ref: element,
+				autoScroll: false,
 			};
 
 			expect( context.ref ).toBe( element );
@@ -444,6 +497,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should allow null ref', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -456,6 +510,7 @@ describe( 'CarouselContext Type', () => {
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
 				ref: null,
+				autoScroll: false,
 			};
 
 			expect( context.ref ).toBeNull();
@@ -463,6 +518,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should work without ref property', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -474,6 +530,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.ref ).toBeUndefined();
@@ -483,6 +540,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Embla Options Integration', () => {
 		it( 'should accept slidesToScroll as number in options', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {
 					loop: true,
 					slidesToScroll: 2,
@@ -497,6 +555,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.options.slidesToScroll ).toBe( 2 );
@@ -504,6 +563,7 @@ describe( 'CarouselContext Type', () => {
 
 		it( 'should accept slidesToScroll as "auto" in options', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {
 					loop: true,
 					slidesToScroll: 'auto',
@@ -518,6 +578,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.options.slidesToScroll ).toBe( 'auto' );
@@ -535,6 +596,7 @@ describe( 'CarouselContext Type', () => {
 
 			patterns.forEach( ( pattern ) => {
 				const context: CarouselContext = {
+					transition: 'slide',
 					options: {},
 					autoplay: false,
 					isPlaying: false,
@@ -546,6 +608,7 @@ describe( 'CarouselContext Type', () => {
 					scrollProgress: 0,
 					slideCount: 0,
 					ariaLabelPattern: pattern,
+					autoScroll: false,
 				};
 
 				expect( context.ariaLabelPattern ).toBe( pattern );
@@ -556,6 +619,7 @@ describe( 'CarouselContext Type', () => {
 	describe( 'Scroll Snaps Array', () => {
 		it( 'should accept empty scrollSnaps array', () => {
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -567,6 +631,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 0,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.scrollSnaps ).toHaveLength( 0 );
@@ -582,6 +647,7 @@ describe( 'CarouselContext Type', () => {
 			];
 
 			const context: CarouselContext = {
+				transition: 'slide',
 				options: {},
 				autoplay: false,
 				isPlaying: false,
@@ -593,6 +659,7 @@ describe( 'CarouselContext Type', () => {
 				scrollProgress: 0,
 				slideCount: 5,
 				ariaLabelPattern: 'Slide %d',
+				autoScroll: false,
 			};
 
 			expect( context.scrollSnaps ).toHaveLength( 5 );

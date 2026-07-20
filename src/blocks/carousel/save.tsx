@@ -9,6 +9,7 @@ export default function Save( {
 	attributes: CarouselAttributes;
 } ) {
 	const {
+		transition,
 		loop,
 		dragFree,
 		carouselAlign,
@@ -24,10 +25,17 @@ export default function Save( {
 		height,
 		slidesToScroll,
 		useTabs = false,
+		autoScroll,
+		autoScrollSpeed,
+		autoScrollDirection,
+		autoScrollStartDelay,
+		autoScrollStopOnInteraction,
+		autoScrollStopOnMouseEnter,
 	} = attributes;
 
 	// Pass configuration to the frontend via data-wp-context
 	const context: CarouselContext = {
+		transition,
 		options: {
 			loop,
 			dragFree,
@@ -68,6 +76,15 @@ export default function Save( {
 			'Slide {{currentSlide}} of {{totalSlides}}',
 			'rt-carousel',
 		),
+		autoScroll: autoScroll ? {
+			speed: autoScrollSpeed,
+			direction: autoScrollDirection,
+			startDelay: autoScrollStartDelay,
+			stopOnInteraction: autoScrollStopOnInteraction,
+			stopOnMouseEnter: autoScrollStopOnMouseEnter,
+			stopOnFocusIn: true,
+		}
+			: false,
 		useTabs,
 		carouselId: '', // Set at runtime by initCarousel in view.ts
 	};

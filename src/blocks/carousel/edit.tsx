@@ -217,6 +217,7 @@ export default function Edit( {
 			slideCount,
 			carouselOptions,
 			useTabs,
+			autoScroll,
 		} ),
 		[
 			emblaApi,
@@ -228,6 +229,7 @@ export default function Edit( {
 			slideCount,
 			carouselOptions,
 			useTabs,
+			autoScroll,
 			setEmblaApi,
 			setCanScrollPrev,
 			setCanScrollNext,

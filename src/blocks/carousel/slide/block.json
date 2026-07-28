@@ -17,7 +17,8 @@
 		}
 	},
 	"usesContext": [
-		"rt-carousel/carousel/allowedSlideBlocks"
+		"rt-carousel/carousel/allowedSlideBlocks",
+		"rt-carousel/carousel/useTabs"
 	],
 	"editorScript": "file:./index.js"
 }

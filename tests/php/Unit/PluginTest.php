@@ -548,4 +548,82 @@ class PluginTest extends UnitTestCase {
 
 		$this->assertEmpty( $output );
 	}
+
+	/**
+	 * Test that handle_lazy_load_images returns content unmodified when $instance is null.
+	 *
+	 * @return void
+	 */
+	public function test_handle_lazy_load_images_returns_unmodified_when_instance_is_null(): void {
+		$instance = $this->getPluginInstance();
+		$content  = '<div class="embla__slide"><img src="a.jpg" /></div>';
+
+		$result = $instance->handle_lazy_load_images( $content, [], null );
+
+		$this->assertSame( $content, $result );
+	}
+
+	/**
+	 * Test that handle_lazy_load_images returns content unmodified when lazyLoadImages attribute is unset.
+	 *
+	 * @return void
+	 */
+	public function test_handle_lazy_load_images_returns_unmodified_when_attribute_missing(): void {
+		$instance = $this->getPluginInstance();
+		$content  = '<div class="embla__slide"><img src="a.jpg" /></div>';
+		$block    = new \WP_Block( [] );
+
+		$result = $instance->handle_lazy_load_images( $content, [], $block );
+
+		$this->assertSame( $content, $result );
+	}
+
+	/**
+	 * Test that handle_lazy_load_images returns content unmodified when lazyLoadImages is disabled.
+	 *
+	 * @return void
+	 */
+	public function test_handle_lazy_load_images_returns_unmodified_when_disabled(): void {
+		$instance = $this->getPluginInstance();
+		$content  = '<div class="embla__slide"><img src="a.jpg" /></div>';
+		$block    = new \WP_Block( [ 'lazyLoadImages' => false ] );
+
+		$result = $instance->handle_lazy_load_images( $content, [], $block );
+
+		$this->assertSame( $content, $result );
+	}
+
+	/**
+	 * Test that the first slide's image loads eager and subsequent slides load lazy.
+	 *
+	 * @return void
+	 */
+	public function test_handle_lazy_load_images_sets_eager_on_first_slide_and_lazy_on_rest(): void {
+		$instance = $this->getPluginInstance();
+		$content  = '<div class="embla__slide"><img src="a.jpg" /></div>'
+			. '<div class="embla__slide"><img src="b.jpg" /></div>';
+		$block    = new \WP_Block( [ 'lazyLoadImages' => true ] );
+
+		$result = $instance->handle_lazy_load_images( $content, [], $block );
+
+		$this->assertMatchesRegularExpression( '/src="a\.jpg"[^>]*loading="eager"/', $result );
+		$this->assertStringContainsString( 'fetchpriority="high"', $result );
+		$this->assertMatchesRegularExpression( '/src="b\.jpg"[^>]*loading="lazy"/', $result );
+	}
+
+	/**
+	 * Test that an image with an existing loading attribute is left untouched.
+	 *
+	 * @return void
+	 */
+	public function test_handle_lazy_load_images_does_not_override_existing_loading_attribute(): void {
+		$instance = $this->getPluginInstance();
+		$content  = '<div class="embla__slide"><img src="a.jpg" loading="eager" /></div>';
+		$block    = new \WP_Block( [ 'lazyLoadImages' => true ] );
+
+		$result = $instance->handle_lazy_load_images( $content, [], $block );
+
+		$this->assertStringNotContainsString( 'fetchpriority', $result );
+		$this->assertMatchesRegularExpression( '/src="a\.jpg"[^>]*loading="eager"/', $result );
+	}
 }

@@ -45,7 +45,15 @@ jest.mock( '@wordpress/components', () => {
 
 	return {
 		PanelBody: Passthrough,
-		ToggleControl: jest.fn( () => null ),
+		ToggleControl: jest.fn( ( { onChange, checked, label } ) => (
+			<input
+				type="checkbox"
+				aria-label={ label }
+				checked={ checked }
+				onChange={ ( e ) => onChange?.( e.target.checked ) }
+				readOnly={ ! onChange }
+			/>
+		) ),
 		SelectControl: jest.fn( () => null ),
 		FormTokenField: jest.fn( () => null ),
 		BaseControl: Passthrough,
@@ -159,6 +167,8 @@ const createAttributes = (): CarouselAttributes => ( {
 	ariaLabel: 'Carousel',
 	slidesToScroll: '1',
 	slideGap: 0,
+	useTabs: false,
+	lazyLoadImages: true,
 	autoScroll: false,
 	autoScrollSpeed: 2,
 	autoScrollDirection: 'forward' as const,
@@ -342,5 +352,26 @@ describe( 'Carousel Edit setup flow', () => {
 			autoScroll: true,
 			transition: 'slide',
 		} ) );
+	} );
+} );
+
+describe( 'useTabs toggle', () => {
+	it( 'renders Use as Tabs toggle when inner blocks exist', () => {
+		mockBlockCount = 2;
+
+		render(
+			<Edit
+				attributes={ createAttributes() }
+				setAttributes={ jest.fn() }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		expect( toggleCall ).toBeDefined();
+		expect( toggleCall[ 0 ].checked ).toBe( false );
 	} );
 } );

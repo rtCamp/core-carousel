@@ -125,6 +125,66 @@ const markForAnnouncement = (): void => {
 	getContext<CarouselContext>().shouldAnnounce = true;
 };
 
+type StoppablePlugin = {
+	stop?: () => void;
+	destroy?: () => void;
+	reset?: () => void;
+};
+
+const stopPluginsOnInteraction = (
+	embla: EmblaCarouselType,
+	context: CarouselContext,
+): void => {
+	if ( typeof embla.plugins !== 'function' ) {
+		return;
+	}
+	const plugins = embla.plugins() as {
+		autoplay?: StoppablePlugin;
+		autoScroll?: StoppablePlugin;
+	};
+	const autoplay = plugins.autoplay;
+	const autoScroll = plugins.autoScroll;
+
+	const isAutoplayEnabled =
+		context.autoplay === true ||
+		( typeof context.autoplay === 'object' && context.autoplay !== null );
+	if ( autoplay && isAutoplayEnabled ) {
+		const shouldStop =
+			context.autoplay === true ||
+			( typeof context.autoplay === 'object' &&
+				context.autoplay.stopOnInteraction !== false );
+
+		if ( shouldStop ) {
+			if ( typeof autoplay.destroy === 'function' ) {
+				autoplay.destroy();
+			} else if ( typeof autoplay.stop === 'function' ) {
+				autoplay.stop();
+			}
+		} else if ( typeof autoplay.reset === 'function' ) {
+			autoplay.reset();
+		}
+	}
+
+	const isAutoScrollEnabled =
+		context.autoScroll === true ||
+		( typeof context.autoScroll === 'object' && context.autoScroll !== null );
+	if ( autoScroll && isAutoScrollEnabled ) {
+		const shouldStop =
+			context.autoScroll === true ||
+			( typeof context.autoScroll === 'object' &&
+				context.autoScroll.stopOnInteraction !== false );
+
+		if ( shouldStop ) {
+			if ( typeof autoScroll.destroy === 'function' ) {
+				autoScroll.destroy();
+			} else if ( typeof autoScroll.stop === 'function' ) {
+				autoScroll.stop();
+			}
+		} else if ( typeof autoScroll.reset === 'function' ) {
+			autoScroll.reset();
+		}
+	}
+};
 // Incrementing counter for unique carousel IDs on the same page
 let carouselIdCounter = 0;
 
@@ -144,6 +204,9 @@ store( 'rt-carousel/carousel', {
 			const element = getElementRef( getElement() );
 			const embla = getEmblaFromElement( element );
 			if ( embla ) {
+				const context = getContext<CarouselContext>();
+				stopPluginsOnInteraction( embla, context );
+
 				if ( embla.canScrollPrev() ) {
 					markForAnnouncement();
 				}
@@ -157,6 +220,9 @@ store( 'rt-carousel/carousel', {
 			const element = getElementRef( getElement() );
 			const embla = getEmblaFromElement( element );
 			if ( embla ) {
+				const context = getContext<CarouselContext>();
+				stopPluginsOnInteraction( embla, context );
+
 				if ( embla.canScrollNext() ) {
 					markForAnnouncement();
 				}
@@ -176,6 +242,8 @@ store( 'rt-carousel/carousel', {
 				const element = getElementRef( getElement() );
 				const embla = getEmblaFromElement( element );
 				if ( embla ) {
+					stopPluginsOnInteraction( embla, context );
+
 					if ( snap.index !== context.selectedIndex ) {
 						markForAnnouncement();
 					}

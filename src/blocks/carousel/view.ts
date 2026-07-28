@@ -192,11 +192,11 @@ store( 'rt-carousel/carousel', {
 	state: {
 		get canScrollPrev() {
 			const context = getContext<CarouselContext>();
-			return context.canScrollPrev;
+			return context.autoScroll ? true : context.canScrollPrev;
 		},
 		get canScrollNext() {
 			const context = getContext<CarouselContext>();
-			return context.canScrollNext;
+			return context.autoScroll ? true : context.canScrollNext;
 		},
 	},
 	actions: {

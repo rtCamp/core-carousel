@@ -16,6 +16,7 @@ export type EditorCarouselContextType = {
 	scrollSnaps: number[];
 	slideCount: number;
 	useTabs?: boolean;
+	autoScroll?: boolean;
 	carouselOptions: Omit<Partial<CarouselAttributes>, 'slidesToScroll'> & {
 		slidesToScroll?: number | string;
 		duration?: number;
@@ -37,6 +38,7 @@ const defaultValue: EditorCarouselContextType = {
 	scrollSnaps: [],
 	slideCount: 0,
 	useTabs: false,
+	autoScroll: false,
 	carouselOptions: {},
 };
 

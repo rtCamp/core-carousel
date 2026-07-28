@@ -195,9 +195,10 @@ export default function Edit( {
 			axis,
 			height,
 			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+			autoScroll,
 			...( useTabs ? { duration: 0 } : {} ),
 		} ),
-		[ transition, loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll, useTabs ],
+		[ transition, loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll, autoScroll, useTabs ],
 	);
 
 	const contextValue = useMemo(
@@ -216,6 +217,7 @@ export default function Edit( {
 			slideCount,
 			carouselOptions,
 			useTabs,
+			autoScroll,
 		} ),
 		[
 			emblaApi,
@@ -227,6 +229,7 @@ export default function Edit( {
 			slideCount,
 			carouselOptions,
 			useTabs,
+			autoScroll,
 			setEmblaApi,
 			setCanScrollPrev,
 			setCanScrollNext,
@@ -359,6 +362,26 @@ export default function Edit( {
 		<>
 			<InspectorControls>
 				<PanelBody title={ useTabs ? __( 'Tab Settings', 'rt-carousel' ) : __( 'Carousel Settings', 'rt-carousel' ) }>
+					<SelectControl
+						label={ __( 'Transition', 'rt-carousel' ) }
+						value={ transition }
+						disabled={ autoScroll }
+						options={ [
+							{ label: __( 'Slide', 'rt-carousel' ), value: 'slide' },
+							{ label: __( 'Fade', 'rt-carousel' ), value: 'fade' },
+						] }
+						onChange={ ( value ) =>
+							setAttributes( { transition: value as CarouselAttributes[ 'transition' ] } )
+						}
+						help={
+							autoScroll
+								? __( 'Auto Scroll does not support transitions.', 'rt-carousel' )
+								: __(
+									'Choose how slides transition: sliding horizontally or cross-fading.',
+									'rt-carousel',
+								)
+						}
+					/>
 					<ToggleControl
 						label={ __( 'Use as Tabs', 'rt-carousel' ) }
 						checked={ useTabs }
@@ -370,21 +393,6 @@ export default function Edit( {
 					/>
 					{ ! useTabs && (
 						<>
-							<SelectControl
-								label={ __( 'Transition', 'rt-carousel' ) }
-								value={ transition }
-								options={ [
-									{ label: __( 'Slide', 'rt-carousel' ), value: 'slide' },
-									{ label: __( 'Fade', 'rt-carousel' ), value: 'fade' },
-								] }
-								onChange={ ( value ) =>
-									setAttributes( { transition: value as CarouselAttributes[ 'transition' ] } )
-								}
-								help={ __(
-									'Choose how slides transition: sliding horizontally or cross-fading.',
-									'rt-carousel',
-								) }
-							/>
 							<ToggleControl
 								label={ __( 'Loop', 'rt-carousel' ) }
 								checked={ loop }
@@ -568,11 +576,17 @@ export default function Edit( {
 						<ToggleControl
 							label={ __( 'Enable Auto Scroll', 'rt-carousel' ) }
 							checked={ autoScroll }
-							onChange={ ( value ) => setAttributes( {
-								autoScroll: value,
-								autoplay: value ? false : autoplay,
-								loop: ( value && autoScrollDirection === 'backward' ) ? true : loop,
-							} ) }
+							onChange={ ( value ) => {
+								const nextAttributes: Partial< CarouselAttributes > = {
+									autoScroll: value,
+									autoplay: value ? false : autoplay,
+									loop: ( value && autoScrollDirection === 'backward' ) ? true : loop,
+								};
+								if ( value ) {
+									nextAttributes.transition = 'slide';
+								}
+								setAttributes( nextAttributes );
+							} }
 						/>
 						{ autoScroll && ( <>
 							<RangeControl

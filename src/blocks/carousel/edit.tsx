@@ -195,9 +195,10 @@ export default function Edit( {
 			axis,
 			height,
 			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+			autoScroll,
 			...( useTabs ? { duration: 0 } : {} ),
 		} ),
-		[ transition, loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll, useTabs ],
+		[ transition, loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll, autoScroll, useTabs ],
 	);
 
 	const contextValue = useMemo(

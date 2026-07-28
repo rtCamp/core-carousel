@@ -145,7 +145,10 @@ const stopPluginsOnInteraction = (
 	const autoplay = plugins.autoplay;
 	const autoScroll = plugins.autoScroll;
 
-	if ( autoplay ) {
+	const isAutoplayEnabled =
+		context.autoplay === true ||
+		( typeof context.autoplay === 'object' && context.autoplay !== null );
+	if ( autoplay && isAutoplayEnabled ) {
 		const shouldStop =
 			context.autoplay === true ||
 			( typeof context.autoplay === 'object' &&
@@ -162,7 +165,10 @@ const stopPluginsOnInteraction = (
 		}
 	}
 
-	if ( autoScroll ) {
+	const isAutoScrollEnabled =
+		context.autoScroll === true ||
+		( typeof context.autoScroll === 'object' && context.autoScroll !== null );
+	if ( autoScroll && isAutoScrollEnabled ) {
 		const shouldStop =
 			context.autoScroll === true ||
 			( typeof context.autoScroll === 'object' &&

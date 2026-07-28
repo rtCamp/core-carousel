@@ -435,6 +435,42 @@ describe( 'Carousel View Module', () => {
 					document.body.removeChild( wrapper );
 				}
 			} );
+
+			it( 'should not call stop, destroy, or reset on autoplay or autoscroll if context config is false', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: false,
+					autoScroll: false,
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				try {
+					storeConfig.actions.scrollPrev();
+
+					expect( mockAutoplay.destroy ).not.toHaveBeenCalled();
+					expect( mockAutoplay.stop ).not.toHaveBeenCalled();
+					expect( mockAutoplay.reset ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.destroy ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.stop ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.reset ).not.toHaveBeenCalled();
+				} finally {
+					document.body.removeChild( wrapper );
+				}
+			} );
 		} );
 
 		describe( 'scrollNext', () => {

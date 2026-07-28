@@ -117,3 +117,45 @@
 	max-height: var(--rt-carousel-slide-width, 100%);
 	margin-block-end: var(--rt-carousel-gap, 0);
 }
+
+/* ── Tabs mode: stack panels and cross-fade ─────────────────────────────────
+ * Before JS: all slides visible in normal flow (no :has match → no stacking).
+ * After JS sets is-active: CSS grid stacks all panels; inactive fade out.
+ */
+:where(.rt-carousel[data-is-tabs="true"]) .embla {
+	overflow: visible;
+}
+
+/* Only stack once JS has initialised and marked a slide active.
+   Scope to .embla__slide.is-active (not any .is-active) so the tab list's
+   active tab doesn't trigger stacking before a slide has been activated. */
+:where(.rt-carousel[data-is-tabs="true"]:has(.embla__slide.is-active)) .embla__container,
+:where(.rt-carousel[data-is-tabs="true"]:has(.embla__slide.is-active)) .embla .wp-block-post-template,
+:where(.rt-carousel[data-is-tabs="true"]:has(.embla__slide.is-active)) .embla .wp-block-term-template {
+	display: grid;
+	/* stylelint-disable-next-line declaration-no-important */
+	transform: none !important;
+}
+
+:where(.rt-carousel[data-is-tabs="true"]:has(.embla__slide.is-active)) .embla__slide,
+:where(.rt-carousel[data-is-tabs="true"]:has(.embla__slide.is-active)) .embla .wp-block-post-template li,
+:where(.rt-carousel[data-is-tabs="true"]:has(.embla__slide.is-active)) .embla .wp-block-term-template li {
+	grid-area: 1 / 1;
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+
+	/* delay visibility until after fade-out completes */
+	transition: opacity 0.3s ease, visibility 0s 0.3s;
+}
+
+:where(.rt-carousel[data-is-tabs="true"]) .embla__slide.is-active,
+:where(.rt-carousel[data-is-tabs="true"]) .embla .wp-block-post-template li.is-active,
+:where(.rt-carousel[data-is-tabs="true"]) .embla .wp-block-term-template li.is-active {
+	visibility: visible;
+	opacity: 1;
+	pointer-events: auto;
+
+	/* make visible immediately so opacity can fade in */
+	transition: opacity 0.3s ease, visibility 0s;
+}

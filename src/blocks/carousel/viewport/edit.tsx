@@ -27,7 +27,7 @@ export default function Edit( {
 	clientId: string;
 	attributes: CarouselViewportAttributes;
 } ) {
-	const { setEmblaApi, setCanScrollPrev, setCanScrollNext, carouselOptions } = useContext(
+	const { setEmblaApi, setCanScrollPrev, setCanScrollNext, carouselOptions, setSelectedIndex, useTabs } = useContext(
 		EditorCarouselContext,
 	);
 
@@ -178,6 +178,14 @@ export default function Edit( {
 		if ( selectedSlideIndex < 0 ) {
 			return;
 		}
+		// In tabs mode, selectedIndex must be driven directly from tree-view
+		// selection because Embla cannot scroll to hidden (0-width) slides.
+		// In carousel mode, selectedIndex tracks Embla's scroll position via
+		// the 'select' event handler in carousel/edit.tsx — don't override it.
+		if ( useTabs ) {
+			setSelectedIndex( selectedSlideIndex );
+			return; // No Embla scroll in tabs mode — slides are display:none.
+		}
 		const id = requestAnimationFrame( () => {
 			const api = emblaApiRef.current;
 			if ( api && api.selectedScrollSnap() !== selectedSlideIndex ) {
@@ -185,7 +193,7 @@ export default function Edit( {
 			}
 		} );
 		return () => cancelAnimationFrame( id );
-	}, [ selectedSlideIndex ] );
+	}, [ selectedSlideIndex, setSelectedIndex, useTabs ] );
 
 	/**
 	 * Core Embla initialisation effect.
@@ -221,6 +229,7 @@ export default function Edit( {
 					align: options?.align || 'start',
 					direction: options?.direction || 'ltr',
 					slidesToScroll: options?.slidesToScroll || 1,
+					duration: options?.duration,
 					container: dynamicListContainer || undefined,
 					watchDrag: false, // Clicks in slide gaps must not trigger Embla scroll in the editor.
 					watchSlides: false, // Gutenberg injects block UI nodes into .embla__container; Embla's built-in MutationObserver would call reInit() on those, corrupting slide order and transforms.

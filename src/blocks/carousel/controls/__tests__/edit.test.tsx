@@ -41,7 +41,7 @@ describe( 'Carousel Controls Edit', () => {
 				} }
 			>
 				<Edit />
-			</EditorCarouselContext.Provider>
+			</EditorCarouselContext.Provider>,
 		);
 
 		const prevBtn = screen.getByRole( 'button', { name: 'Previous Slide' } );
@@ -73,7 +73,7 @@ describe( 'Carousel Controls Edit', () => {
 				} }
 			>
 				<Edit />
-			</EditorCarouselContext.Provider>
+			</EditorCarouselContext.Provider>,
 		);
 
 		const prevBtn = screen.getByRole( 'button', { name: 'Previous Slide' } );

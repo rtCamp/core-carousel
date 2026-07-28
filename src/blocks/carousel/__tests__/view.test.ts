@@ -1126,3 +1126,56 @@ describe( 'Edge Cases and Error Handling', () => {
 		expect( mockContext.autoScroll ).toBe( false );
 	} );
 } );
+
+describe( 'getSlideTabPanelId', () => {
+	const getSlideTabPanelId = storeConfig?.callbacks?.getSlideTabPanelId;
+
+	it( 'returns correct id for slide at index 1', () => {
+		const container = document.createElement( 'div' );
+		container.className = 'embla__container';
+		const slide0 = document.createElement( 'div' );
+		slide0.className = 'embla__slide';
+		const slide1 = document.createElement( 'div' );
+		slide1.className = 'embla__slide';
+		container.appendChild( slide0 );
+		container.appendChild( slide1 );
+		const viewport = document.createElement( 'div' );
+		viewport.className = 'embla';
+		viewport.appendChild( container );
+		const wrapper = document.createElement( 'div' );
+		wrapper.className = 'rt-carousel';
+		wrapper.appendChild( viewport );
+
+		( getContext as jest.Mock ).mockReturnValue(
+			createMockContext( { carouselId: 'abc', useTabs: true } ),
+		);
+		( getElement as jest.Mock ).mockReturnValue( slide1 );
+
+		expect( getSlideTabPanelId() ).toBe( 'rt-carousel-panel-abc-1' );
+	} );
+} );
+
+describe( 'getSlideTabLabelledBy', () => {
+	const getSlideTabLabelledBy = storeConfig?.callbacks?.getSlideTabLabelledBy;
+
+	it( 'returns correct labelledby id for slide at index 0', () => {
+		const container = document.createElement( 'div' );
+		container.className = 'embla__container';
+		const slide0 = document.createElement( 'div' );
+		slide0.className = 'embla__slide';
+		container.appendChild( slide0 );
+		const viewport = document.createElement( 'div' );
+		viewport.className = 'embla';
+		viewport.appendChild( container );
+		const wrapper = document.createElement( 'div' );
+		wrapper.className = 'rt-carousel';
+		wrapper.appendChild( viewport );
+
+		( getContext as jest.Mock ).mockReturnValue(
+			createMockContext( { carouselId: 'abc', useTabs: true } ),
+		);
+		( getElement as jest.Mock ).mockReturnValue( slide0 );
+
+		expect( getSlideTabLabelledBy() ).toBe( 'rt-carousel-tab-abc-0' );
+	} );
+} );

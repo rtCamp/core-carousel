@@ -12,12 +12,16 @@ import metadata from './block.json';
 import type { CarouselAttributes } from './types';
 import { __ } from '@wordpress/i18n';
 
+// @ts-expect-error — __experimentalLabel exists in Gutenberg but is not yet typed
 registerBlockType( metadata as BlockConfiguration<CarouselAttributes>, {
 	edit: Edit,
 	save: Save,
 	deprecated: deprecated as unknown as NonNullable<
 		BlockConfiguration<CarouselAttributes>[ 'deprecated' ]
 	>,
+	__experimentalLabel: ( attributes: CarouselAttributes ) => {
+		return attributes.useTabs ? __( 'Tabs', 'rt-carousel' ) : undefined;
+	},
 } );
 
 const styles = [

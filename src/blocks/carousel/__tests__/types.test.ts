@@ -12,7 +12,7 @@
  * @package
  */
 
-import type { CarouselAttributes, CarouselContext } from '../types';
+import { findBlockDeep, type CarouselAttributes, type CarouselContext } from '../types';
 
 describe( 'CarouselAttributes Type', () => {
 	describe( 'Structure Validation', () => {
@@ -34,6 +34,7 @@ describe( 'CarouselAttributes Type', () => {
 				ariaLabel: 'Image carousel',
 				slideGap: 16,
 				slidesToScroll: '1',
+				useTabs: false,
 				lazyLoadImages: true,
 				autoScroll: false,
 				autoScrollSpeed: 2,
@@ -67,6 +68,7 @@ describe( 'CarouselAttributes Type', () => {
 				ariaLabel: '',
 				slideGap: 0,
 				slidesToScroll: 'auto',
+				useTabs: false,
 				lazyLoadImages: false,
 				autoScroll: false,
 				autoScrollSpeed: 2,
@@ -94,7 +96,14 @@ describe( 'CarouselAttributes Type', () => {
 				'ariaLabel',
 				'slideGap',
 				'slidesToScroll',
+				'useTabs',
 				'lazyLoadImages',
+				'autoScroll',
+				'autoScrollSpeed',
+				'autoScrollDirection',
+				'autoScrollStartDelay',
+				'autoScrollStopOnInteraction',
+				'autoScrollStopOnMouseEnter',
 			];
 
 			requiredKeys.forEach( ( key ) => {
@@ -658,5 +667,57 @@ describe( 'CarouselContext Type', () => {
 				expect( snap.index ).toBe( i );
 			} );
 		} );
+	} );
+} );
+
+describe( 'findBlockDeep', () => {
+	it( 'returns the first top-level match', () => {
+		const tree = [
+			{ name: 'a', clientId: '1', innerBlocks: [] },
+			{ name: 'b', clientId: '2', innerBlocks: [] },
+		];
+		expect( findBlockDeep( tree, 'b' )?.clientId ).toBe( '2' );
+	} );
+
+	it( 'descends into innerBlocks depth-first', () => {
+		const tree = [
+			{
+				name: 'a',
+				clientId: '1',
+				innerBlocks: [
+					{ name: 'c', clientId: '3', innerBlocks: [] },
+				],
+			},
+			{ name: 'b', clientId: '2', innerBlocks: [] },
+		];
+		expect( findBlockDeep( tree, 'c' )?.clientId ).toBe( '3' );
+	} );
+
+	it( 'returns the shallowest match, not a deeper namesake', () => {
+		// DFS returns first hit; parent visited before its child.
+		const tree = [
+			{
+				name: 'x',
+				clientId: 'outer',
+				innerBlocks: [
+					{ name: 'x', clientId: 'inner', innerBlocks: [] },
+				],
+			},
+		];
+		expect( findBlockDeep( tree, 'x' )?.clientId ).toBe( 'outer' );
+	} );
+
+	it( 'returns undefined when no block matches', () => {
+		const tree = [ { name: 'a', clientId: '1', innerBlocks: [] } ];
+		expect( findBlockDeep( tree, 'missing' ) ).toBeUndefined();
+	} );
+
+	it( 'handles empty trees', () => {
+		expect( findBlockDeep( [], 'a' ) ).toBeUndefined();
+	} );
+
+	it( 'handles blocks without innerBlocks', () => {
+		const tree = [ { name: 'a', clientId: '1' } ];
+		expect( findBlockDeep( tree, 'a' )?.clientId ).toBe( '1' );
 	} );
 } );

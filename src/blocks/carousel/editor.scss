@@ -149,3 +149,8 @@
 .rt-carousel .embla__slide {
 	min-height: 200px;
 }
+
+// WYSIWYG tabs mode: hide non-active slides in the editor
+.rt-carousel[data-is-tabs="true"] .embla__slide:not(.is-active) {
+	display: none;
+}

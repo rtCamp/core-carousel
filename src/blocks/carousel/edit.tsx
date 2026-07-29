@@ -22,7 +22,7 @@ import { plus } from '@wordpress/icons';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useState, useMemo, useCallback, useEffect, useRef } from '@wordpress/element';
 import { createBlock, type BlockConfiguration } from '@wordpress/blocks';
-import { findBlockDeep, type CarouselAttributes, type BlockEditorSelectors } from './types';
+import { findBlockDeep, findAllBlocksDeep, type CarouselAttributes, type BlockEditorSelectors } from './types';
 import { EditorCarouselContext } from './editor-context';
 import type { EmblaCarouselType } from 'embla-carousel';
 import { getSlideTemplates, type SlideTemplate } from './templates';
@@ -82,23 +82,26 @@ export default function Edit( {
 
 	const slideTemplates = useMemo( getSlideTemplates, [ getSlideTemplates ] );
 
-	const { replaceInnerBlocks, insertBlock } = useDispatch( 'core/block-editor' );
+	const { replaceInnerBlocks, insertBlock, removeBlocks } = useDispatch( 'core/block-editor' );
 
 	const hasInnerBlocks = useSelect(
-		( select ) =>
+		( selectStore ) =>
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			( select( 'core/block-editor' ) as any ).getBlockCount( clientId ) > 0,
+			( selectStore( 'core/block-editor' ) as any ).getBlockCount( clientId ) > 0,
 		[ clientId ],
 	);
 
-	const viewportClientId = useSelect(
-		( select ) => {
-			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
-			const innerBlocks = blockEditor.getBlocks( clientId );
-			// Viewport may be nested through columns/group for side-by-side tab layouts.
-			return findBlockDeep( innerBlocks, 'rt-carousel/carousel-viewport' )?.clientId;
+	const innerBlocks = useSelect(
+		( selectStore ) => {
+			const blockEditor = selectStore( 'core/block-editor' ) as BlockEditorSelectors;
+			return blockEditor.getBlocks( clientId );
 		},
 		[ clientId ],
+	);
+
+	const viewportClientId = useMemo(
+		() => findBlockDeep( innerBlocks, 'rt-carousel/carousel-viewport' )?.clientId,
+		[ innerBlocks ],
 	);
 
 	const addSlide = useCallback( () => {
@@ -163,9 +166,9 @@ export default function Edit( {
 	}, [ showSetup, setupStep ] );
 
 	// Fetch registered block types for the allowed-blocks token field
-	const blockTypes = useSelect( ( select ) => {
+	const blockTypes = useSelect( ( selectStore ) => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return ( select( 'core/blocks' ) as any ).getBlockTypes() as BlockConfiguration[];
+		return ( selectStore( 'core/blocks' ) as any ).getBlockTypes() as BlockConfiguration[];
 	}, [] );
 
 	const suggestions = blockTypes?.map( ( block ) => block.name ) || [];
@@ -347,14 +350,22 @@ export default function Edit( {
 				autoplay: false,
 				axis: 'x',
 			} );
-			// Auto-insert tab list as first child (before viewport)
-			insertBlock(
-				createBlock( 'rt-carousel/carousel-tab-list', {} ),
-				0,
-				clientId,
-			);
+			const tabListExists = findBlockDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
+			if ( ! tabListExists ) {
+				// Auto-insert tab list as first child (before viewport)
+				insertBlock(
+					createBlock( 'rt-carousel/carousel-tab-list', {} ),
+					0,
+					clientId,
+				);
+			}
 		} else {
 			setAttributes( { useTabs: false } );
+			const tabListBlocks = findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
+			const tabListIds = tabListBlocks.map( ( b ) => b.clientId );
+			if ( tabListIds.length > 0 ) {
+				removeBlocks( tabListIds );
+			}
 		}
 	};
 

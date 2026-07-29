@@ -12,7 +12,7 @@
  * @package
  */
 
-import { findBlockDeep, type CarouselAttributes, type CarouselContext } from '../types';
+import { findBlockDeep, findAllBlocksDeep, type CarouselAttributes, type CarouselContext } from '../types';
 
 describe( 'CarouselAttributes Type', () => {
 	describe( 'Structure Validation', () => {
@@ -719,5 +719,28 @@ describe( 'findBlockDeep', () => {
 	it( 'handles blocks without innerBlocks', () => {
 		const tree = [ { name: 'a', clientId: '1' } ];
 		expect( findBlockDeep( tree, 'a' )?.clientId ).toBe( '1' );
+	} );
+} );
+
+describe( 'findAllBlocksDeep', () => {
+	it( 'returns all matching blocks at all nesting levels', () => {
+		const tree = [
+			{
+				name: 'target',
+				clientId: '1',
+				innerBlocks: [
+					{ name: 'other', clientId: '2', innerBlocks: [] },
+					{ name: 'target', clientId: '3', innerBlocks: [] },
+				],
+			},
+			{ name: 'target', clientId: '4', innerBlocks: [] },
+		];
+		const matches = findAllBlocksDeep( tree, 'target' );
+		expect( matches.map( ( b ) => b.clientId ) ).toEqual( [ '1', '3', '4' ] );
+	} );
+
+	it( 'returns empty array when no blocks match', () => {
+		const tree = [ { name: 'a', clientId: '1', innerBlocks: [] } ];
+		expect( findAllBlocksDeep( tree, 'missing' ) ).toEqual( [] );
 	} );
 } );

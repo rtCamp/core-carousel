@@ -85,15 +85,15 @@ export default function Edit( {
 	const { replaceInnerBlocks, insertBlock, removeBlocks } = useDispatch( 'core/block-editor' );
 
 	const hasInnerBlocks = useSelect(
-		( select ) =>
+		( selectStore ) =>
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			( select( 'core/block-editor' ) as any ).getBlockCount( clientId ) > 0,
+			( selectStore( 'core/block-editor' ) as any ).getBlockCount( clientId ) > 0,
 		[ clientId ],
 	);
 
 	const viewportClientId = useSelect(
-		( select ) => {
-			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
+		( selectStore ) => {
+			const blockEditor = selectStore( 'core/block-editor' ) as BlockEditorSelectors;
 			const innerBlocks = blockEditor.getBlocks( clientId );
 			// Viewport may be nested through columns/group for side-by-side tab layouts.
 			return findBlockDeep( innerBlocks, 'rt-carousel/carousel-viewport' )?.clientId;
@@ -163,9 +163,9 @@ export default function Edit( {
 	}, [ showSetup, setupStep ] );
 
 	// Fetch registered block types for the allowed-blocks token field
-	const blockTypes = useSelect( ( select ) => {
+	const blockTypes = useSelect( ( selectStore ) => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return ( select( 'core/blocks' ) as any ).getBlockTypes() as BlockConfiguration[];
+		return ( selectStore( 'core/blocks' ) as any ).getBlockTypes() as BlockConfiguration[];
 	}, [] );
 
 	const suggestions = blockTypes?.map( ( block ) => block.name ) || [];

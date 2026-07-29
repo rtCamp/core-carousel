@@ -37,6 +37,14 @@ jest.mock( '@wordpress/block-editor', () => ( {
 	ColorPalette: () => null,
 } ) );
 
+jest.mock( '@wordpress/components', () => {
+	const Passthrough = ( { children }: { children?: React.ReactNode } ) => <>{ children }</>;
+	return {
+		PanelBody: Passthrough,
+		BaseControl: Passthrough,
+	};
+} );
+
 jest.mock( '@wordpress/data', () => ( {
 	useSelect: jest.fn( () => 2 ),
 } ) );

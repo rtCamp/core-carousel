@@ -86,6 +86,30 @@ export function findBlockDeep<T extends { name: string; innerBlocks?: T[] }>(
 	return undefined;
 }
 
+/**
+ * Depth-first search for all blocks of `name` anywhere in the tree.
+ *
+ * @template {Object} T - Block-like value with a `name` and optional `innerBlocks`.
+ * @param {T[]}    blocks - Block tree to search (must include innerBlocks).
+ * @param {string} name   - Block name to match.
+ * @return {T[]} All matching blocks.
+ */
+export function findAllBlocksDeep<T extends { name: string; innerBlocks?: T[] }>(
+	blocks: T[],
+	name: string,
+): T[] {
+	const result: T[] = [];
+	for ( const block of blocks ) {
+		if ( block.name === name ) {
+			result.push( block );
+		}
+		if ( block.innerBlocks?.length ) {
+			result.push( ...findAllBlocksDeep( block.innerBlocks, name ) );
+		}
+	}
+	return result;
+}
+
 export type CarouselContext = {
 	transition: 'slide' | 'fade';
 	options: EmblaOptionsType & {

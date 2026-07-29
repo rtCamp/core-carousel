@@ -19,10 +19,10 @@ import {
 	ToolbarButton,
 } from '@wordpress/components';
 import { plus } from '@wordpress/icons';
-import { useSelect, useDispatch } from '@wordpress/data';
+import { useSelect, useDispatch, select } from '@wordpress/data';
 import { useState, useMemo, useCallback, useEffect, useRef } from '@wordpress/element';
 import { createBlock, type BlockConfiguration } from '@wordpress/blocks';
-import { findBlockDeep, type CarouselAttributes, type BlockEditorSelectors } from './types';
+import { findBlockDeep, findAllBlocksDeep, type CarouselAttributes, type BlockEditorSelectors } from './types';
 import { EditorCarouselContext } from './editor-context';
 import type { EmblaCarouselType } from 'embla-carousel';
 import { getSlideTemplates, type SlideTemplate } from './templates';
@@ -82,7 +82,7 @@ export default function Edit( {
 
 	const slideTemplates = useMemo( getSlideTemplates, [ getSlideTemplates ] );
 
-	const { replaceInnerBlocks, insertBlock } = useDispatch( 'core/block-editor' );
+	const { replaceInnerBlocks, insertBlock, removeBlocks } = useDispatch( 'core/block-editor' );
 
 	const hasInnerBlocks = useSelect(
 		( select ) =>
@@ -347,14 +347,26 @@ export default function Edit( {
 				autoplay: false,
 				axis: 'x',
 			} );
-			// Auto-insert tab list as first child (before viewport)
-			insertBlock(
-				createBlock( 'rt-carousel/carousel-tab-list', {} ),
-				0,
-				clientId,
-			);
+			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
+			const innerBlocks = blockEditor.getBlocks( clientId );
+			const tabListExists = findBlockDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
+			if ( ! tabListExists ) {
+				// Auto-insert tab list as first child (before viewport)
+				insertBlock(
+					createBlock( 'rt-carousel/carousel-tab-list', {} ),
+					0,
+					clientId,
+				);
+			}
 		} else {
 			setAttributes( { useTabs: false } );
+			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
+			const innerBlocks = blockEditor.getBlocks( clientId );
+			const tabListBlocks = findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
+			const tabListIds = tabListBlocks.map( ( b ) => b.clientId );
+			if ( tabListIds.length > 0 ) {
+				removeBlocks( tabListIds );
+			}
 		}
 	};
 

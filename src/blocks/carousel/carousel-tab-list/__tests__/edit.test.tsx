@@ -44,6 +44,10 @@ jest.mock( '@wordpress/data', () => ( {
 describe( 'Carousel Tab List Edit Component', () => {
 	const defaultAttributes: TabListAttributes = {
 		labels: [ 'Tab 1', 'Tab 2' ],
+		activeTabBackgroundColor: '',
+		activeTabTextColor: '',
+		inactiveTabBackgroundColor: '',
+		inactiveTabTextColor: '',
 	};
 
 	it( 'renders tabs as editable span elements with role="tab" instead of button elements', () => {

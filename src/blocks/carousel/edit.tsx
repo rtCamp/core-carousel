@@ -19,7 +19,7 @@ import {
 	ToolbarButton,
 } from '@wordpress/components';
 import { plus } from '@wordpress/icons';
-import { useSelect, useDispatch, select } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { useState, useMemo, useCallback, useEffect, useRef } from '@wordpress/element';
 import { createBlock, type BlockConfiguration } from '@wordpress/blocks';
 import { findBlockDeep, findAllBlocksDeep, type CarouselAttributes, type BlockEditorSelectors } from './types';
@@ -91,14 +91,17 @@ export default function Edit( {
 		[ clientId ],
 	);
 
-	const viewportClientId = useSelect(
+	const innerBlocks = useSelect(
 		( selectStore ) => {
 			const blockEditor = selectStore( 'core/block-editor' ) as BlockEditorSelectors;
-			const innerBlocks = blockEditor.getBlocks( clientId );
-			// Viewport may be nested through columns/group for side-by-side tab layouts.
-			return findBlockDeep( innerBlocks, 'rt-carousel/carousel-viewport' )?.clientId;
+			return blockEditor.getBlocks( clientId );
 		},
 		[ clientId ],
+	);
+
+	const viewportClientId = useMemo(
+		() => findBlockDeep( innerBlocks, 'rt-carousel/carousel-viewport' )?.clientId,
+		[ innerBlocks ],
 	);
 
 	const addSlide = useCallback( () => {
@@ -347,8 +350,6 @@ export default function Edit( {
 				autoplay: false,
 				axis: 'x',
 			} );
-			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
-			const innerBlocks = blockEditor.getBlocks( clientId );
 			const tabListExists = findBlockDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
 			if ( ! tabListExists ) {
 				// Auto-insert tab list as first child (before viewport)
@@ -360,8 +361,6 @@ export default function Edit( {
 			}
 		} else {
 			setAttributes( { useTabs: false } );
-			const blockEditor = select( 'core/block-editor' ) as BlockEditorSelectors;
-			const innerBlocks = blockEditor.getBlocks( clientId );
 			const tabListBlocks = findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
 			const tabListIds = tabListBlocks.map( ( b ) => b.clientId );
 			if ( tabListIds.length > 0 ) {

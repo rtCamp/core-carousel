@@ -78,6 +78,10 @@ jest.mock( '@wordpress/components', () => {
 	};
 } );
 
+const mockInsertBlock = jest.fn();
+const mockRemoveBlocks = jest.fn();
+let mockBlocks: unknown[] = [];
+
 type BlockEditorMockSelectors = {
 	getBlockCount: () => number;
 	getBlocks: () => unknown[];
@@ -95,30 +99,33 @@ type MockSelect = {
 
 type MockUseSelectCallback = ( select: MockSelect ) => unknown;
 
+const mockSelect = ( ( storeName: string ) => {
+	if ( storeName === 'core/block-editor' ) {
+		return {
+			getBlockCount: () => mockBlockCount,
+			getBlocks: () => mockBlocks,
+		};
+	}
+
+	if ( storeName === 'core/blocks' ) {
+		return {
+			getBlockTypes: () => [],
+		};
+	}
+
+	return {};
+} ) as MockSelect;
+
 jest.mock( '@wordpress/data', () => ( {
 	useDispatch: jest.fn( () => ( {
 		replaceInnerBlocks: jest.fn(),
-		insertBlock: jest.fn(),
+		insertBlock: mockInsertBlock,
+		removeBlocks: mockRemoveBlocks,
 	} ) ),
+	select: jest.fn( ( storeName: string ) => mockSelect( storeName ) ),
+	useRegistry: jest.fn( () => ( { select: mockSelect } ) ),
 	useSelect: jest.fn( ( selector: MockUseSelectCallback ) => {
-		const select = ( ( storeName: string ) => {
-			if ( storeName === 'core/block-editor' ) {
-				return {
-					getBlockCount: () => mockBlockCount,
-					getBlocks: () => [],
-				};
-			}
-
-			if ( storeName === 'core/blocks' ) {
-				return {
-					getBlockTypes: () => [],
-				};
-			}
-
-			return {};
-		} ) as MockSelect;
-
-		return selector( select );
+		return selector( mockSelect );
 	} ),
 } ) );
 
@@ -356,9 +363,14 @@ describe( 'Carousel Edit setup flow', () => {
 } );
 
 describe( 'useTabs toggle', () => {
-	it( 'renders Use as Tabs toggle when inner blocks exist', () => {
+	beforeEach( () => {
 		mockBlockCount = 2;
+		mockBlocks = [];
+		mockInsertBlock.mockClear();
+		mockRemoveBlocks.mockClear();
+	} );
 
+	it( 'renders Use as Tabs toggle when inner blocks exist', () => {
 		render(
 			<Edit
 				attributes={ createAttributes() }
@@ -373,5 +385,89 @@ describe( 'useTabs toggle', () => {
 
 		expect( toggleCall ).toBeDefined();
 		expect( toggleCall[ 0 ].checked ).toBe( false );
+	} );
+
+	it( 'inserts a tab list block when toggling Use as Tabs ON if no tab list exists', () => {
+		mockBlocks = [
+			{ name: 'rt-carousel/carousel-viewport', clientId: 'viewport-1', innerBlocks: [] },
+		];
+		const setAttributes = jest.fn();
+
+		render(
+			<Edit
+				attributes={ createAttributes() }
+				setAttributes={ setAttributes }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		toggleCall[ 0 ].onChange( true );
+
+		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-tab-list' } ),
+			0,
+			'test-client-id',
+		);
+	} );
+
+	it( 'does not insert a second tab list block when toggling Use as Tabs ON if one already exists', () => {
+		mockBlocks = [
+			{ name: 'rt-carousel/carousel-tab-list', clientId: 'existing-tab-list', innerBlocks: [] },
+			{ name: 'rt-carousel/carousel-viewport', clientId: 'viewport-1', innerBlocks: [] },
+		];
+		const setAttributes = jest.fn();
+
+		render(
+			<Edit
+				attributes={ createAttributes() }
+				setAttributes={ setAttributes }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		toggleCall[ 0 ].onChange( true );
+
+		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
+		expect( mockInsertBlock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'removes all tab list blocks (including nested ones) when toggling Use as Tabs OFF', () => {
+		mockBlocks = [
+			{ name: 'rt-carousel/carousel-tab-list', clientId: 'top-tab-list', innerBlocks: [] },
+			{
+				name: 'core/group',
+				clientId: 'group-1',
+				innerBlocks: [
+					{ name: 'rt-carousel/carousel-tab-list', clientId: 'nested-tab-list', innerBlocks: [] },
+				],
+			},
+		];
+		const setAttributes = jest.fn();
+
+		render(
+			<Edit
+				attributes={ { ...createAttributes(), useTabs: true } }
+				setAttributes={ setAttributes }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		toggleCall[ 0 ].onChange( false );
+
+		expect( setAttributes ).toHaveBeenCalledWith( { useTabs: false } );
+		expect( mockRemoveBlocks ).toHaveBeenCalledWith( [ 'top-tab-list', 'nested-tab-list' ] );
 	} );
 } );

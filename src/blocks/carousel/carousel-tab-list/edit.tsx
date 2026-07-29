@@ -177,8 +177,9 @@ export default function Edit( {
 					return (
 						<RichText
 							key={ `tab-${ index }` }
-							tagName="button"
-							type="button"
+							tagName="span"
+							role="tab"
+							aria-selected={ index === carousel.selectedIndex }
 							className={ `wp-block-rt-carousel-carousel-tab-list__tab${ index === carousel.selectedIndex ? ' is-active' : '' }` }
 							value={ label }
 							onChange={ ( value ) => setLabelAt( index, value ) }

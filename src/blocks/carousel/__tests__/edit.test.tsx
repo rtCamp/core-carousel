@@ -407,7 +407,9 @@ describe( 'useTabs toggle', () => {
 
 		toggleCall[ 0 ].onChange( true );
 
-		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
+		expect( setAttributes ).toHaveBeenCalledWith(
+			expect.objectContaining( { useTabs: true, transition: 'slide', autoScroll: false } ),
+		);
 		expect( mockInsertBlock ).toHaveBeenCalledWith(
 			expect.objectContaining( { name: 'rt-carousel/carousel-tab-list' } ),
 			0,
@@ -436,18 +438,92 @@ describe( 'useTabs toggle', () => {
 
 		toggleCall[ 0 ].onChange( true );
 
-		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
+		expect( setAttributes ).toHaveBeenCalledWith(
+			expect.objectContaining( { useTabs: true, transition: 'slide', autoScroll: false } ),
+		);
 		expect( mockInsertBlock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'removes all tab list blocks (including nested ones) when toggling Use as Tabs OFF', () => {
+	it( 'removes tab list blocks and re-inserts full nav group container when toggling Use as Tabs OFF and no nav blocks exist', () => {
 		mockBlocks = [
 			{ name: 'rt-carousel/carousel-tab-list', clientId: 'top-tab-list', innerBlocks: [] },
+			{ name: 'rt-carousel/carousel-viewport', clientId: 'viewport-1', innerBlocks: [] },
+		];
+		const setAttributes = jest.fn();
+
+		render(
+			<Edit
+				attributes={ { ...createAttributes(), useTabs: true } }
+				setAttributes={ setAttributes }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		toggleCall[ 0 ].onChange( false );
+
+		expect( setAttributes ).toHaveBeenCalledWith( { useTabs: false } );
+		expect( mockRemoveBlocks ).toHaveBeenCalledWith( [ 'top-tab-list' ] );
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'core/group' } ),
+			undefined,
+			'test-client-id',
+		);
+	} );
+
+	it( 'removes navigation group row containers and navigation blocks when toggling Use as Tabs ON', () => {
+		mockBlocks = [
+			{ name: 'rt-carousel/carousel-viewport', clientId: 'viewport-1', innerBlocks: [] },
 			{
 				name: 'core/group',
 				clientId: 'group-1',
 				innerBlocks: [
-					{ name: 'rt-carousel/carousel-tab-list', clientId: 'nested-tab-list', innerBlocks: [] },
+					{ name: 'rt-carousel/carousel-controls', clientId: 'nested-controls', innerBlocks: [] },
+					{ name: 'rt-carousel/carousel-counter', clientId: 'nested-counter', innerBlocks: [] },
+					{ name: 'rt-carousel/carousel-dots', clientId: 'nested-dots', innerBlocks: [] },
+				],
+			},
+		];
+		const setAttributes = jest.fn();
+
+		render(
+			<Edit
+				attributes={ createAttributes() }
+				setAttributes={ setAttributes }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		toggleCall[ 0 ].onChange( true );
+
+		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
+		const removedIds = mockRemoveBlocks.mock.calls[ 0 ][ 0 ];
+		expect( removedIds ).toHaveLength( 4 );
+		expect( removedIds ).toEqual(
+			expect.arrayContaining( [
+				'group-1',
+				'nested-controls',
+				'nested-counter',
+				'nested-dots',
+			] ),
+		);
+	} );
+
+	it( 'restores missing nav blocks into the core/group that actually contains nav elements, ignoring unrelated groups', () => {
+		mockBlocks = [
+			{ name: 'core/group', clientId: 'unrelated-group', innerBlocks: [] },
+			{
+				name: 'core/group',
+				clientId: 'nav-group-1',
+				innerBlocks: [
+					{ name: 'rt-carousel/carousel-dots', clientId: 'existing-dots', innerBlocks: [] },
 				],
 			},
 		];
@@ -467,7 +543,61 @@ describe( 'useTabs toggle', () => {
 
 		toggleCall[ 0 ].onChange( false );
 
-		expect( setAttributes ).toHaveBeenCalledWith( { useTabs: false } );
-		expect( mockRemoveBlocks ).toHaveBeenCalledWith( [ 'top-tab-list', 'nested-tab-list' ] );
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-controls' } ),
+			undefined,
+			'nav-group-1',
+		);
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-counter' } ),
+			undefined,
+			'nav-group-1',
+		);
+	} );
+
+	it( 're-inserts only missing nav blocks (counter and dots) when controls already exist in a nav group', () => {
+		mockBlocks = [
+			{
+				name: 'core/group',
+				clientId: 'nav-group-1',
+				innerBlocks: [
+					{ name: 'rt-carousel/carousel-controls', clientId: 'existing-controls', innerBlocks: [] },
+				],
+			},
+		];
+		const setAttributes = jest.fn();
+
+		render(
+			<Edit
+				attributes={ { ...createAttributes(), useTabs: true } }
+				setAttributes={ setAttributes }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		toggleCall[ 0 ].onChange( false );
+
+		// Controls already exist — should NOT be inserted again
+		expect( mockInsertBlock ).not.toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-controls' } ),
+			expect.anything(),
+			expect.anything(),
+		);
+
+		// Missing counter and dots SHOULD be inserted into nav-group-1
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-counter' } ),
+			undefined,
+			'nav-group-1',
+		);
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-dots' } ),
+			undefined,
+			'nav-group-1',
+		);
 	} );
 } );

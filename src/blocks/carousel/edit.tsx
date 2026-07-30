@@ -342,12 +342,14 @@ export default function Edit( {
 		if ( value ) {
 			setAttributes( {
 				useTabs: true,
+				transition: 'slide',
 				loop: false,
 				dragFree: false,
 				carouselAlign: 'start',
 				containScroll: 'trimSnaps',
 				slidesToScroll: '1',
 				autoplay: false,
+				autoScroll: false,
 				axis: 'x',
 			} );
 			const tabListExists = findBlockDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
@@ -359,12 +361,75 @@ export default function Edit( {
 					clientId,
 				);
 			}
+			// Find nav row containers (core/group containing navigation blocks) as well as any standalone nav blocks
+			const navGroupBlocks = innerBlocks.filter(
+				( b ) =>
+					b.name === 'core/group' &&
+					( findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-controls' ) ||
+						findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-counter' ) ||
+						findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-dots' ) ),
+			);
+			const looseNavBlocks = [
+				...findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-controls' ),
+				...findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-counter' ),
+				...findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-dots' ),
+			];
+
+			const idsToRemove = Array.from(
+				new Set( [
+					...navGroupBlocks.map( ( b ) => b.clientId ),
+					...looseNavBlocks.map( ( b ) => b.clientId ),
+				] ),
+			);
+			if ( idsToRemove.length > 0 ) {
+				removeBlocks( idsToRemove );
+			}
 		} else {
 			setAttributes( { useTabs: false } );
 			const tabListBlocks = findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
 			const tabListIds = tabListBlocks.map( ( b ) => b.clientId );
 			if ( tabListIds.length > 0 ) {
 				removeBlocks( tabListIds );
+			}
+
+			const controlsExist = findBlockDeep( innerBlocks, 'rt-carousel/carousel-controls' );
+			const counterExist = findBlockDeep( innerBlocks, 'rt-carousel/carousel-counter' );
+			const dotsExist = findBlockDeep( innerBlocks, 'rt-carousel/carousel-dots' );
+
+			if ( ! controlsExist && ! counterExist && ! dotsExist ) {
+				// No navigation blocks exist — insert full nav group row container
+				insertBlock( createNavGroup(), undefined, clientId );
+			} else if ( ! controlsExist || ! counterExist || ! dotsExist ) {
+				const navGroup = innerBlocks.find(
+					( b ) =>
+						b.name === 'core/group' &&
+						( findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-controls' ) ||
+							findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-counter' ) ||
+							findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-dots' ) ),
+				);
+				const targetParentId = navGroup ? navGroup.clientId : clientId;
+
+				if ( ! controlsExist ) {
+					insertBlock(
+						createBlock( 'rt-carousel/carousel-controls', {} ),
+						undefined,
+						targetParentId,
+					);
+				}
+				if ( ! counterExist ) {
+					insertBlock(
+						createBlock( 'rt-carousel/carousel-counter', {} ),
+						undefined,
+						targetParentId,
+					);
+				}
+				if ( ! dotsExist ) {
+					insertBlock(
+						createBlock( 'rt-carousel/carousel-dots', {} ),
+						undefined,
+						targetParentId,
+					);
+				}
 			}
 		}
 	};
@@ -373,26 +438,6 @@ export default function Edit( {
 		<>
 			<InspectorControls>
 				<PanelBody title={ useTabs ? __( 'Tab Settings', 'rt-carousel' ) : __( 'Carousel Settings', 'rt-carousel' ) }>
-					<SelectControl
-						label={ __( 'Transition', 'rt-carousel' ) }
-						value={ transition }
-						disabled={ autoScroll }
-						options={ [
-							{ label: __( 'Slide', 'rt-carousel' ), value: 'slide' },
-							{ label: __( 'Fade', 'rt-carousel' ), value: 'fade' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { transition: value as CarouselAttributes[ 'transition' ] } )
-						}
-						help={
-							autoScroll
-								? __( 'Auto Scroll does not support transitions.', 'rt-carousel' )
-								: __(
-									'Choose how slides transition: sliding horizontally or cross-fading.',
-									'rt-carousel',
-								)
-						}
-					/>
 					<ToggleControl
 						label={ __( 'Use as Tabs', 'rt-carousel' ) }
 						checked={ useTabs }
@@ -404,6 +449,26 @@ export default function Edit( {
 					/>
 					{ ! useTabs && (
 						<>
+							<SelectControl
+								label={ __( 'Transition', 'rt-carousel' ) }
+								value={ transition }
+								disabled={ autoScroll }
+								options={ [
+									{ label: __( 'Slide', 'rt-carousel' ), value: 'slide' },
+									{ label: __( 'Fade', 'rt-carousel' ), value: 'fade' },
+								] }
+								onChange={ ( value ) =>
+									setAttributes( { transition: value as CarouselAttributes[ 'transition' ] } )
+								}
+								help={
+									autoScroll
+										? __( 'Auto Scroll does not support transitions.', 'rt-carousel' )
+										: __(
+											'Choose how slides transition: sliding horizontally or cross-fading.',
+											'rt-carousel',
+										)
+								}
+							/>
 							<ToggleControl
 								label={ __( 'Loop', 'rt-carousel' ) }
 								checked={ loop }

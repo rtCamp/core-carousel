@@ -407,7 +407,9 @@ describe( 'useTabs toggle', () => {
 
 		toggleCall[ 0 ].onChange( true );
 
-		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
+		expect( setAttributes ).toHaveBeenCalledWith(
+			expect.objectContaining( { useTabs: true, transition: 'slide' } ),
+		);
 		expect( mockInsertBlock ).toHaveBeenCalledWith(
 			expect.objectContaining( { name: 'rt-carousel/carousel-tab-list' } ),
 			0,
@@ -436,20 +438,16 @@ describe( 'useTabs toggle', () => {
 
 		toggleCall[ 0 ].onChange( true );
 
-		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
+		expect( setAttributes ).toHaveBeenCalledWith(
+			expect.objectContaining( { useTabs: true, transition: 'slide' } ),
+		);
 		expect( mockInsertBlock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'removes all tab list blocks (including nested ones) when toggling Use as Tabs OFF', () => {
+	it( 'removes tab list blocks and re-inserts full nav group container when toggling Use as Tabs OFF and no nav blocks exist', () => {
 		mockBlocks = [
 			{ name: 'rt-carousel/carousel-tab-list', clientId: 'top-tab-list', innerBlocks: [] },
-			{
-				name: 'core/group',
-				clientId: 'group-1',
-				innerBlocks: [
-					{ name: 'rt-carousel/carousel-tab-list', clientId: 'nested-tab-list', innerBlocks: [] },
-				],
-			},
+			{ name: 'rt-carousel/carousel-viewport', clientId: 'viewport-1', innerBlocks: [] },
 		];
 		const setAttributes = jest.fn();
 
@@ -468,6 +466,49 @@ describe( 'useTabs toggle', () => {
 		toggleCall[ 0 ].onChange( false );
 
 		expect( setAttributes ).toHaveBeenCalledWith( { useTabs: false } );
-		expect( mockRemoveBlocks ).toHaveBeenCalledWith( [ 'top-tab-list', 'nested-tab-list' ] );
+		expect( mockRemoveBlocks ).toHaveBeenCalledWith( [ 'top-tab-list' ] );
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'core/group' } ),
+			undefined,
+			'test-client-id',
+		);
+	} );
+
+	it( 'removes navigation group row containers and navigation blocks when toggling Use as Tabs ON', () => {
+		mockBlocks = [
+			{ name: 'rt-carousel/carousel-viewport', clientId: 'viewport-1', innerBlocks: [] },
+			{
+				name: 'core/group',
+				clientId: 'group-1',
+				innerBlocks: [
+					{ name: 'rt-carousel/carousel-controls', clientId: 'nested-controls', innerBlocks: [] },
+					{ name: 'rt-carousel/carousel-counter', clientId: 'nested-counter', innerBlocks: [] },
+					{ name: 'rt-carousel/carousel-dots', clientId: 'nested-dots', innerBlocks: [] },
+				],
+			},
+		];
+		const setAttributes = jest.fn();
+
+		render(
+			<Edit
+				attributes={ createAttributes() }
+				setAttributes={ setAttributes }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		toggleCall[ 0 ].onChange( true );
+
+		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
+		expect( mockRemoveBlocks ).toHaveBeenCalledWith( [
+			'group-1',
+			'nested-controls',
+			'nested-counter',
+			'nested-dots',
+		] );
 	} );
 } );

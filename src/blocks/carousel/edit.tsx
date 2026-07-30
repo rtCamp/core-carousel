@@ -349,6 +349,7 @@ export default function Edit( {
 				containScroll: 'trimSnaps',
 				slidesToScroll: '1',
 				autoplay: false,
+				autoScroll: false,
 				axis: 'x',
 			} );
 			const tabListExists = findBlockDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
@@ -399,7 +400,13 @@ export default function Edit( {
 				// No navigation blocks exist — insert full nav group row container
 				insertBlock( createNavGroup(), undefined, clientId );
 			} else if ( ! controlsExist || ! counterExist || ! dotsExist ) {
-				const navGroup = innerBlocks.find( ( b ) => b.name === 'core/group' );
+				const navGroup = innerBlocks.find(
+					( b ) =>
+						b.name === 'core/group' &&
+						( findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-controls' ) ||
+							findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-counter' ) ||
+							findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-dots' ) ),
+				);
 				const targetParentId = navGroup ? navGroup.clientId : clientId;
 
 				if ( ! controlsExist ) {

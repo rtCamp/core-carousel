@@ -364,9 +364,9 @@ export default function Edit( {
 			const navGroupBlocks = innerBlocks.filter(
 				( b ) =>
 					b.name === 'core/group' &&
-					( findBlockDeep( b.innerBlocks, 'rt-carousel/carousel-controls' ) ||
-						findBlockDeep( b.innerBlocks, 'rt-carousel/carousel-counter' ) ||
-						findBlockDeep( b.innerBlocks, 'rt-carousel/carousel-dots' ) ),
+					( findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-controls' ) ||
+						findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-counter' ) ||
+						findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-dots' ) ),
 			);
 			const looseNavBlocks = [
 				...findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-controls' ),

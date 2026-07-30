@@ -504,12 +504,16 @@ describe( 'useTabs toggle', () => {
 		toggleCall[ 0 ].onChange( true );
 
 		expect( setAttributes ).toHaveBeenCalledWith( expect.objectContaining( { useTabs: true } ) );
-		expect( mockRemoveBlocks ).toHaveBeenCalledWith( [
-			'group-1',
-			'nested-controls',
-			'nested-counter',
-			'nested-dots',
-		] );
+		const removedIds = mockRemoveBlocks.mock.calls[ 0 ][ 0 ];
+		expect( removedIds ).toHaveLength( 4 );
+		expect( removedIds ).toEqual(
+			expect.arrayContaining( [
+				'group-1',
+				'nested-controls',
+				'nested-counter',
+				'nested-dots',
+			] ),
+		);
 	} );
 
 	it( 'restores missing nav blocks into the core/group that actually contains nav elements, ignoring unrelated groups', () => {
@@ -541,12 +545,58 @@ describe( 'useTabs toggle', () => {
 
 		expect( mockInsertBlock ).toHaveBeenCalledWith(
 			expect.objectContaining( { name: 'rt-carousel/carousel-controls' } ),
-			0,
+			undefined,
 			'nav-group-1',
 		);
 		expect( mockInsertBlock ).toHaveBeenCalledWith(
 			expect.objectContaining( { name: 'rt-carousel/carousel-counter' } ),
-			1,
+			undefined,
+			'nav-group-1',
+		);
+	} );
+
+	it( 're-inserts only missing nav blocks (counter and dots) when controls already exist in a nav group', () => {
+		mockBlocks = [
+			{
+				name: 'core/group',
+				clientId: 'nav-group-1',
+				innerBlocks: [
+					{ name: 'rt-carousel/carousel-controls', clientId: 'existing-controls', innerBlocks: [] },
+				],
+			},
+		];
+		const setAttributes = jest.fn();
+
+		render(
+			<Edit
+				attributes={ { ...createAttributes(), useTabs: true } }
+				setAttributes={ setAttributes }
+				clientId="test-client-id"
+			/>,
+		);
+
+		const toggleCall = ( ToggleControl as unknown as jest.Mock ).mock.calls.find(
+			( [ props ] ) => props.label === 'Use as Tabs',
+		);
+
+		toggleCall[ 0 ].onChange( false );
+
+		// Controls already exist — should NOT be inserted again
+		expect( mockInsertBlock ).not.toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-controls' } ),
+			expect.anything(),
+			expect.anything(),
+		);
+
+		// Missing counter and dots SHOULD be inserted into nav-group-1
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-counter' } ),
+			undefined,
+			'nav-group-1',
+		);
+		expect( mockInsertBlock ).toHaveBeenCalledWith(
+			expect.objectContaining( { name: 'rt-carousel/carousel-dots' } ),
+			undefined,
 			'nav-group-1',
 		);
 	} );

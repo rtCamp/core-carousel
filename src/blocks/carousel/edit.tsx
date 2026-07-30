@@ -412,21 +412,21 @@ export default function Edit( {
 				if ( ! controlsExist ) {
 					insertBlock(
 						createBlock( 'rt-carousel/carousel-controls', {} ),
-						0,
+						undefined,
 						targetParentId,
 					);
 				}
 				if ( ! counterExist ) {
 					insertBlock(
 						createBlock( 'rt-carousel/carousel-counter', {} ),
-						1,
+						undefined,
 						targetParentId,
 					);
 				}
 				if ( ! dotsExist ) {
 					insertBlock(
 						createBlock( 'rt-carousel/carousel-dots', {} ),
-						2,
+						undefined,
 						targetParentId,
 					);
 				}

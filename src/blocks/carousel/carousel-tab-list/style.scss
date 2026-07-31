@@ -32,7 +32,9 @@
 		align-items: center;
 		justify-content: center;
 		padding: 0.5em 1em;
-		border: var(--rt-tab-border-width) var(--rt-tab-border-style) var(--rt-tab-border-color);
+		border-width: var(--rt-tab-border-width);
+		border-style: var(--rt-tab-border-style);
+		border-color: var(--rt-tab-border-color);
 		background: var(--rt-tab-inactive-bg);
 		color: var(--rt-tab-inactive-color);
 		cursor: pointer;
@@ -45,7 +47,8 @@
 
 		&:focus-visible {
 
-			/* Visible by default (WCAG 2.4.7). High contrast outline for keyboard navigation */
+			/* Visible by default (WCAG 2.4.7). High contrast outline for keyboard
+			 * navigation. */
 			outline: 2px solid var(--wp-admin-theme-color, #007cba);
 			outline-offset: 2px;
 		}

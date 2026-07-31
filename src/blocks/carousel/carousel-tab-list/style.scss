@@ -66,10 +66,21 @@
 		flex-wrap: nowrap;
 		overflow-x: auto;
 		-webkit-overflow-scrolling: touch;
-		scrollbar-width: none;
+		scrollbar-width: thin;
+		scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+		padding-bottom: 4px;
 
 		&::-webkit-scrollbar {
-			display: none;
+			height: 4px;
+		}
+
+		&::-webkit-scrollbar-track {
+			background: transparent;
+		}
+
+		&::-webkit-scrollbar-thumb {
+			background-color: rgba(0, 0, 0, 0.2);
+			border-radius: 2px;
 		}
 
 		.wp-block-rt-carousel-carousel-tab-list__tab {

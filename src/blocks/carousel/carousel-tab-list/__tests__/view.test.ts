@@ -209,6 +209,13 @@ describe( 'getTabTabIndex (roving tabindex)', () => {
 		);
 		expect( storeConfig!.callbacks.getTabTabIndex() ).toBe( '-1' );
 	} );
+
+	it( 'returns "0" for the first tab when selectedIndex is -1 or uninitialized', () => {
+		( getContext as jest.Mock ).mockReturnValue(
+			mockContext( { selectedIndex: -1, snap: { index: 0 } } ),
+		);
+		expect( storeConfig!.callbacks.getTabTabIndex() ).toBe( '0' );
+	} );
 } );
 
 describe( 'getKeyFeatureDotText', () => {

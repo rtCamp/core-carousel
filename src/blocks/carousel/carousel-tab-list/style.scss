@@ -60,10 +60,10 @@
 
 @media (max-width: 1024px) {
 
-	.wp-block-rt-carousel-carousel-tab-list {
+	.wp-block-rt-carousel-carousel-tab-list,
+	.wp-block-rt-carousel-carousel-tab-list.is-layout-flex {
 		max-width: 100%;
-		/* stylelint-disable-next-line declaration-no-important */
-		flex-wrap: nowrap !important;
+		flex-wrap: nowrap;
 		overflow-x: auto;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: none;
@@ -72,7 +72,7 @@
 			display: none;
 		}
 
-		&__tab {
+		.wp-block-rt-carousel-carousel-tab-list__tab {
 			flex: 0 0 auto;
 			white-space: nowrap;
 		}

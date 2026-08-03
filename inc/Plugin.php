@@ -341,7 +341,15 @@ class Plugin {
 			return $block_content;
 		}
 
-		$processor = new WP_HTML_Tag_Processor( $block_content );
+		// WordPress 6.6, the plugin's floor, always has the HTML Processor; the unit test
+		// harness stubs only the Tag Processor, so it exercises the fallback walk.
+		$processor = class_exists( \WP_HTML_Processor::class )
+			? \WP_HTML_Processor::create_fragment( $block_content )
+			: new WP_HTML_Tag_Processor( $block_content );
+
+		if ( null === $processor ) {
+			return $block_content;
+		}
 
 		while ( $processor->next_tag() ) {
 			if ( 'LI' !== $processor->get_tag() ) {
@@ -349,6 +357,23 @@ class Plugin {
 			}
 
 			if ( ! $processor->has_class( 'wp-block-post' ) && ! $processor->has_class( 'wp-block-term' ) ) {
+				continue;
+			}
+
+			// Keep existing interactivity scopes and bindings intact.
+			if (
+				null !== $processor->get_attribute( 'data-wp-interactive' )
+				|| null !== $processor->get_attribute( 'data-wp-class--is-active' )
+				|| null !== $processor->get_attribute( 'data-wp-bind--aria-current' )
+			) {
+				continue;
+			}
+
+			// Only the carousel's own track items are slides; a loop nested inside a slide keeps its items untouched.
+			if (
+				$processor instanceof \WP_HTML_Processor
+				&& 1 !== count( array_keys( $processor->get_breadcrumbs(), 'LI', true ) )
+			) {
 				continue;
 			}
 

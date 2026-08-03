@@ -675,4 +675,24 @@ class PluginTest extends UnitTestCase {
 		$this->assertStringContainsString( '<li class="plain-item">Nope</li>', $result );
 		$this->assertStringContainsString( 'data-wp-class--is-active="callbacks.isDotActive"', $result );
 	}
+
+	/**
+	 * Test that mark_query_loop_slides keeps existing directives and scopes intact.
+	 *
+	 * @return void
+	 */
+	public function test_mark_query_loop_slides_keeps_existing_directives(): void {
+		$instance = $this->getPluginInstance();
+		$content  = '<ul class="wp-block-post-template">'
+			. '<li class="wp-block-post post-1" data-wp-interactive="my-theme/scope" data-wp-class--is-active="callbacks.myOwn">A</li>'
+			. '<li class="wp-block-post post-2">B</li>'
+			. '</ul>';
+
+		$result = $instance->mark_query_loop_slides( $content );
+
+		$this->assertStringContainsString( 'data-wp-interactive="my-theme/scope"', $result );
+		$this->assertStringContainsString( 'data-wp-class--is-active="callbacks.myOwn"', $result );
+		$this->assertSame( 1, substr_count( $result, 'data-wp-interactive="rt-carousel/carousel"' ) );
+		$this->assertSame( 1, substr_count( $result, 'data-wp-bind--aria-current="callbacks.isSlideActive"' ) );
+	}
 }

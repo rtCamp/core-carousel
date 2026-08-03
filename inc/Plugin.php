@@ -326,23 +326,19 @@ class Plugin {
 	/**
 	 * Add the active-slide directives to Query Loop and Terms Query slides.
 	 *
-	 * The Slide block ships these directives in its saved markup, but the items rendered by
-	 * `core/post-template` or `core/term-template` carry none, so the runtime never marks them
-	 * with `is-active` or `aria-current` even though `callbacks.isSlideActive` already resolves them.
-	 * See: https://github.com/rtCamp/rt-carousel/issues/179
+	 * The Slide block ships these directives in its saved markup; query and term loop items carry
+	 * none, so the runtime never marks them. See: https://github.com/rtCamp/rt-carousel/issues/179
 	 *
 	 * @param string $block_content The carousel's rendered HTML.
 	 *
 	 * @return string The filtered HTML.
 	 */
 	public function mark_query_loop_slides( string $block_content ): string {
-		// Bail early when the carousel contains no query-driven slides.
 		if ( ! str_contains( $block_content, 'wp-block-post-template' ) && ! str_contains( $block_content, 'wp-block-term-template' ) ) {
 			return $block_content;
 		}
 
-		// WordPress 6.6, the plugin's floor, always has the HTML Processor; the unit test
-		// harness stubs only the Tag Processor, so it exercises the fallback walk.
+		// WordPress 6.6, the plugin's floor, always has the HTML Processor; the unit harness stubs only the Tag Processor.
 		$processor = class_exists( \WP_HTML_Processor::class )
 			? \WP_HTML_Processor::create_fragment( $block_content )
 			: new WP_HTML_Tag_Processor( $block_content );
@@ -360,7 +356,6 @@ class Plugin {
 				continue;
 			}
 
-			// Keep existing interactivity scopes and bindings intact.
 			if (
 				null !== $processor->get_attribute( 'data-wp-interactive' )
 				|| null !== $processor->get_attribute( 'data-wp-class--is-active' )
@@ -369,7 +364,7 @@ class Plugin {
 				continue;
 			}
 
-			// Only the carousel's own track items are slides; a loop nested inside a slide keeps its items untouched.
+			// Depth one is the carousel's own track; a loop nested inside a slide keeps its items untouched.
 			if (
 				$processor instanceof \WP_HTML_Processor
 				&& 1 !== count( array_keys( $processor->get_breadcrumbs(), 'LI', true ) )

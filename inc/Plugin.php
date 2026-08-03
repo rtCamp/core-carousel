@@ -44,6 +44,7 @@ class Plugin {
 		add_action( 'admin_notices', [ $this, 'legacy_plugin_notice' ] );
 		add_action( 'network_admin_notices', [ $this, 'legacy_plugin_notice' ] );
 		add_filter( 'render_block_rt-carousel/carousel', [ $this, 'handle_lazy_load_images' ], 16, 3 );
+		add_filter( 'render_block_rt-carousel/carousel', [ $this, 'mark_query_loop_slides' ] );
 	}
 
 	/**
@@ -317,6 +318,43 @@ class Plugin {
 			}
 
 			$processor->set_attribute( 'loading', 'lazy' );
+		}
+
+		return $processor->get_updated_html();
+	}
+
+	/**
+	 * Add the active-slide directives to Query Loop and Terms Query slides.
+	 *
+	 * The Slide block ships these directives in its saved markup, but the items rendered by
+	 * `core/post-template` or `core/term-template` carry none, so the runtime never marks them
+	 * with `is-active` or `aria-current` even though `callbacks.isSlideActive` already resolves them.
+	 * See: https://github.com/rtCamp/rt-carousel/issues/179
+	 *
+	 * @param string $block_content The carousel's rendered HTML.
+	 *
+	 * @return string The filtered HTML.
+	 */
+	public function mark_query_loop_slides( string $block_content ): string {
+		// Bail early when the carousel contains no query-driven slides.
+		if ( ! str_contains( $block_content, 'wp-block-post-template' ) && ! str_contains( $block_content, 'wp-block-term-template' ) ) {
+			return $block_content;
+		}
+
+		$processor = new WP_HTML_Tag_Processor( $block_content );
+
+		while ( $processor->next_tag() ) {
+			if ( 'LI' !== $processor->get_tag() ) {
+				continue;
+			}
+
+			if ( ! $processor->has_class( 'wp-block-post' ) && ! $processor->has_class( 'wp-block-term' ) ) {
+				continue;
+			}
+
+			$processor->set_attribute( 'data-wp-interactive', 'rt-carousel/carousel' );
+			$processor->set_attribute( 'data-wp-class--is-active', 'callbacks.isSlideActive' );
+			$processor->set_attribute( 'data-wp-bind--aria-current', 'callbacks.isSlideActive' );
 		}
 
 		return $processor->get_updated_html();

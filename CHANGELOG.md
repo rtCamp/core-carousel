@@ -8,12 +8,11 @@
 * Add LazyLoadImages toggle to Carousel block with per-slide override option.[#100](https://github.com/rtCamp/rt-carousel/pull/100)
 * Added carousel tabs mode.[#167](https://github.com/rtCamp/rt-carousel/pull/167)
 
-### Maintaince
+### Maintenance
 * Add logic to reset autoplay and autoscroll on carousel interaction.[#164](https://github.com/rtCamp/rt-carousel/pull/164)
 * Fixes issues with tab not able to edit tab title and also removes tab lists when tabs are toggled off.[#173](https://github.com/rtCamp/rt-carousel/pull/173)
 * Mark query loop slides with the active-slide directives.[#180](https://github.com/rtCamp/rt-carousel/pull/180)
 * Improve Auto Scroll UX and enforce compatible transition settings.[#165](https://github.com/rtCamp/rt-carousel/pull/165)
-* Add logic to reset autoplay and autoscroll on carousel interaction.[#164](https://github.com/rtCamp/rt-carousel/pull/164)
 
 ## [2.0.3](https://github.com/rtCamp/rt-carousel/compare/2.0.2...2.0.3) (2026-06-24)
 

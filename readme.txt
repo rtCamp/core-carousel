@@ -86,14 +86,14 @@ rtCarousel is the successor to Carousel Kit. Simply install and activate rtCarou
 == Changelog ==
 
 = 2.1.0 =
-* New : add fade transition option.
-* New : add Embla Auto Scroll plugin support with editor controls.
-* New : Add LazyLoadImages toggle to Carousel block with per-slide override option.
-* New : Added carousel tabs mode.
-* Tweak : Add logic to reset autoplay and autoscroll on carousel interaction.
-* Tweak : Fixes issues with tab not able to edit tab title and also removes tab lists when tabs are toggled off.
-* Tweak : mark query loop slides with the active-slide directives.
-* Tweak : improve Auto Scroll UX and enforce compatible transition settings.
+* New: add fade transition option.
+* New: add Embla Auto Scroll plugin support with editor controls.
+* New: Add LazyLoadImages toggle to Carousel block with per-slide override option.
+* New: Added carousel tabs mode.
+* Tweak: Add logic to reset autoplay and autoscroll on carousel interaction.
+* Tweak: Fixes issues with tab not able to edit tab title and also removes tab lists when tabs are toggled off.
+* Tweak: Mark query loop slides with the active-slide directives.
+* Tweak: Improve Auto Scroll UX and enforce compatible transition settings.
 * Tweak: Add logic to reset autoplay and autoscroll on carousel interaction.
 
 = 2.0.3 =

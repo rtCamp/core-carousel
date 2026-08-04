@@ -13,6 +13,7 @@ export default function Edit() {
 		emblaApi: contextApi,
 		canScrollPrev,
 		canScrollNext,
+		carouselOptions,
 	} = useContext( EditorCarouselContext );
 	const ref = useRef<HTMLDivElement>( null );
 
@@ -58,7 +59,7 @@ export default function Edit() {
 					handleScroll( 'prev' );
 				} }
 				type="button"
-				disabled={ ! canScrollPrev }
+				disabled={ ! carouselOptions?.autoScroll && ! canScrollPrev }
 				aria-label={ __( 'Previous Slide', 'rt-carousel' ) }
 			>
 				<PreviousIcon />
@@ -70,7 +71,7 @@ export default function Edit() {
 					handleScroll( 'next' );
 				} }
 				type="button"
-				disabled={ ! canScrollNext }
+				disabled={ ! carouselOptions?.autoScroll && ! canScrollNext }
 				aria-label={ __( 'Next Slide', 'rt-carousel' ) }
 			>
 				<NextIcon />

@@ -1,6 +1,7 @@
 import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import type { CarouselAttributes, CarouselContext } from './types';
+import { encodeContext } from './encode-context';
 
 export default function Save( {
 	attributes,
@@ -8,6 +9,7 @@ export default function Save( {
 	attributes: CarouselAttributes;
 } ) {
 	const {
+		transition,
 		loop,
 		dragFree,
 		carouselAlign,
@@ -22,10 +24,18 @@ export default function Save( {
 		axis,
 		height,
 		slidesToScroll,
+		useTabs = false,
+		autoScroll,
+		autoScrollSpeed,
+		autoScrollDirection,
+		autoScrollStartDelay,
+		autoScrollStopOnInteraction,
+		autoScrollStopOnMouseEnter,
 	} = attributes;
 
 	// Pass configuration to the frontend via data-wp-context
 	const context: CarouselContext = {
+		transition,
 		options: {
 			loop,
 			dragFree,
@@ -34,6 +44,8 @@ export default function Save( {
 			direction,
 			axis,
 			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+			// Instant switch in tabs mode — no scroll animation
+			...( useTabs ? { duration: 0 } : {} ),
 		},
 		autoplay: autoplay
 			? {
@@ -64,18 +76,30 @@ export default function Save( {
 			'Slide {{currentSlide}} of {{totalSlides}}',
 			'rt-carousel',
 		),
+		autoScroll: autoScroll ? {
+			speed: autoScrollSpeed,
+			direction: autoScrollDirection,
+			startDelay: autoScrollStartDelay,
+			stopOnInteraction: autoScrollStopOnInteraction,
+			stopOnMouseEnter: autoScrollStopOnMouseEnter,
+			stopOnFocusIn: true,
+		}
+			: false,
+		useTabs,
+		carouselId: '', // Set at runtime by initCarousel in view.ts
 	};
 
 	const blockProps = useBlockProps.save( {
 		className: 'rt-carousel',
 		role: 'region',
-		'aria-roledescription': 'carousel',
+		...( ! useTabs ? { 'aria-roledescription': 'carousel' } : {} ),
 		'aria-label': ariaLabel,
 		dir: direction,
 		'data-axis': axis,
 		'data-loop': loop ? 'true' : undefined,
+		...( useTabs ? { 'data-is-tabs': 'true' } : {} ),
 		'data-wp-interactive': 'rt-carousel/carousel',
-		'data-wp-context': JSON.stringify( context ),
+		'data-wp-context': encodeContext( JSON.stringify( context ) ),
 		'data-wp-init': 'callbacks.initCarousel', // Use init for mounting
 		style: {
 			'--rt-carousel-gap': `${ slideGap }px`,

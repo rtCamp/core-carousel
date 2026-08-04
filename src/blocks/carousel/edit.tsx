@@ -22,7 +22,7 @@ import { plus } from '@wordpress/icons';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useState, useMemo, useCallback, useEffect, useRef } from '@wordpress/element';
 import { createBlock, type BlockConfiguration } from '@wordpress/blocks';
-import type { CarouselAttributes } from './types';
+import { findBlockDeep, findAllBlocksDeep, type CarouselAttributes, type BlockEditorSelectors } from './types';
 import { EditorCarouselContext } from './editor-context';
 import type { EmblaCarouselType } from 'embla-carousel';
 import { getSlideTemplates, type SlideTemplate } from './templates';
@@ -40,6 +40,7 @@ export default function Edit( {
 	clientId: string;
 } ) {
 	const {
+		transition,
 		loop,
 		dragFree,
 		carouselAlign,
@@ -54,6 +55,14 @@ export default function Edit( {
 		autoplayStopOnMouseEnter,
 		ariaLabel,
 		slidesToScroll = '1',
+		useTabs = false,
+		lazyLoadImages,
+		autoScroll,
+		autoScrollSpeed,
+		autoScrollDirection,
+		autoScrollStartDelay,
+		autoScrollStopOnInteraction,
+		autoScrollStopOnMouseEnter,
 	} = attributes;
 
 	const [ emblaApi, setEmblaApi ] = useState<EmblaCarouselType | undefined>();
@@ -66,24 +75,33 @@ export default function Edit( {
 	const [ scrollSnaps, setScrollSnaps ] = useState<number[]>( [] );
 	const [ slideCount, setSlideCount ] = useState( 0 );
 
+	/* Mirror useTabs into a ref so Embla's select/reInit handlers always read
+	 * the latest value without forcing this effect to re-subscribe. */
+	const useTabsRef = useRef( useTabs );
+	useTabsRef.current = useTabs;
+
 	const slideTemplates = useMemo( getSlideTemplates, [ getSlideTemplates ] );
 
-	const { replaceInnerBlocks, insertBlock } = useDispatch( 'core/block-editor' );
+	const { replaceInnerBlocks, insertBlock, removeBlocks } = useDispatch( 'core/block-editor' );
 
 	const hasInnerBlocks = useSelect(
-		( select ) =>
+		( selectStore ) =>
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			( select( 'core/block-editor' ) as any ).getBlockCount( clientId ) > 0,
+			( selectStore( 'core/block-editor' ) as any ).getBlockCount( clientId ) > 0,
 		[ clientId ],
 	);
 
-	const viewportClientId = useSelect(
-		( select ) => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const innerBlocks = ( select( 'core/block-editor' ) as any ).getBlocks( clientId ) as Array<{ name: string; clientId: string }>;
-			return innerBlocks.find( ( b ) => b.name === 'rt-carousel/carousel-viewport' )?.clientId;
+	const innerBlocks = useSelect(
+		( selectStore ) => {
+			const blockEditor = selectStore( 'core/block-editor' ) as BlockEditorSelectors;
+			return blockEditor.getBlocks( clientId );
 		},
 		[ clientId ],
+	);
+
+	const viewportClientId = useMemo(
+		() => findBlockDeep( innerBlocks, 'rt-carousel/carousel-viewport' )?.clientId,
+		[ innerBlocks ],
 	);
 
 	const addSlide = useCallback( () => {
@@ -148,9 +166,9 @@ export default function Edit( {
 	}, [ showSetup, setupStep ] );
 
 	// Fetch registered block types for the allowed-blocks token field
-	const blockTypes = useSelect( ( select ) => {
+	const blockTypes = useSelect( ( selectStore ) => {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return ( select( 'core/blocks' ) as any ).getBlockTypes() as BlockConfiguration[];
+		return ( selectStore( 'core/blocks' ) as any ).getBlockTypes() as BlockConfiguration[];
 	}, [] );
 
 	const suggestions = blockTypes?.map( ( block ) => block.name ) || [];
@@ -160,6 +178,7 @@ export default function Edit( {
 		dir: direction,
 		'data-axis': axis,
 		'data-loop': loop ? 'true' : undefined,
+		'data-is-tabs': useTabs ? 'true' : undefined,
 		style: {
 			'--rt-carousel-gap': `${ attributes.slideGap }px`,
 			'--rt-carousel-height': axis === 'y' ? height : undefined,
@@ -170,6 +189,7 @@ export default function Edit( {
 
 	const carouselOptions = useMemo(
 		() => ( {
+			transition,
 			loop,
 			dragFree,
 			align: carouselAlign,
@@ -178,8 +198,10 @@ export default function Edit( {
 			axis,
 			height,
 			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+			autoScroll,
+			...( useTabs ? { duration: 0 } : {} ),
 		} ),
-		[ loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll ],
+		[ transition, loop, dragFree, carouselAlign, containScroll, direction, axis, height, slidesToScroll, autoScroll, useTabs ],
 	);
 
 	const contextValue = useMemo(
@@ -193,9 +215,12 @@ export default function Edit( {
 			scrollProgress,
 			setScrollProgress,
 			selectedIndex,
+			setSelectedIndex,
 			scrollSnaps,
 			slideCount,
 			carouselOptions,
+			useTabs,
+			autoScroll,
 		} ),
 		[
 			emblaApi,
@@ -206,6 +231,8 @@ export default function Edit( {
 			scrollSnaps,
 			slideCount,
 			carouselOptions,
+			useTabs,
+			autoScroll,
 			setEmblaApi,
 			setCanScrollPrev,
 			setCanScrollNext,
@@ -224,7 +251,11 @@ export default function Edit( {
 		};
 
 		const updateState = () => {
-			setSelectedIndex( emblaApi.selectedScrollSnap() );
+			// In tabs mode selectedIndex is driven by tab clicks / tree-view selection,
+			// not Embla's scroll position (hidden slides have 0-width, breaking snaps).
+			if ( ! useTabsRef.current ) {
+				setSelectedIndex( emblaApi.selectedScrollSnap() );
+			}
 			setScrollSnaps( emblaApi.scrollSnapList() );
 			setSlideCount( emblaApi.slideNodes().length );
 			updateScrollProgress();
@@ -307,159 +338,385 @@ export default function Edit( {
 		);
 	};
 
+	const handleUseTabsChange = ( value: boolean ) => {
+		if ( value ) {
+			setAttributes( {
+				useTabs: true,
+				transition: 'slide',
+				loop: false,
+				dragFree: false,
+				carouselAlign: 'start',
+				containScroll: 'trimSnaps',
+				slidesToScroll: '1',
+				autoplay: false,
+				autoScroll: false,
+				axis: 'x',
+			} );
+			const tabListExists = findBlockDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
+			if ( ! tabListExists ) {
+				// Auto-insert tab list as first child (before viewport)
+				insertBlock(
+					createBlock( 'rt-carousel/carousel-tab-list', {} ),
+					0,
+					clientId,
+				);
+			}
+			// Find nav row containers (core/group containing navigation blocks) as well as any standalone nav blocks
+			const navGroupBlocks = innerBlocks.filter(
+				( b ) =>
+					b.name === 'core/group' &&
+					( findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-controls' ) ||
+						findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-counter' ) ||
+						findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-dots' ) ),
+			);
+			const looseNavBlocks = [
+				...findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-controls' ),
+				...findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-counter' ),
+				...findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-dots' ),
+			];
+
+			const idsToRemove = Array.from(
+				new Set( [
+					...navGroupBlocks.map( ( b ) => b.clientId ),
+					...looseNavBlocks.map( ( b ) => b.clientId ),
+				] ),
+			);
+			if ( idsToRemove.length > 0 ) {
+				removeBlocks( idsToRemove );
+			}
+		} else {
+			setAttributes( { useTabs: false } );
+			const tabListBlocks = findAllBlocksDeep( innerBlocks, 'rt-carousel/carousel-tab-list' );
+			const tabListIds = tabListBlocks.map( ( b ) => b.clientId );
+			if ( tabListIds.length > 0 ) {
+				removeBlocks( tabListIds );
+			}
+
+			const controlsExist = findBlockDeep( innerBlocks, 'rt-carousel/carousel-controls' );
+			const counterExist = findBlockDeep( innerBlocks, 'rt-carousel/carousel-counter' );
+			const dotsExist = findBlockDeep( innerBlocks, 'rt-carousel/carousel-dots' );
+
+			if ( ! controlsExist && ! counterExist && ! dotsExist ) {
+				// No navigation blocks exist — insert full nav group row container
+				insertBlock( createNavGroup(), undefined, clientId );
+			} else if ( ! controlsExist || ! counterExist || ! dotsExist ) {
+				const navGroup = innerBlocks.find(
+					( b ) =>
+						b.name === 'core/group' &&
+						( findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-controls' ) ||
+							findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-counter' ) ||
+							findBlockDeep( b.innerBlocks ?? [], 'rt-carousel/carousel-dots' ) ),
+				);
+				const targetParentId = navGroup ? navGroup.clientId : clientId;
+
+				if ( ! controlsExist ) {
+					insertBlock(
+						createBlock( 'rt-carousel/carousel-controls', {} ),
+						undefined,
+						targetParentId,
+					);
+				}
+				if ( ! counterExist ) {
+					insertBlock(
+						createBlock( 'rt-carousel/carousel-counter', {} ),
+						undefined,
+						targetParentId,
+					);
+				}
+				if ( ! dotsExist ) {
+					insertBlock(
+						createBlock( 'rt-carousel/carousel-dots', {} ),
+						undefined,
+						targetParentId,
+					);
+				}
+			}
+		}
+	};
+
 	const inspectorControls = (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Carousel Settings', 'rt-carousel' ) }>
+				<PanelBody title={ useTabs ? __( 'Tab Settings', 'rt-carousel' ) : __( 'Carousel Settings', 'rt-carousel' ) }>
 					<ToggleControl
-						label={ __( 'Loop', 'rt-carousel' ) }
-						checked={ loop }
-						onChange={ ( value ) => setAttributes( { loop: value } ) }
+						label={ __( 'Use as Tabs', 'rt-carousel' ) }
+						checked={ useTabs }
+						onChange={ handleUseTabsChange }
 						help={ __(
-							'Enables infinite scrolling of slides.',
+							'Converts the carousel into an accessible tab widget.',
 							'rt-carousel',
 						) }
 					/>
-					<ToggleControl
-						label={ __( 'Free Drag', 'rt-carousel' ) }
-						checked={ dragFree }
-						onChange={ ( value ) => setAttributes( { dragFree: value } ) }
-						help={ __( 'Enables momentum scrolling.', 'rt-carousel' ) }
-					/>
-					<SelectControl
-						label={ __( 'Alignment', 'rt-carousel' ) }
-						value={ carouselAlign }
-						options={ [
-							{ label: __( 'Start', 'rt-carousel' ), value: 'start' },
-							{ label: __( 'Center', 'rt-carousel' ), value: 'center' },
-							{ label: __( 'End', 'rt-carousel' ), value: 'end' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { carouselAlign: value as CarouselAttributes[ 'carouselAlign' ] } )
-						}
-					/>
-					<SelectControl
-						label={ __( 'Contain Scroll', 'rt-carousel' ) }
-						value={ containScroll }
-						options={ [
-							{ label: __( 'Trim Snaps', 'rt-carousel' ), value: 'trimSnaps' },
-							{ label: __( 'Keep Snaps', 'rt-carousel' ), value: 'keepSnaps' },
-							{ label: __( 'None', 'rt-carousel' ), value: '' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { containScroll: value as CarouselAttributes[ 'containScroll' ] } )
-						}
-						help={ __(
-							'Prevents excess scrolling at the beginning or end.',
-							'rt-carousel',
-						) }
-					/>
-					<ToggleControl
-						label={ __( 'Scroll Auto', 'rt-carousel' ) }
-						checked={ slidesToScroll === 'auto' }
-						onChange={ ( isAuto ) =>
-							setAttributes( { slidesToScroll: isAuto ? 'auto' : '1' } )
-						}
-						help={ __(
-							'Scrolls the number of slides currently visible in the viewport.',
-							'rt-carousel',
-						) }
-					/>
-					{ slidesToScroll !== 'auto' && (
-						<RangeControl
-							label={ __( 'Slides to Scroll', 'rt-carousel' ) }
-							value={ parseInt( slidesToScroll, 10 ) || 1 }
-							onChange={ ( value ) =>
-								setAttributes( { slidesToScroll: ( value || 1 ).toString() } )
-							}
-							min={ 1 }
-							max={ 10 }
-						/>
-					) }
-					<SelectControl
-						label={ __( 'Direction', 'rt-carousel' ) }
-						value={ direction }
-						options={ [
-							{ label: __( 'Left to Right (LTR)', 'rt-carousel' ), value: 'ltr' },
-							{ label: __( 'Right to Left (RTL)', 'rt-carousel' ), value: 'rtl' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { direction: value as CarouselAttributes[ 'direction' ] } )
-						}
-						help={ __(
-							'Choose content direction. RTL is typically used for Arabic, Hebrew, and other right-to-left languages.',
-							'rt-carousel',
-						) }
-					/>
-					<SelectControl
-						label={ __( 'Orientation', 'rt-carousel' ) }
-						value={ axis }
-						options={ [
-							{ label: __( 'Horizontal', 'rt-carousel' ), value: 'x' },
-							{ label: __( 'Vertical', 'rt-carousel' ), value: 'y' },
-						] }
-						onChange={ ( value ) =>
-							setAttributes( { axis: value as CarouselAttributes[ 'axis' ] } )
-						}
-					/>
-					{ axis === 'y' && (
-						<TextControl
-							label={ __( 'Height', 'rt-carousel' ) }
-							value={ height }
-							onChange={ ( value ) => setAttributes( { height: value } ) }
-							help={ __(
-								'Set a fixed height for vertical carousel (e.g., 400px).',
-								'rt-carousel',
+					{ ! useTabs && (
+						<>
+							<SelectControl
+								label={ __( 'Transition', 'rt-carousel' ) }
+								value={ transition }
+								disabled={ autoScroll }
+								options={ [
+									{ label: __( 'Slide', 'rt-carousel' ), value: 'slide' },
+									{ label: __( 'Fade', 'rt-carousel' ), value: 'fade' },
+								] }
+								onChange={ ( value ) =>
+									setAttributes( { transition: value as CarouselAttributes[ 'transition' ] } )
+								}
+								help={
+									autoScroll
+										? __( 'Auto Scroll does not support transitions.', 'rt-carousel' )
+										: __(
+											'Choose how slides transition: sliding horizontally or cross-fading.',
+											'rt-carousel',
+										)
+								}
+							/>
+							<ToggleControl
+								label={ __( 'Loop', 'rt-carousel' ) }
+								checked={ loop }
+								disabled={ autoScroll && autoScrollDirection === 'backward' }
+								onChange={ ( value ) => setAttributes( { loop: value } ) }
+								help={ autoScroll && autoScrollDirection === 'backward'
+									? __( 'Loop is required for backward auto scroll.', 'rt-carousel' )
+									: __( 'Enables infinite scrolling of slides.', 'rt-carousel' ) }
+							/>
+							{ transition !== 'fade' && (
+								<ToggleControl
+									label={ __( 'Free Drag', 'rt-carousel' ) }
+									checked={ dragFree }
+									onChange={ ( value ) => setAttributes( { dragFree: value } ) }
+									help={ __( 'Enables momentum scrolling.', 'rt-carousel' ) }
+								/>
 							) }
-						/>
+							<ToggleControl
+								label={ __( 'Lazy Load Images', 'rt-carousel' ) }
+								checked={ lazyLoadImages }
+								onChange={ ( value ) => setAttributes( { lazyLoadImages: value } ) }
+								help={ __(
+									'Load images only when they enter the viewport.',
+									'rt-carousel',
+								) }
+							/>
+							{ transition !== 'fade' && (
+								<SelectControl
+									label={ __( 'Alignment', 'rt-carousel' ) }
+									value={ carouselAlign }
+									options={ [
+										{ label: __( 'Start', 'rt-carousel' ), value: 'start' },
+										{ label: __( 'Center', 'rt-carousel' ), value: 'center' },
+										{ label: __( 'End', 'rt-carousel' ), value: 'end' },
+									] }
+									onChange={ ( value ) =>
+										setAttributes( { carouselAlign: value as CarouselAttributes[ 'carouselAlign' ] } )
+									}
+								/>
+							) }
+							{ transition !== 'fade' && (
+								<SelectControl
+									label={ __( 'Contain Scroll', 'rt-carousel' ) }
+									value={ containScroll }
+									options={ [
+										{ label: __( 'Trim Snaps', 'rt-carousel' ), value: 'trimSnaps' },
+										{ label: __( 'Keep Snaps', 'rt-carousel' ), value: 'keepSnaps' },
+										{ label: __( 'None', 'rt-carousel' ), value: '' },
+									] }
+									onChange={ ( value ) =>
+										setAttributes( { containScroll: value as CarouselAttributes[ 'containScroll' ] } )
+									}
+									help={ __(
+										'Prevents excess scrolling at the beginning or end.',
+										'rt-carousel',
+									) }
+								/>
+							) }
+							{ transition !== 'fade' && (
+								<ToggleControl
+									label={ __( 'Scroll Auto', 'rt-carousel' ) }
+									checked={ slidesToScroll === 'auto' }
+									onChange={ ( isAuto ) =>
+										setAttributes( { slidesToScroll: isAuto ? 'auto' : '1' } )
+									}
+									help={ __(
+										'Scrolls the number of slides currently visible in the viewport.',
+										'rt-carousel',
+									) }
+								/>
+							) }
+							{ transition !== 'fade' && slidesToScroll !== 'auto' && (
+								<RangeControl
+									label={ __( 'Slides to Scroll', 'rt-carousel' ) }
+									value={ parseInt( slidesToScroll, 10 ) || 1 }
+									onChange={ ( value ) =>
+										setAttributes( { slidesToScroll: ( value || 1 ).toString() } )
+									}
+									min={ 1 }
+									max={ 10 }
+								/>
+							) }
+							<SelectControl
+								label={ __( 'Direction', 'rt-carousel' ) }
+								value={ direction }
+								options={ [
+									{ label: __( 'Left to Right (LTR)', 'rt-carousel' ), value: 'ltr' },
+									{ label: __( 'Right to Left (RTL)', 'rt-carousel' ), value: 'rtl' },
+								] }
+								onChange={ ( value ) =>
+									setAttributes( { direction: value as CarouselAttributes[ 'direction' ] } )
+								}
+								help={ __(
+									'Choose content direction. RTL is typically used for Arabic, Hebrew, and other right-to-left languages.',
+									'rt-carousel',
+								) }
+							/>
+							<SelectControl
+								label={ __( 'Orientation', 'rt-carousel' ) }
+								value={ axis }
+								options={ [
+									{ label: __( 'Horizontal', 'rt-carousel' ), value: 'x' },
+									{ label: __( 'Vertical', 'rt-carousel' ), value: 'y' },
+								] }
+								onChange={ ( value ) =>
+									setAttributes( { axis: value as CarouselAttributes[ 'axis' ] } )
+								}
+							/>
+							{ axis === 'y' && (
+								<TextControl
+									label={ __( 'Height', 'rt-carousel' ) }
+									value={ height }
+									onChange={ ( value ) => setAttributes( { height: value } ) }
+									help={ __(
+										'Set a fixed height for vertical carousel (e.g., 400px).',
+										'rt-carousel',
+									) }
+								/>
+							) }
+						</>
 					) }
 				</PanelBody>
-				<PanelBody
-					title={ __( 'Autoplay Options', 'rt-carousel' ) }
-					initialOpen={ false }
-				>
-					<ToggleControl
-						label={ __( 'Enable Autoplay', 'rt-carousel' ) }
-						checked={ autoplay }
-						onChange={ ( value ) => setAttributes( { autoplay: value } ) }
-					/>
-					{ autoplay && (
-						<>
-							<RangeControl
-								label={ __( 'Delay (ms)', 'rt-carousel' ) }
-								value={ autoplayDelay }
-								onChange={ ( value ) =>
-									setAttributes( { autoplayDelay: value ?? 1000 } )
+				{ ! useTabs && (
+					<PanelBody
+						title={ __( 'Autoplay Options', 'rt-carousel' ) }
+						initialOpen={ false }
+					>
+						<ToggleControl
+							label={ __( 'Enable Autoplay', 'rt-carousel' ) }
+							checked={ autoplay }
+							onChange={ ( value ) => {
+								setAttributes( {
+									autoplay: value,
+									autoScroll: value ? false : autoScroll,
+								} );
+							} }
+						/>
+						{ autoplay && (
+							<>
+								<RangeControl
+									label={ __( 'Delay (ms)', 'rt-carousel' ) }
+									value={ autoplayDelay }
+									onChange={ ( value ) =>
+										setAttributes( { autoplayDelay: value ?? 1000 } )
+									}
+									min={ 1000 }
+									max={ 10000 }
+									step={ 100 }
+								/>
+								<ToggleControl
+									label={ __( 'Stop on Interaction', 'rt-carousel' ) }
+									checked={ autoplayStopOnInteraction }
+									onChange={ ( value ) =>
+										setAttributes( { autoplayStopOnInteraction: value } )
+									}
+									help={ __(
+										'Stop autoplay when user interacts with carousel.',
+										'rt-carousel',
+									) }
+								/>
+								<ToggleControl
+									label={ __( 'Stop on Mouse Enter', 'rt-carousel' ) }
+									checked={ autoplayStopOnMouseEnter }
+									onChange={ ( value ) =>
+										setAttributes( { autoplayStopOnMouseEnter: value } )
+									}
+									help={ __(
+										'Stop autoplay when mouse hovers over carousel.',
+										'rt-carousel',
+									) }
+								/>
+							</>
+						) }
+					</PanelBody>
+				) }
+				{ ! useTabs && (
+					<PanelBody
+						title={ __( 'Auto Scroll', 'rt-carousel' ) }
+						initialOpen={ false }
+					>
+						<ToggleControl
+							label={ __( 'Enable Auto Scroll', 'rt-carousel' ) }
+							checked={ autoScroll }
+							onChange={ ( value ) => {
+								const nextAttributes: Partial< CarouselAttributes > = {
+									autoScroll: value,
+									autoplay: value ? false : autoplay,
+									loop: ( value && autoScrollDirection === 'backward' ) ? true : loop,
+								};
+								if ( value ) {
+									nextAttributes.transition = 'slide';
 								}
-								min={ 1000 }
+								setAttributes( nextAttributes );
+							} }
+						/>
+						{ autoScroll && ( <>
+							<RangeControl
+								label={ __( 'Speed', 'rt-carousel' ) }
+								value={ autoScrollSpeed }
+								onChange={ ( value ) =>
+									setAttributes( { autoScrollSpeed: value ?? 2 } )
+								}
+								min={ 1 }
+								max={ 10 }
+							/>
+							<SelectControl
+								label={ __( 'Direction', 'rt-carousel' ) }
+								value={ autoScrollDirection }
+								options={ [
+									{ label: __( 'Forward', 'rt-carousel' ), value: 'forward' },
+									{ label: __( 'Backward', 'rt-carousel' ), value: 'backward' },
+								] }
+								onChange={ ( value ) =>
+									setAttributes( {
+										autoScrollDirection: value as CarouselAttributes['autoScrollDirection'],
+										loop: value === 'backward' ? true : loop,
+									} )
+								}
+							/>
+							<RangeControl
+								label={ __( 'Start Delay (ms)', 'rt-carousel' ) }
+								value={ autoScrollStartDelay }
+								onChange={ ( value ) =>
+									setAttributes( { autoScrollStartDelay: value ?? 1000 } )
+								}
+								min={ 0 }
 								max={ 10000 }
 								step={ 100 }
 							/>
 							<ToggleControl
 								label={ __( 'Stop on Interaction', 'rt-carousel' ) }
-								checked={ autoplayStopOnInteraction }
+								checked={ autoScrollStopOnInteraction }
 								onChange={ ( value ) =>
-									setAttributes( { autoplayStopOnInteraction: value } )
+									setAttributes( { autoScrollStopOnInteraction: value } )
 								}
-								help={ __(
-									'Stop autoplay when user interacts with carousel.',
-									'rt-carousel',
-								) }
+								help={ __( 'Stop auto scroll when user interacts with carousel.', 'rt-carousel' ) }
 							/>
 							<ToggleControl
 								label={ __( 'Stop on Mouse Enter', 'rt-carousel' ) }
-								checked={ autoplayStopOnMouseEnter }
+								checked={ autoScrollStopOnMouseEnter }
 								onChange={ ( value ) =>
-									setAttributes( { autoplayStopOnMouseEnter: value } )
+									setAttributes( { autoScrollStopOnMouseEnter: value } )
 								}
-								help={ __(
-									'Stop autoplay when mouse hovers over carousel.',
-									'rt-carousel',
-								) }
+								help={ __( 'Stop auto scroll when mouse hovers over carousel.', 'rt-carousel' ) }
 							/>
-						</>
-					) }
-				</PanelBody>
+						</> ) }
+					</PanelBody>
+				) }
 			</InspectorControls>
 			<InspectorAdvancedControls>
 				<TextControl

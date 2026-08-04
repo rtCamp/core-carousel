@@ -49,6 +49,35 @@ jest.mock( 'embla-carousel-autoplay', () => ( {
 } ) );
 
 /**
+ * Mock embla-carousel-fade module.
+ */
+jest.mock( 'embla-carousel-fade', () => ( {
+	__esModule: true,
+	default: jest.fn( () => ( {
+		name: 'fade',
+		options: {},
+		init: jest.fn(),
+		destroy: jest.fn(),
+	} ) ),
+} ) );
+
+/**
+ * Mock embla-carousel-auto-scroll module.
+ */
+jest.mock( 'embla-carousel-auto-scroll', () => ( {
+	__esModule: true,
+	default: jest.fn( () => ( {
+		name: 'autoScroll',
+		options: {},
+		init: jest.fn(),
+		destroy: jest.fn(),
+		play: jest.fn(),
+		stop: jest.fn(),
+		isPlaying: jest.fn( () => false ),
+	} ) ),
+} ) );
+
+/**
  * Mock WordPress block editor components.
  */
 jest.mock( '@wordpress/block-editor', () => ( {

@@ -12,10 +12,14 @@ export type EditorCarouselContextType = {
 	scrollProgress: number;
 	setScrollProgress: ( value: number ) => void;
 	selectedIndex: number;
+	setSelectedIndex: ( index: number ) => void;
 	scrollSnaps: number[];
 	slideCount: number;
+	useTabs?: boolean;
+	autoScroll?: boolean;
 	carouselOptions: Omit<Partial<CarouselAttributes>, 'slidesToScroll'> & {
 		slidesToScroll?: number | string;
+		duration?: number;
 	};
 };
 
@@ -30,8 +34,11 @@ const defaultValue: EditorCarouselContextType = {
 	scrollProgress: 0,
 	setScrollProgress: () => {},
 	selectedIndex: 0,
+	setSelectedIndex: () => {},
 	scrollSnaps: [],
 	slideCount: 0,
+	useTabs: false,
+	autoScroll: false,
 	carouselOptions: {},
 };
 

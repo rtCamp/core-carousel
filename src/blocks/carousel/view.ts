@@ -4,12 +4,15 @@ import EmblaCarousel, {
 	type EmblaCarouselType,
 } from 'embla-carousel';
 import Autoplay, { type AutoplayOptionsType } from 'embla-carousel-autoplay';
+import AutoScroll, { type AutoScrollOptionsType } from 'embla-carousel-auto-scroll';
+
+import Fade from 'embla-carousel-fade';
 import type { CarouselContext } from './types';
 import {
 	DYNAMIC_LIST_CONTAINER_SELECTOR,
 	CAROUSEL_SLIDE_SELECTOR,
 } from './dynamic-list-selectors';
-import { normalizeContainScroll } from './embla-options';
+import { normalizeContainScroll, applyTransitionOverrides } from './embla-options';
 
 type ElementWithRef = {
 	ref?: HTMLElement | null;
@@ -122,15 +125,78 @@ const markForAnnouncement = (): void => {
 	getContext<CarouselContext>().shouldAnnounce = true;
 };
 
+type StoppablePlugin = {
+	stop?: () => void;
+	destroy?: () => void;
+	reset?: () => void;
+};
+
+const stopPluginsOnInteraction = (
+	embla: EmblaCarouselType,
+	context: CarouselContext,
+): void => {
+	if ( typeof embla.plugins !== 'function' ) {
+		return;
+	}
+	const plugins = embla.plugins() as {
+		autoplay?: StoppablePlugin;
+		autoScroll?: StoppablePlugin;
+	};
+	const autoplay = plugins.autoplay;
+	const autoScroll = plugins.autoScroll;
+
+	const isAutoplayEnabled =
+		context.autoplay === true ||
+		( typeof context.autoplay === 'object' && context.autoplay !== null );
+	if ( autoplay && isAutoplayEnabled ) {
+		const shouldStop =
+			context.autoplay === true ||
+			( typeof context.autoplay === 'object' &&
+				context.autoplay.stopOnInteraction !== false );
+
+		if ( shouldStop ) {
+			if ( typeof autoplay.destroy === 'function' ) {
+				autoplay.destroy();
+			} else if ( typeof autoplay.stop === 'function' ) {
+				autoplay.stop();
+			}
+		} else if ( typeof autoplay.reset === 'function' ) {
+			autoplay.reset();
+		}
+	}
+
+	const isAutoScrollEnabled =
+		context.autoScroll === true ||
+		( typeof context.autoScroll === 'object' && context.autoScroll !== null );
+	if ( autoScroll && isAutoScrollEnabled ) {
+		const shouldStop =
+			context.autoScroll === true ||
+			( typeof context.autoScroll === 'object' &&
+				context.autoScroll.stopOnInteraction !== false );
+
+		if ( shouldStop ) {
+			if ( typeof autoScroll.destroy === 'function' ) {
+				autoScroll.destroy();
+			} else if ( typeof autoScroll.stop === 'function' ) {
+				autoScroll.stop();
+			}
+		} else if ( typeof autoScroll.reset === 'function' ) {
+			autoScroll.reset();
+		}
+	}
+};
+// Incrementing counter for unique carousel IDs on the same page
+let carouselIdCounter = 0;
+
 store( 'rt-carousel/carousel', {
 	state: {
 		get canScrollPrev() {
 			const context = getContext<CarouselContext>();
-			return context.canScrollPrev;
+			return context.autoScroll ? true : context.canScrollPrev;
 		},
 		get canScrollNext() {
 			const context = getContext<CarouselContext>();
-			return context.canScrollNext;
+			return context.autoScroll ? true : context.canScrollNext;
 		},
 	},
 	actions: {
@@ -138,6 +204,9 @@ store( 'rt-carousel/carousel', {
 			const element = getElementRef( getElement() );
 			const embla = getEmblaFromElement( element );
 			if ( embla ) {
+				const context = getContext<CarouselContext>();
+				stopPluginsOnInteraction( embla, context );
+
 				if ( embla.canScrollPrev() ) {
 					markForAnnouncement();
 				}
@@ -151,6 +220,9 @@ store( 'rt-carousel/carousel', {
 			const element = getElementRef( getElement() );
 			const embla = getEmblaFromElement( element );
 			if ( embla ) {
+				const context = getContext<CarouselContext>();
+				stopPluginsOnInteraction( embla, context );
+
 				if ( embla.canScrollNext() ) {
 					markForAnnouncement();
 				}
@@ -170,6 +242,8 @@ store( 'rt-carousel/carousel', {
 				const element = getElementRef( getElement() );
 				const embla = getEmblaFromElement( element );
 				if ( embla ) {
+					stopPluginsOnInteraction( embla, context );
+
 					if ( snap.index !== context.selectedIndex ) {
 						markForAnnouncement();
 					}
@@ -247,10 +321,49 @@ store( 'rt-carousel/carousel', {
 			}
 			return `transform:translate3d(${ getProgress() * 100 }%, 0px, 0px)`;
 		},
+		getSlideTabPanelId: () => {
+			const slide = getElementRef( getElement() )?.closest?.(
+				CAROUSEL_SLIDE_SELECTOR,
+			);
+
+			if ( ! slide || ! slide.parentElement ) {
+				return '';
+			}
+
+			const context = getContext<CarouselContext>();
+			const slides = Array.from( slide.parentElement.children ).filter(
+				( child: Element ) => child.matches( CAROUSEL_SLIDE_SELECTOR ),
+			);
+
+			const index = slides.indexOf( slide );
+			return `rt-carousel-panel-${ context.carouselId }-${ index }`;
+		},
+		getSlideTabLabelledBy: () => {
+			const slide = getElementRef( getElement() )?.closest?.(
+				CAROUSEL_SLIDE_SELECTOR,
+			);
+
+			if ( ! slide || ! slide.parentElement ) {
+				return '';
+			}
+
+			const context = getContext<CarouselContext>();
+			const slides = Array.from( slide.parentElement.children ).filter(
+				( child: Element ) => child.matches( CAROUSEL_SLIDE_SELECTOR ),
+			);
+
+			const index = slides.indexOf( slide );
+			return `rt-carousel-tab-${ context.carouselId }-${ index }`;
+		},
 		initCarousel: () => {
 			try {
 				const context = getContext<CarouselContext>();
 				const element = getElementRef( getElement() );
+
+				// Assign a unique ID for tab panel/tab linkage
+				if ( ! context.carouselId ) {
+					context.carouselId = String( ++carouselIdCounter );
+				}
 
 				if ( ! element || typeof element.querySelector !== 'function' ) {
 					// eslint-disable-next-line no-console
@@ -295,19 +408,30 @@ store( 'rt-carousel/carousel', {
 						slidesToScroll = rawOptions.slidesToScroll;
 					}
 
-					const options: EmblaOptionsType = {
-						...rawOptions,
-						align,
-						containScroll: normalizeContainScroll( rawOptions.containScroll ),
-						direction,
-						slidesToScroll,
-						container: dynamicListContainer || null,
-					};
+					const options: EmblaOptionsType = applyTransitionOverrides(
+						{
+							...rawOptions,
+							align,
+							containScroll: normalizeContainScroll( rawOptions.containScroll ),
+							direction,
+							slidesToScroll,
+							container: dynamicListContainer || null,
+						},
+						context.transition,
+					);
 
 					const plugins = [];
 
+					if ( context.transition === 'fade' ) {
+						plugins.push( Fade() );
+					}
+
 					if ( context.autoplay ) {
 						plugins.push( Autoplay( context.autoplay as AutoplayOptionsType ) );
+					}
+
+					if ( context.autoScroll ) {
+						plugins.push( AutoScroll( context.autoScroll as AutoScrollOptionsType ) );
 					}
 
 					const embla = EmblaCarousel( viewport, options, plugins );

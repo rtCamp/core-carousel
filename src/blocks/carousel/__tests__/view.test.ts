@@ -15,6 +15,8 @@
 import { store, getContext, getElement } from '@wordpress/interactivity';
 
 import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel';
+import Fade from 'embla-carousel-fade';
+import AutoScroll from 'embla-carousel-auto-scroll';
 
 // Symbol key used by the view.ts for Embla instances
 const EMBLA_KEY = Symbol.for( 'rt-carousel.carousel' );
@@ -57,6 +59,7 @@ const setEmblaOnViewport = (
 const createMockContext = (
 	overrides: Partial<CarouselContext> = {},
 ): CarouselContext => ( {
+	transition: 'slide',
 	options: { loop: true },
 	autoplay: false,
 	isPlaying: false,
@@ -68,6 +71,7 @@ const createMockContext = (
 	scrollProgress: 0,
 	slideCount: 3,
 	ariaLabelPattern: 'Go to slide %d',
+	autoScroll: false,
 	...overrides,
 } );
 
@@ -171,6 +175,29 @@ describe( 'Carousel View Module', () => {
 
 				expect( result ).toBe( false );
 			} );
+
+			it( 'should return true when autoScroll is enabled', () => {
+				const mockContext = createMockContext( {
+					canScrollPrev: false,
+					autoScroll: {
+						speed: 2,
+						direction: 'forward',
+						startDelay: 1000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: false,
+						stopOnFocusIn: true,
+					},
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result =
+					Object.getOwnPropertyDescriptor(
+						storeConfig.state,
+						'canScrollPrev',
+					)?.get?.() ?? false;
+
+				expect( result ).toBe( true );
+			} );
 		} );
 
 		describe( 'canScrollNext', () => {
@@ -198,6 +225,29 @@ describe( 'Carousel View Module', () => {
 					)?.get?.() ?? true;
 
 				expect( result ).toBe( false );
+			} );
+
+			it( 'should return true when autoScroll is enabled', () => {
+				const mockContext = createMockContext( {
+					canScrollNext: false,
+					autoScroll: {
+						speed: 2,
+						direction: 'forward',
+						startDelay: 1000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: false,
+						stopOnFocusIn: true,
+					},
+				} );
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+
+				const result =
+					Object.getOwnPropertyDescriptor(
+						storeConfig.state,
+						'canScrollNext',
+					)?.get?.() ?? false;
+
+				expect( result ).toBe( true );
 			} );
 		} );
 	} );
@@ -254,6 +304,220 @@ describe( 'Carousel View Module', () => {
 
 				consoleSpy.mockRestore();
 			} );
+
+			it( 'should stop (destroy) autoplay and autoscroll if stopOnInteraction is true', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+					},
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					},
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				try {
+					storeConfig.actions.scrollPrev();
+
+					expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoplay.reset ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.reset ).not.toHaveBeenCalled();
+				} finally {
+					document.body.removeChild( wrapper );
+				}
+			} );
+
+			it( 'should fall back to stop() when destroy is omitted and stopOnInteraction is true', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+					},
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					},
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				try {
+					storeConfig.actions.scrollPrev();
+
+					expect( mockAutoplay.stop ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.stop ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoplay.reset ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.reset ).not.toHaveBeenCalled();
+				} finally {
+					document.body.removeChild( wrapper );
+				}
+			} );
+
+			it( 'should reset autoplay and autoscroll if stopOnInteraction is false', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						stopOnInteraction: false,
+						stopOnMouseEnter: true,
+					},
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						stopOnInteraction: false,
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					},
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				try {
+					storeConfig.actions.scrollPrev();
+
+					expect( mockAutoplay.destroy ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.destroy ).not.toHaveBeenCalled();
+					expect( mockAutoplay.reset ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.reset ).toHaveBeenCalledTimes( 1 );
+				} finally {
+					document.body.removeChild( wrapper );
+				}
+			} );
+
+			it( 'should stop (destroy) autoplay and autoscroll if stopOnInteraction is omitted/undefined (defaults to true)', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						// stopOnInteraction omitted
+						stopOnMouseEnter: true,
+					} as unknown as CarouselContext[ 'autoplay' ],
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						// stopOnInteraction omitted
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					} as unknown as CarouselContext[ 'autoScroll' ],
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				try {
+					storeConfig.actions.scrollPrev();
+
+					expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+				} finally {
+					document.body.removeChild( wrapper );
+				}
+			} );
+
+			it( 'should not call stop, destroy, or reset on autoplay or autoscroll if context config is false', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: false,
+					autoScroll: false,
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				try {
+					storeConfig.actions.scrollPrev();
+
+					expect( mockAutoplay.destroy ).not.toHaveBeenCalled();
+					expect( mockAutoplay.stop ).not.toHaveBeenCalled();
+					expect( mockAutoplay.reset ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.destroy ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.stop ).not.toHaveBeenCalled();
+					expect( mockAutoScroll.reset ).not.toHaveBeenCalled();
+				} finally {
+					document.body.removeChild( wrapper );
+				}
+			} );
 		} );
 
 		describe( 'scrollNext', () => {
@@ -291,6 +555,49 @@ describe( 'Carousel View Module', () => {
 				);
 
 				consoleSpy.mockRestore();
+			} );
+
+			it( 'should stop autoplay and autoscroll if stopOnInteraction is true', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+					},
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					},
+				} );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				try {
+					storeConfig.actions.scrollNext();
+
+					expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+				} finally {
+					document.body.removeChild( wrapper );
+				}
 			} );
 		} );
 
@@ -352,6 +659,52 @@ describe( 'Carousel View Module', () => {
 				expect( mockEmbla.scrollTo ).toHaveBeenCalledWith( 0 );
 
 				document.body.removeChild( wrapper );
+			} );
+
+			it( 'should stop autoplay and autoscroll if stopOnInteraction is true', () => {
+				const { wrapper, viewport, button } = createMockCarouselDOM();
+				const mockAutoplay = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockAutoScroll = { stop: jest.fn(), destroy: jest.fn(), reset: jest.fn() };
+				const mockEmbla = createMockEmblaInstance( {
+					plugins: jest.fn( () => ( {
+						autoplay: mockAutoplay,
+						autoScroll: mockAutoScroll,
+					} ) ),
+				} );
+
+				setEmblaOnViewport( viewport, mockEmbla );
+
+				const mockContext = createMockContext( {
+					autoplay: {
+						delay: 3000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+					},
+					autoScroll: {
+						speed: 1,
+						direction: 'forward',
+						startDelay: 0,
+						stopOnInteraction: true,
+						stopOnMouseEnter: true,
+						stopOnFocusIn: true,
+					},
+				} );
+				( mockContext as CarouselContext & { snap?: { index: number } } ).snap = {
+					index: 2,
+				};
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: button } );
+				document.body.appendChild( wrapper );
+
+				try {
+					storeConfig.actions.onDotClick();
+
+					expect( mockAutoplay.destroy ).toHaveBeenCalledTimes( 1 );
+					expect( mockAutoScroll.destroy ).toHaveBeenCalledTimes( 1 );
+				} finally {
+					document.body.removeChild( wrapper );
+				}
 			} );
 		} );
 	} );
@@ -828,6 +1181,138 @@ describe( 'Carousel View Module', () => {
 						originalIntersectionObserver;
 				}
 			} );
+
+			it( 'includes the Fade plugin when transition is fade', () => {
+				const mockContext = createMockContext( { transition: 'fade' } );
+				const { wrapper, viewport } = createMockCarouselDOM();
+				const originalIntersectionObserver = window.IntersectionObserver;
+
+				viewport.getBoundingClientRect = jest.fn( () => ( {
+					width: 100,
+					height: 0,
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0,
+					x: 0,
+					y: 0,
+					toJSON: () => ( {} ),
+				} ) );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: wrapper } );
+				( EmblaCarousel as unknown as jest.Mock ).mockReturnValue(
+					createMockEmblaInstance( {
+						scrollProgress: jest.fn( () => 0 ),
+						slideNodes: jest.fn( () => [] ),
+					} ),
+				);
+				delete ( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver;
+
+				try {
+					storeConfig.callbacks.initCarousel();
+
+					const lastCall = ( EmblaCarousel as unknown as jest.Mock ).mock.calls.at( -1 );
+					expect( lastCall?.[ 1 ] ).toMatchObject( {
+						align: 'center',
+						containScroll: false,
+						dragFree: false,
+						slidesToScroll: 1,
+					} );
+					expect( lastCall?.[ 2 ] ).toContainEqual( ( Fade as unknown as jest.Mock ).mock.results.at( -1 )?.value );
+				} finally {
+					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
+						originalIntersectionObserver;
+				}
+			} );
+
+			it( 'does not include the Fade plugin when transition is slide', () => {
+				const mockContext = createMockContext( { transition: 'slide' } );
+				const { wrapper, viewport } = createMockCarouselDOM();
+				const originalIntersectionObserver = window.IntersectionObserver;
+
+				viewport.getBoundingClientRect = jest.fn( () => ( {
+					width: 100,
+					height: 0,
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0,
+					x: 0,
+					y: 0,
+					toJSON: () => ( {} ),
+				} ) );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: wrapper } );
+				( EmblaCarousel as unknown as jest.Mock ).mockReturnValue(
+					createMockEmblaInstance( {
+						scrollProgress: jest.fn( () => 0 ),
+						slideNodes: jest.fn( () => [] ),
+					} ),
+				);
+				delete ( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver;
+
+				try {
+					storeConfig.callbacks.initCarousel();
+
+					const lastCall = ( EmblaCarousel as unknown as jest.Mock ).mock.calls.at( -1 );
+					expect( lastCall?.[ 2 ] ).toEqual( [] );
+				} finally {
+					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
+						originalIntersectionObserver;
+				}
+			} );
+
+			it( 'includes the AutoScroll plugin when transition is fade', () => {
+				const mockContext = createMockContext( {
+					transition: 'fade',
+					autoScroll: {
+						speed: 2,
+						direction: 'forward',
+						startDelay: 1000,
+						stopOnInteraction: true,
+						stopOnMouseEnter: false,
+						stopOnFocusIn: true,
+					},
+				} );
+				const { wrapper, viewport } = createMockCarouselDOM();
+				const originalIntersectionObserver = window.IntersectionObserver;
+
+				viewport.getBoundingClientRect = jest.fn( () => ( {
+					width: 100,
+					height: 0,
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0,
+					x: 0,
+					y: 0,
+					toJSON: () => ( {} ),
+				} ) );
+
+				( getContext as jest.Mock ).mockReturnValue( mockContext );
+				( getElement as jest.Mock ).mockReturnValue( { ref: wrapper } );
+				( EmblaCarousel as unknown as jest.Mock ).mockReturnValue(
+					createMockEmblaInstance( {
+						scrollProgress: jest.fn( () => 0 ),
+						slideNodes: jest.fn( () => [] ),
+					} ),
+				);
+				delete ( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver;
+
+				try {
+					storeConfig.callbacks.initCarousel();
+
+					const lastCall = ( EmblaCarousel as unknown as jest.Mock ).mock.calls.at( -1 );
+					expect( lastCall?.[ 2 ] ).toContainEqual( ( Fade as unknown as jest.Mock ).mock.results.at( -1 )?.value );
+					const autoScrollMockResult = ( AutoScroll as unknown as jest.Mock ).mock.results.at( -1 )?.value;
+					expect( lastCall?.[ 2 ] ).toContainEqual( autoScrollMockResult );
+				} finally {
+					( window as Window & { IntersectionObserver?: typeof IntersectionObserver } ).IntersectionObserver =
+						originalIntersectionObserver;
+				}
+			} );
 		} );
 	} );
 } );
@@ -1009,5 +1494,88 @@ describe( 'Edge Cases and Error Handling', () => {
 
 		expect( mockContext.scrollSnaps ).toHaveLength( 100 );
 		expect( mockContext.selectedIndex ).toBe( 50 );
+	} );
+
+	it( 'should handle autoScroll configuration', () => {
+		const mockContextWithAutoScroll = createMockContext( {
+			autoScroll: {
+				speed: 3,
+				direction: 'forward',
+				startDelay: 500,
+				stopOnInteraction: false,
+				stopOnMouseEnter: true,
+				stopOnFocusIn: false,
+			},
+		} );
+
+		expect( mockContextWithAutoScroll.autoScroll ).toEqual( {
+			speed: 3,
+			direction: 'forward',
+			startDelay: 500,
+			stopOnInteraction: false,
+			stopOnMouseEnter: true,
+			stopOnFocusIn: false,
+		} );
+	} );
+
+	it( 'should handle autoScroll disabled', () => {
+		const mockContext = createMockContext( {
+			autoScroll: false,
+		} );
+
+		expect( mockContext.autoScroll ).toBe( false );
+	} );
+} );
+
+describe( 'getSlideTabPanelId', () => {
+	const getSlideTabPanelId = storeConfig?.callbacks?.getSlideTabPanelId;
+
+	it( 'returns correct id for slide at index 1', () => {
+		const container = document.createElement( 'div' );
+		container.className = 'embla__container';
+		const slide0 = document.createElement( 'div' );
+		slide0.className = 'embla__slide';
+		const slide1 = document.createElement( 'div' );
+		slide1.className = 'embla__slide';
+		container.appendChild( slide0 );
+		container.appendChild( slide1 );
+		const viewport = document.createElement( 'div' );
+		viewport.className = 'embla';
+		viewport.appendChild( container );
+		const wrapper = document.createElement( 'div' );
+		wrapper.className = 'rt-carousel';
+		wrapper.appendChild( viewport );
+
+		( getContext as jest.Mock ).mockReturnValue(
+			createMockContext( { carouselId: 'abc', useTabs: true } ),
+		);
+		( getElement as jest.Mock ).mockReturnValue( slide1 );
+
+		expect( getSlideTabPanelId() ).toBe( 'rt-carousel-panel-abc-1' );
+	} );
+} );
+
+describe( 'getSlideTabLabelledBy', () => {
+	const getSlideTabLabelledBy = storeConfig?.callbacks?.getSlideTabLabelledBy;
+
+	it( 'returns correct labelledby id for slide at index 0', () => {
+		const container = document.createElement( 'div' );
+		container.className = 'embla__container';
+		const slide0 = document.createElement( 'div' );
+		slide0.className = 'embla__slide';
+		container.appendChild( slide0 );
+		const viewport = document.createElement( 'div' );
+		viewport.className = 'embla';
+		viewport.appendChild( container );
+		const wrapper = document.createElement( 'div' );
+		wrapper.className = 'rt-carousel';
+		wrapper.appendChild( viewport );
+
+		( getContext as jest.Mock ).mockReturnValue(
+			createMockContext( { carouselId: 'abc', useTabs: true } ),
+		);
+		( getElement as jest.Mock ).mockReturnValue( slide0 );
+
+		expect( getSlideTabLabelledBy() ).toBe( 'rt-carousel-tab-abc-0' );
 	} );
 } );

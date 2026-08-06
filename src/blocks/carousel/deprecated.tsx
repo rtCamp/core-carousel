@@ -1,7 +1,6 @@
 import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 import type { CarouselAttributes } from './types';
-import { encodeContext } from './encode-context';
 
 /**
  * v2.0.0 save — before a11y announcement fields were added to context
@@ -70,7 +69,7 @@ function SaveV200( {
 		'data-axis': axis,
 		'data-loop': loop ? 'true' : undefined,
 		'data-wp-interactive': 'rt-carousel/carousel',
-		'data-wp-context': encodeContext( JSON.stringify( context ) ),
+		'data-wp-context': JSON.stringify( context ),
 		'data-wp-init': 'callbacks.initCarousel',
 		style: {
 			'--rt-carousel-gap': `${ slideGap }px`,
@@ -166,7 +165,7 @@ function SaveV203( {
 		'data-axis': axis,
 		'data-loop': loop ? 'true' : undefined,
 		'data-wp-interactive': 'rt-carousel/carousel',
-		'data-wp-context': encodeContext( JSON.stringify( context ) ),
+		'data-wp-context': JSON.stringify( context ),
 		'data-wp-init': 'callbacks.initCarousel',
 		style: {
 			'--rt-carousel-gap': `${ slideGap }px`,

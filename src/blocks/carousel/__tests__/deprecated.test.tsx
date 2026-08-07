@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import deprecated, { SaveV200, SaveV203, SaveV210, SaveV210_NaN, SaveV211, SaveV211_NaN } from '../deprecated';
+import deprecated, { SaveV200, SaveV203, SaveV210 } from '../deprecated';
 import type { CarouselAttributes } from '../types';
 
 jest.mock( '@wordpress/block-editor', () => ( {
@@ -50,15 +50,12 @@ const mockAttributes: CarouselAttributes = {
 };
 
 describe( 'Carousel Deprecations', () => {
-	it( 'should export a deprecated array with six deprecation entries', () => {
+	it( 'should export a deprecated array with three deprecation entries', () => {
 		expect( Array.isArray( deprecated ) ).toBe( true );
-		expect( deprecated ).toHaveLength( 6 );
-		expect( deprecated[ 0 ].save ).toBe( SaveV211 );
-		expect( deprecated[ 1 ].save ).toBe( SaveV211_NaN );
-		expect( deprecated[ 2 ].save ).toBe( SaveV210 );
-		expect( deprecated[ 3 ].save ).toBe( SaveV210_NaN );
-		expect( deprecated[ 4 ].save ).toBe( SaveV203 );
-		expect( deprecated[ 5 ].save ).toBe( SaveV200 );
+		expect( deprecated ).toHaveLength( 3 );
+		expect( deprecated[ 0 ].save ).toBe( SaveV210 );
+		expect( deprecated[ 1 ].save ).toBe( SaveV203 );
+		expect( deprecated[ 2 ].save ).toBe( SaveV200 );
 	} );
 
 	it( 'should include all attributes in shared attributes schema across deprecation entries', () => {
@@ -67,19 +64,6 @@ describe( 'Carousel Deprecations', () => {
 			expect( entry.attributes ).toHaveProperty( 'lazyLoadImages' );
 			expect( entry.attributes ).toHaveProperty( 'autoScroll' );
 			expect( entry.attributes ).toHaveProperty( 'useTabs' );
-		} );
-	} );
-
-	describe( 'SaveV211', () => {
-		it( 'renders correctly with transition included in raw JSON context', () => {
-			const { container } = render( <SaveV211 attributes={ mockAttributes } /> );
-			const wrapper = container.querySelector( '.rt-carousel' );
-
-			const rawContext = wrapper?.getAttribute( 'data-wp-context' );
-			const parsedContext = JSON.parse( rawContext || '{}' );
-			expect( parsedContext.transition ).toBe( 'slide' );
-			expect( parsedContext.options ).toBeDefined();
-			expect( parsedContext.ariaLabelPattern ).toBe( 'Go to slide %d' );
 		} );
 	} );
 

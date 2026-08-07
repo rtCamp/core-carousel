@@ -63,7 +63,7 @@ export default function Save( {
 		scrollProgress: 0,
 		slideCount: 0,
 		/* translators: %d: slide number */
-		ariaLabelPattern: __( 'Go to slide %d', 'rt-carousel' ),
+		ariaLabelPattern: 'Go to slide %d',
 		/* translators: {{currentSlide}}: current slide number, {{totalSlides}}: total slide count. */
 		countLabelPattern: __(
 			'Slide {{currentSlide}} of {{totalSlides}}',

@@ -31,6 +31,7 @@ export default function Save( {
 		autoScrollStartDelay,
 		autoScrollStopOnInteraction,
 		autoScrollStopOnMouseEnter,
+		carouselId = '',
 	} = attributes;
 
 	// Pass configuration to the frontend via data-wp-context
@@ -86,7 +87,7 @@ export default function Save( {
 		}
 			: false,
 		useTabs,
-		carouselId: '', // Set at runtime by initCarousel in view.ts
+		carouselId: carouselId || '',
 	};
 
 	const blockProps = useBlockProps.save( {

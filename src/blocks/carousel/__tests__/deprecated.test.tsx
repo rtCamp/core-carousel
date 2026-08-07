@@ -82,7 +82,7 @@ describe( 'Carousel Deprecations', () => {
 			expect( parsedContext.ariaLabelPattern ).toBe( 'Go to slide %d' );
 		} );
 
-		it( 'dynamically serializes autoScroll and useTabs when enabled', () => {
+		it( 'dynamically serializes autoScroll, useTabs, and carouselId when enabled', () => {
 			const customAttributes: CarouselAttributes = {
 				...mockAttributes,
 				useTabs: true,
@@ -92,6 +92,7 @@ describe( 'Carousel Deprecations', () => {
 				autoScrollStartDelay: 500,
 				autoScrollStopOnInteraction: false,
 				autoScrollStopOnMouseEnter: true,
+				carouselId: 'my-custom-carousel',
 			};
 
 			const { container } = render( <SaveV210 attributes={ customAttributes } /> );
@@ -104,6 +105,7 @@ describe( 'Carousel Deprecations', () => {
 			const parsedContext = JSON.parse( rawContext || '{}' );
 
 			expect( parsedContext.useTabs ).toBe( true );
+			expect( parsedContext.carouselId ).toBe( 'my-custom-carousel' );
 			expect( parsedContext.options.duration ).toBe( 0 );
 			expect( parsedContext.autoScroll ).toEqual( {
 				speed: 3,

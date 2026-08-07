@@ -124,6 +124,10 @@
 		"useTabs": {
 			"type": "boolean",
 			"default": false
+		},
+		"carouselId": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"editorScript": "file:./index.js",

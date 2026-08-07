@@ -199,7 +199,7 @@ function SaveV203( {
 
 /**
  * v2.1.0 save — before `transition` was added to context,
- * but after `autoScroll`, `useTabs`, and `carouselId` fields were added.
+ * but after `autoScroll` and `useTabs` fields were added.
  *
  * @param {Object}             root0            Component props.
  * @param {CarouselAttributes} root0.attributes Block attributes.
@@ -231,6 +231,7 @@ function SaveV210( {
 		autoScrollStartDelay,
 		autoScrollStopOnInteraction,
 		autoScrollStopOnMouseEnter,
+		carouselId = '',
 	} = attributes;
 
 	const context = {
@@ -284,7 +285,7 @@ function SaveV210( {
 			}
 			: false,
 		useTabs,
-		carouselId: '',
+		carouselId: carouselId || '',
 	};
 
 	const blockProps = useBlockProps.save( {
@@ -354,6 +355,7 @@ const sharedAttributes = {
 	autoScrollStopOnInteraction: { type: 'boolean' as const, default: true },
 	autoScrollStopOnMouseEnter: { type: 'boolean' as const, default: false },
 	useTabs: { type: 'boolean' as const, default: false },
+	carouselId: { type: 'string' as const, default: '' },
 };
 
 const sharedSupports = {

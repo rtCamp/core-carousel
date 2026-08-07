@@ -27,6 +27,7 @@ export type CarouselAttributes = {
 	autoScrollStopOnInteraction: boolean;
 	autoScrollStopOnMouseEnter: boolean;
 	useTabs: boolean;
+	carouselId?: string;
 };
 
 export type CarouselViewportAttributes = Record<string, never>;

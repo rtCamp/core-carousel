@@ -56,7 +56,7 @@ function SaveV200( {
 		canScrollNext: false,
 		scrollProgress: 0,
 		slideCount: 0,
-		/* translators: %d: slide number */
+		// Un-translated pattern to keep saved block markup consistent across translations
 		ariaLabelPattern: 'Go to slide %d',
 	};
 
@@ -140,7 +140,7 @@ function SaveV203( {
 		canScrollNext: false,
 		scrollProgress: 0,
 		slideCount: 0,
-		/* translators: %d: slide number */
+		// Un-translated pattern to keep saved block markup consistent across translations
 		ariaLabelPattern: 'Go to slide %d',
 		/* translators: {{currentSlide}}: current slide number, {{totalSlides}}: total slide count. */
 		countLabelPattern: __(
@@ -224,6 +224,13 @@ function SaveV210( {
 		axis,
 		height,
 		slidesToScroll,
+		useTabs = false,
+		autoScroll,
+		autoScrollSpeed,
+		autoScrollDirection,
+		autoScrollStartDelay,
+		autoScrollStopOnInteraction,
+		autoScrollStopOnMouseEnter,
 	} = attributes;
 
 	const context = {
@@ -235,6 +242,7 @@ function SaveV210( {
 			direction,
 			axis,
 			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+			...( useTabs ? { duration: 0 } : {} ),
 		},
 		autoplay: autoplay
 			? {
@@ -251,7 +259,7 @@ function SaveV210( {
 		canScrollNext: false,
 		scrollProgress: 0,
 		slideCount: 0,
-		/* translators: %d: slide number */
+		// Un-translated pattern to keep saved block markup consistent across translations
 		ariaLabelPattern: 'Go to slide %d',
 		/* translators: {{currentSlide}}: current slide number, {{totalSlides}}: total slide count. */
 		countLabelPattern: __(
@@ -265,19 +273,29 @@ function SaveV210( {
 			'Slide {{currentSlide}} of {{totalSlides}}',
 			'rt-carousel',
 		),
-		autoScroll: false,
-		useTabs: false,
+		autoScroll: autoScroll
+			? {
+				speed: autoScrollSpeed,
+				direction: autoScrollDirection,
+				startDelay: autoScrollStartDelay,
+				stopOnInteraction: autoScrollStopOnInteraction,
+				stopOnMouseEnter: autoScrollStopOnMouseEnter,
+				stopOnFocusIn: true,
+			}
+			: false,
+		useTabs,
 		carouselId: '',
 	};
 
 	const blockProps = useBlockProps.save( {
 		className: 'rt-carousel',
 		role: 'region',
-		'aria-roledescription': 'carousel',
+		...( ! useTabs ? { 'aria-roledescription': 'carousel' } : {} ),
 		'aria-label': ariaLabel,
 		dir: direction,
 		'data-axis': axis,
 		'data-loop': loop ? 'true' : undefined,
+		...( useTabs ? { 'data-is-tabs': 'true' } : {} ),
 		'data-wp-interactive': 'rt-carousel/carousel',
 		'data-wp-context': JSON.stringify( context ),
 		'data-wp-init': 'callbacks.initCarousel',

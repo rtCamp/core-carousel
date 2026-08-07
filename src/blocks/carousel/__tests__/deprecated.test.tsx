@@ -81,5 +81,38 @@ describe( 'Carousel Deprecations', () => {
 			expect( parsedContext.carouselId ).toBe( '' );
 			expect( parsedContext.ariaLabelPattern ).toBe( 'Go to slide %d' );
 		} );
+
+		it( 'dynamically serializes autoScroll and useTabs when enabled', () => {
+			const customAttributes: CarouselAttributes = {
+				...mockAttributes,
+				useTabs: true,
+				autoScroll: true,
+				autoScrollSpeed: 3,
+				autoScrollDirection: 'backward',
+				autoScrollStartDelay: 500,
+				autoScrollStopOnInteraction: false,
+				autoScrollStopOnMouseEnter: true,
+			};
+
+			const { container } = render( <SaveV210 attributes={ customAttributes } /> );
+			const wrapper = container.querySelector( '.rt-carousel' );
+
+			expect( wrapper?.getAttribute( 'data-is-tabs' ) ).toBe( 'true' );
+			expect( wrapper?.getAttribute( 'aria-roledescription' ) ).toBeNull();
+
+			const rawContext = wrapper?.getAttribute( 'data-wp-context' );
+			const parsedContext = JSON.parse( rawContext || '{}' );
+
+			expect( parsedContext.useTabs ).toBe( true );
+			expect( parsedContext.options.duration ).toBe( 0 );
+			expect( parsedContext.autoScroll ).toEqual( {
+				speed: 3,
+				direction: 'backward',
+				startDelay: 500,
+				stopOnInteraction: false,
+				stopOnMouseEnter: true,
+				stopOnFocusIn: true,
+			} );
+		} );
 	} );
 } );

@@ -62,7 +62,7 @@ export default function Save( {
 		canScrollNext: false,
 		scrollProgress: 0,
 		slideCount: 0,
-		/* translators: %d: slide number */
+		// Un-translated pattern to keep saved block markup consistent across translations
 		ariaLabelPattern: 'Go to slide %d',
 		/* translators: {{currentSlide}}: current slide number, {{totalSlides}}: total slide count. */
 		countLabelPattern: __(

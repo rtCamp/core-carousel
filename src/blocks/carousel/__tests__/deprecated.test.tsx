@@ -1,4 +1,3 @@
-import React from 'react';
 import { render } from '@testing-library/react';
 import deprecated, { SaveV200, SaveV203, SaveV210 } from '../deprecated';
 import type { CarouselAttributes } from '../types';

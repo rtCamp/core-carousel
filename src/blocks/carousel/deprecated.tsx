@@ -56,8 +56,8 @@ function SaveV200( {
 		canScrollNext: false,
 		scrollProgress: 0,
 		slideCount: 0,
-		// Un-translated pattern to keep saved block markup consistent across translations
-		ariaLabelPattern: 'Go to slide %d',
+		/* translators: %d: slide number */
+		ariaLabelPattern: __( 'Go to slide %d', 'rt-carousel' ),
 	};
 
 	const blockProps = useBlockProps.save( {
@@ -140,8 +140,8 @@ function SaveV203( {
 		canScrollNext: false,
 		scrollProgress: 0,
 		slideCount: 0,
-		// Un-translated pattern to keep saved block markup consistent across translations
-		ariaLabelPattern: 'Go to slide %d',
+		/* translators: %d: slide number */
+		ariaLabelPattern: __( 'Go to slide %d', 'rt-carousel' ),
 		/* translators: {{currentSlide}}: current slide number, {{totalSlides}}: total slide count. */
 		countLabelPattern: __(
 			'Slide {{currentSlide}} of {{totalSlides}}',
@@ -231,7 +231,6 @@ function SaveV210( {
 		autoScrollStartDelay,
 		autoScrollStopOnInteraction,
 		autoScrollStopOnMouseEnter,
-		carouselId = '',
 	} = attributes;
 
 	const context = {
@@ -285,7 +284,7 @@ function SaveV210( {
 			}
 			: false,
 		useTabs,
-		carouselId: carouselId || '',
+		carouselId: '', // Set at runtime by initCarousel in view.ts
 	};
 
 	const blockProps = useBlockProps.save( {

@@ -31,7 +31,6 @@ export default function Save( {
 		autoScrollStartDelay,
 		autoScrollStopOnInteraction,
 		autoScrollStopOnMouseEnter,
-		carouselId = '',
 	} = attributes;
 
 	// Pass configuration to the frontend via data-wp-context
@@ -63,8 +62,8 @@ export default function Save( {
 		canScrollNext: false,
 		scrollProgress: 0,
 		slideCount: 0,
-		// Un-translated pattern to keep saved block markup consistent across translations
-		ariaLabelPattern: 'Go to slide %d',
+		/* translators: %d: slide number */
+		ariaLabelPattern: __( 'Go to slide %d', 'rt-carousel' ),
 		/* translators: {{currentSlide}}: current slide number, {{totalSlides}}: total slide count. */
 		countLabelPattern: __(
 			'Slide {{currentSlide}} of {{totalSlides}}',
@@ -87,7 +86,7 @@ export default function Save( {
 		}
 			: false,
 		useTabs,
-		carouselId: carouselId || '',
+		carouselId: '', // Set at runtime by initCarousel in view.ts
 	};
 
 	const blockProps = useBlockProps.save( {

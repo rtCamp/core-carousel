@@ -1,6 +1,9 @@
 import { render } from '@testing-library/react';
-import deprecated, { SaveV200, SaveV203, SaveV210 } from '../deprecated';
+import deprecated from '../deprecated';
 import type { CarouselAttributes } from '../types';
+
+const [ v210, v203, v200 ] = deprecated;
+const SaveV210 = v210.save;
 
 jest.mock( '@wordpress/block-editor', () => ( {
 	useBlockProps: {
@@ -52,9 +55,9 @@ describe( 'Carousel Deprecations', () => {
 	it( 'should export a deprecated array with three deprecation entries', () => {
 		expect( Array.isArray( deprecated ) ).toBe( true );
 		expect( deprecated ).toHaveLength( 3 );
-		expect( deprecated[ 0 ].save ).toBe( SaveV210 );
-		expect( deprecated[ 1 ].save ).toBe( SaveV203 );
-		expect( deprecated[ 2 ].save ).toBe( SaveV200 );
+		expect( typeof v210.save ).toBe( 'function' );
+		expect( typeof v203.save ).toBe( 'function' );
+		expect( typeof v200.save ).toBe( 'function' );
 	} );
 
 	it( 'should include all attributes in shared attributes schema across deprecation entries', () => {

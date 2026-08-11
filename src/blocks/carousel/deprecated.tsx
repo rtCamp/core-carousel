@@ -198,8 +198,121 @@ function SaveV203( {
 }
 
 /**
- * v2.1.0 save — before `transition` was added to context,
- * but after `autoScroll` and `useTabs` fields were added.
+ * v2.0.4 save — after `transition` was added to context,
+ * but before `autoScroll`, `useTabs`, `carouselId`, and context encoding were added.
+ *
+ * @param {Object}             root0            Component props.
+ * @param {CarouselAttributes} root0.attributes Block attributes.
+ */
+function SaveV204( {
+	attributes,
+}: {
+	attributes: CarouselAttributes;
+} ) {
+	const {
+		transition = 'slide',
+		loop,
+		dragFree,
+		carouselAlign,
+		containScroll,
+		direction,
+		autoplay,
+		autoplayDelay,
+		autoplayStopOnInteraction,
+		autoplayStopOnMouseEnter,
+		ariaLabel,
+		slideGap,
+		axis,
+		height,
+		slidesToScroll,
+	} = attributes;
+
+	const context = {
+		transition,
+		options: {
+			loop,
+			dragFree,
+			align: carouselAlign,
+			containScroll,
+			direction,
+			axis,
+			slidesToScroll: slidesToScroll === 'auto' ? 'auto' : parseInt( slidesToScroll, 10 ),
+		},
+		autoplay: autoplay
+			? {
+				delay: autoplayDelay,
+				stopOnInteraction: autoplayStopOnInteraction,
+				stopOnMouseEnter: autoplayStopOnMouseEnter,
+			}
+			: false,
+		isPlaying: !! autoplay,
+		timerIterationId: 0,
+		selectedIndex: -1,
+		scrollSnaps: [] as { index: number }[],
+		canScrollPrev: false,
+		canScrollNext: false,
+		scrollProgress: 0,
+		slideCount: 0,
+		/* translators: %d: slide number */
+		ariaLabelPattern: __( 'Go to slide %d', 'rt-carousel' ),
+		/* translators: {{currentSlide}}: current slide number, {{totalSlides}}: total slide count. */
+		countLabelPattern: __(
+			'Slide {{currentSlide}} of {{totalSlides}}',
+			'rt-carousel',
+		),
+		announcement: '',
+		shouldAnnounce: false,
+		/* translators: {{currentSlide}}: current slide number, {{totalSlides}}: total slide count. */
+		announcementPattern: __(
+			'Slide {{currentSlide}} of {{totalSlides}}',
+			'rt-carousel',
+		),
+	};
+
+	const blockProps = useBlockProps.save( {
+		className: 'rt-carousel',
+		role: 'region',
+		'aria-roledescription': 'carousel',
+		'aria-label': ariaLabel,
+		dir: direction,
+		'data-axis': axis,
+		'data-loop': loop ? 'true' : undefined,
+		'data-wp-interactive': 'rt-carousel/carousel',
+		'data-wp-context': JSON.stringify( context ),
+		'data-wp-init': 'callbacks.initCarousel',
+		style: {
+			'--rt-carousel-gap': `${ slideGap }px`,
+			'--rt-carousel-height': axis === 'y' ? height : undefined,
+		} as React.CSSProperties,
+	} );
+
+	const innerBlocksProps = useInnerBlocksProps.save( blockProps ) as ReturnType<
+		typeof useInnerBlocksProps.save
+	> & {
+		children: React.ReactNode;
+	};
+	const { children, ...wrapperProps } = innerBlocksProps;
+	const announcementLiveRegion = (
+		<span
+			className="screen-reader-text"
+			role="status"
+			aria-live="polite"
+			aria-atomic="true"
+			data-wp-text="context.announcement"
+		/>
+	);
+
+	return (
+		<div { ...wrapperProps }>
+			{ children }
+			{ announcementLiveRegion }
+		</div>
+	);
+}
+
+/**
+ * v2.1.0 save — before encoded context was added,
+ * but after `autoScroll`, `useTabs`, `transition`, and `carouselId` fields were added.
  *
  * @param {Object}             root0            Component props.
  * @param {CarouselAttributes} root0.attributes Block attributes.
@@ -210,6 +323,7 @@ function SaveV210( {
 	attributes: CarouselAttributes;
 } ) {
 	const {
+		transition = 'slide',
 		loop,
 		dragFree,
 		carouselAlign,
@@ -234,6 +348,7 @@ function SaveV210( {
 	} = attributes;
 
 	const context = {
+		transition,
 		options: {
 			loop,
 			dragFree,
@@ -372,6 +487,11 @@ const deprecated = [
 		attributes: sharedAttributes,
 		supports: sharedSupports,
 		save: SaveV210,
+	},
+	{
+		attributes: sharedAttributes,
+		supports: sharedSupports,
+		save: SaveV204,
 	},
 	{
 		attributes: sharedAttributes,

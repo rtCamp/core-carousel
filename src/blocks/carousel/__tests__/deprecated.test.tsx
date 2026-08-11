@@ -2,8 +2,9 @@ import { render } from '@testing-library/react';
 import deprecated from '../deprecated';
 import type { CarouselAttributes } from '../types';
 
-const [ v210, v203, v200 ] = deprecated;
+const [ v210, v204, v203, v200 ] = deprecated;
 const SaveV210 = v210.save;
+const SaveV204 = v204.save;
 
 jest.mock( '@wordpress/block-editor', () => ( {
 	useBlockProps: {
@@ -52,10 +53,11 @@ const mockAttributes: CarouselAttributes = {
 };
 
 describe( 'Carousel Deprecations', () => {
-	it( 'should export a deprecated array with three deprecation entries', () => {
+	it( 'should export a deprecated array with four deprecation entries', () => {
 		expect( Array.isArray( deprecated ) ).toBe( true );
-		expect( deprecated ).toHaveLength( 3 );
+		expect( deprecated ).toHaveLength( 4 );
 		expect( typeof v210.save ).toBe( 'function' );
+		expect( typeof v204.save ).toBe( 'function' );
 		expect( typeof v203.save ).toBe( 'function' );
 		expect( typeof v200.save ).toBe( 'function' );
 	} );
@@ -69,15 +71,31 @@ describe( 'Carousel Deprecations', () => {
 		} );
 	} );
 
+	describe( 'SaveV204', () => {
+		it( 'renders correctly with transition but without autoScroll and useTabs in raw JSON context', () => {
+			const { container } = render( <SaveV204 attributes={ mockAttributes } /> );
+			const wrapper = container.querySelector( '.rt-carousel' );
+
+			const rawContext = wrapper?.getAttribute( 'data-wp-context' );
+			const parsedContext = JSON.parse( rawContext || '{}' );
+
+			expect( parsedContext.transition ).toBe( 'slide' );
+			expect( parsedContext.autoScroll ).toBeUndefined();
+			expect( parsedContext.useTabs ).toBeUndefined();
+			expect( parsedContext.carouselId ).toBeUndefined();
+			expect( parsedContext.ariaLabelPattern ).toBe( 'Go to slide %d' );
+		} );
+	} );
+
 	describe( 'SaveV210', () => {
-		it( 'renders correctly without transition but with autoScroll and useTabs in raw JSON context', () => {
+		it( 'renders correctly with transition, autoScroll, and useTabs in raw JSON context', () => {
 			const { container } = render( <SaveV210 attributes={ mockAttributes } /> );
 			const wrapper = container.querySelector( '.rt-carousel' );
 
 			const rawContext = wrapper?.getAttribute( 'data-wp-context' );
 			const parsedContext = JSON.parse( rawContext || '{}' );
 
-			expect( parsedContext.transition ).toBeUndefined();
+			expect( parsedContext.transition ).toBe( 'slide' );
 			expect( parsedContext.autoScroll ).toBe( false );
 			expect( parsedContext.useTabs ).toBe( false );
 			expect( parsedContext.carouselId ).toBe( '' );
@@ -119,3 +137,4 @@ describe( 'Carousel Deprecations', () => {
 		} );
 	} );
 } );
+

@@ -17,7 +17,8 @@
 		"labels": {
 			"type": "array",
 			"items": { "type": "string" },
-			"default": []
+			"default": [],
+			"role": "content"
 		},
 		"activeTabBackgroundColor": {
 			"type": "string",

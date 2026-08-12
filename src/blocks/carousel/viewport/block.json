@@ -15,7 +15,10 @@
 	"textdomain": "rt-carousel",
 	"attributes": {},
 	"supports": {
-		"interactivity": true
+		"interactivity": true,
+		"html": false,
+		"listView": true,
+		"visibility": false
 	},
 	"editorScript": "file:./index.js"
 }

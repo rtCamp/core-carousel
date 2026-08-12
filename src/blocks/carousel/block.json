@@ -22,7 +22,10 @@
 		"color": {
 			"text": false,
 			"background": true
-		}
+		},
+		"listView": true,
+		"contentRole": true,
+		"anchor": true
 	},
 	"attributes": {
 		"allowedSlideBlocks": {

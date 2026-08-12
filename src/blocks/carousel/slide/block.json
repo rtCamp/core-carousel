@@ -16,6 +16,11 @@
 			"type": "string"
 		}
 	},
+	"supports": {
+		"html": false,
+		"visibility": false,
+		"contentRole": true
+	},
 	"usesContext": [
 		"rt-carousel/carousel/allowedSlideBlocks",
 		"rt-carousel/carousel/useTabs"

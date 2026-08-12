@@ -1,10 +1,7 @@
 import { render } from '@testing-library/react';
 import deprecated from '../deprecated';
+import blockJson from '../block.json';
 import type { CarouselAttributes } from '../types';
-
-const [ v210, v204, v203, v200 ] = deprecated;
-const SaveV210 = v210.save;
-const SaveV204 = v204.save;
 
 jest.mock( '@wordpress/block-editor', () => ( {
 	useBlockProps: {
@@ -52,89 +49,43 @@ const mockAttributes: CarouselAttributes = {
 	useTabs: false,
 };
 
+const SHIPPED_MARKUP: Record< string, string > = {
+	'v2.0.0':
+		'<div class="rt-carousel" role="region" aria-roledescription="carousel" aria-label="Test Carousel" dir="ltr" data-axis="x" data-wp-interactive="rt-carousel/carousel" data-wp-context="{&quot;options&quot;:{&quot;loop&quot;:false,&quot;dragFree&quot;:false,&quot;align&quot;:&quot;start&quot;,&quot;containScroll&quot;:&quot;trimSnaps&quot;,&quot;direction&quot;:&quot;ltr&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;slidesToScroll&quot;:1},&quot;autoplay&quot;:false,&quot;isPlaying&quot;:false,&quot;timerIterationId&quot;:0,&quot;selectedIndex&quot;:-1,&quot;scrollSnaps&quot;:[],&quot;canScrollPrev&quot;:false,&quot;canScrollNext&quot;:false,&quot;scrollProgress&quot;:0,&quot;slideCount&quot;:0,&quot;ariaLabelPattern&quot;:&quot;Go to slide %d&quot;}" data-wp-init="callbacks.initCarousel" style="--rt-carousel-gap: 0px;"><div data-testid="inner-blocks">Inner Blocks</div></div>',
+	'v2.0.1':
+		'<div class="rt-carousel" role="region" aria-roledescription="carousel" aria-label="Test Carousel" dir="ltr" data-axis="x" data-wp-interactive="rt-carousel/carousel" data-wp-context="{&quot;options&quot;:{&quot;loop&quot;:false,&quot;dragFree&quot;:false,&quot;align&quot;:&quot;start&quot;,&quot;containScroll&quot;:&quot;trimSnaps&quot;,&quot;direction&quot;:&quot;ltr&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;slidesToScroll&quot;:1},&quot;autoplay&quot;:false,&quot;isPlaying&quot;:false,&quot;timerIterationId&quot;:0,&quot;selectedIndex&quot;:-1,&quot;scrollSnaps&quot;:[],&quot;canScrollPrev&quot;:false,&quot;canScrollNext&quot;:false,&quot;scrollProgress&quot;:0,&quot;slideCount&quot;:0,&quot;ariaLabelPattern&quot;:&quot;Go to slide %d&quot;,&quot;announcement&quot;:&quot;&quot;,&quot;shouldAnnounce&quot;:false,&quot;announcementPattern&quot;:&quot;Slide {{currentSlide}} of {{totalSlides}}&quot;}" data-wp-init="callbacks.initCarousel" style="--rt-carousel-gap: 0px;"><div data-testid="inner-blocks">Inner Blocks</div><span class="screen-reader-text" role="status" aria-live="polite" aria-atomic="true" data-wp-text="context.announcement"></span></div>',
+	'v2.0.3':
+		'<div class="rt-carousel" role="region" aria-roledescription="carousel" aria-label="Test Carousel" dir="ltr" data-axis="x" data-wp-interactive="rt-carousel/carousel" data-wp-context="{&quot;options&quot;:{&quot;loop&quot;:false,&quot;dragFree&quot;:false,&quot;align&quot;:&quot;start&quot;,&quot;containScroll&quot;:&quot;trimSnaps&quot;,&quot;direction&quot;:&quot;ltr&quot;,&quot;axis&quot;:&quot;x&quot;,&quot;slidesToScroll&quot;:1},&quot;autoplay&quot;:false,&quot;isPlaying&quot;:false,&quot;timerIterationId&quot;:0,&quot;selectedIndex&quot;:-1,&quot;scrollSnaps&quot;:[],&quot;canScrollPrev&quot;:false,&quot;canScrollNext&quot;:false,&quot;scrollProgress&quot;:0,&quot;slideCount&quot;:0,&quot;ariaLabelPattern&quot;:&quot;Go to slide %d&quot;,&quot;countLabelPattern&quot;:&quot;Slide {{currentSlide}} of {{totalSlides}}&quot;,&quot;announcement&quot;:&quot;&quot;,&quot;shouldAnnounce&quot;:false,&quot;announcementPattern&quot;:&quot;Slide {{currentSlide}} of {{totalSlides}}&quot;}" data-wp-init="callbacks.initCarousel" style="--rt-carousel-gap: 0px;"><div data-testid="inner-blocks">Inner Blocks</div><span class="screen-reader-text" role="status" aria-live="polite" aria-atomic="true" data-wp-text="context.announcement"></span></div>',
+};
+
+const renderSave = ( Component: ( typeof deprecated )[ number ][ 'save' ] ) =>
+	render( <Component attributes={ mockAttributes } /> ).container.innerHTML;
+
 describe( 'Carousel Deprecations', () => {
-	it( 'should export a deprecated array with four deprecation entries', () => {
-		expect( Array.isArray( deprecated ) ).toBe( true );
-		expect( deprecated ).toHaveLength( 4 );
-		expect( typeof v210.save ).toBe( 'function' );
-		expect( typeof v204.save ).toBe( 'function' );
-		expect( typeof v203.save ).toBe( 'function' );
-		expect( typeof v200.save ).toBe( 'function' );
+	const rendered = deprecated.map( ( entry, index ) => ( {
+		index,
+		markup: renderSave( entry.save ),
+	} ) );
+
+	it.each( Object.entries( SHIPPED_MARKUP ) )(
+		'%s markup is reproduced by a deprecation',
+		( _version, markup ) => {
+			expect( rendered.map( ( r ) => r.markup ) ).toContain( markup );
+		},
+	);
+
+	it( 'has no deprecation that reproduces no shipped markup', () => {
+		const shipped = Object.values( SHIPPED_MARKUP );
+		const orphans = rendered
+			.filter( ( r ) => ! shipped.includes( r.markup ) )
+			.map( ( r ) => r.index );
+
+		expect( orphans ).toEqual( [] );
 	} );
 
-	it( 'should include all attributes in shared attributes schema across deprecation entries', () => {
+	it( 'declares the current attribute schema on every entry', () => {
 		deprecated.forEach( ( entry ) => {
-			expect( entry.attributes ).toHaveProperty( 'transition' );
-			expect( entry.attributes ).toHaveProperty( 'lazyLoadImages' );
-			expect( entry.attributes ).toHaveProperty( 'autoScroll' );
-			expect( entry.attributes ).toHaveProperty( 'useTabs' );
-		} );
-	} );
-
-	describe( 'SaveV204', () => {
-		it( 'renders correctly with transition but without autoScroll and useTabs in raw JSON context', () => {
-			const { container } = render( <SaveV204 attributes={ mockAttributes } /> );
-			const wrapper = container.querySelector( '.rt-carousel' );
-
-			const rawContext = wrapper?.getAttribute( 'data-wp-context' );
-			const parsedContext = JSON.parse( rawContext || '{}' );
-
-			expect( parsedContext.transition ).toBe( 'slide' );
-			expect( parsedContext.autoScroll ).toBeUndefined();
-			expect( parsedContext.useTabs ).toBeUndefined();
-			expect( parsedContext.carouselId ).toBeUndefined();
-			expect( parsedContext.ariaLabelPattern ).toBe( 'Go to slide %d' );
-		} );
-	} );
-
-	describe( 'SaveV210', () => {
-		it( 'renders correctly with transition, autoScroll, and useTabs in raw JSON context', () => {
-			const { container } = render( <SaveV210 attributes={ mockAttributes } /> );
-			const wrapper = container.querySelector( '.rt-carousel' );
-
-			const rawContext = wrapper?.getAttribute( 'data-wp-context' );
-			const parsedContext = JSON.parse( rawContext || '{}' );
-
-			expect( parsedContext.transition ).toBe( 'slide' );
-			expect( parsedContext.autoScroll ).toBe( false );
-			expect( parsedContext.useTabs ).toBe( false );
-			expect( parsedContext.carouselId ).toBe( '' );
-			expect( parsedContext.ariaLabelPattern ).toBe( 'Go to slide %d' );
-		} );
-
-		it( 'dynamically serializes autoScroll and useTabs when enabled', () => {
-			const customAttributes: CarouselAttributes = {
-				...mockAttributes,
-				useTabs: true,
-				autoScroll: true,
-				autoScrollSpeed: 3,
-				autoScrollDirection: 'backward',
-				autoScrollStartDelay: 500,
-				autoScrollStopOnInteraction: false,
-				autoScrollStopOnMouseEnter: true,
-			};
-
-			const { container } = render( <SaveV210 attributes={ customAttributes } /> );
-			const wrapper = container.querySelector( '.rt-carousel' );
-
-			expect( wrapper?.getAttribute( 'data-is-tabs' ) ).toBe( 'true' );
-			expect( wrapper?.getAttribute( 'aria-roledescription' ) ).toBeNull();
-
-			const rawContext = wrapper?.getAttribute( 'data-wp-context' );
-			const parsedContext = JSON.parse( rawContext || '{}' );
-
-			expect( parsedContext.useTabs ).toBe( true );
-			expect( parsedContext.carouselId ).toBe( '' );
-			expect( parsedContext.options.duration ).toBe( 0 );
-			expect( parsedContext.autoScroll ).toEqual( {
-				speed: 3,
-				direction: 'backward',
-				startDelay: 500,
-				stopOnInteraction: false,
-				stopOnMouseEnter: true,
-				stopOnFocusIn: true,
-			} );
+			expect( entry.attributes ).toEqual( blockJson.attributes );
 		} );
 	} );
 } );
-

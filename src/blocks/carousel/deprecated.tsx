@@ -321,7 +321,7 @@ const sharedAttributes = {
 	autoplayDelay: { type: 'number' as const, default: 4000 },
 	autoplayStopOnInteraction: { type: 'boolean' as const, default: true },
 	autoplayStopOnMouseEnter: { type: 'boolean' as const, default: false },
-	ariaLabel: { type: 'string' as const, default: 'Carousel' },
+	ariaLabel: { type: 'string' as const, default: 'Carousel', role: 'content' as const },
 	slideGap: { type: 'number' as const, default: 0 },
 	slidesToScroll: { type: 'string' as const, default: '1' },
 	lazyLoadImages: { type: 'boolean' as const, default: true },

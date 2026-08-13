@@ -18,6 +18,7 @@
 		"interactivity": true,
 		"html": false,
 		"listView": true,
+		"contentRole": true,
 		"visibility": false
 	},
 	"editorScript": "file:./index.js"

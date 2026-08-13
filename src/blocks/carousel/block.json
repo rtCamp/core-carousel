@@ -23,8 +23,6 @@
 			"text": false,
 			"background": true
 		},
-		"listView": true,
-		"contentRole": true,
 		"anchor": true
 	},
 	"attributes": {
@@ -85,7 +83,8 @@
 		},
 		"ariaLabel": {
 			"type": "string",
-			"default": "Carousel"
+			"default": "Carousel",
+			"role": "content"
 		},
 		"slideGap": {
 			"type": "number",
